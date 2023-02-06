@@ -1,5 +1,6 @@
 // pretend this is firebase, netlify, or auth0's code.
 // you shouldn't have to implement something like this in your own app
+import { API_URL_LOGIN} from './config';
 
 const localStorageKey = '__auth_provider_token__'
 const localStorageUserData = '__auth_provider_user_data__'
@@ -27,28 +28,39 @@ function handleUserResponse({user}) {
   return user
 }
 
-function login({username, password}) {
-  console.log('login called')
-    //  dummy code to make the app work
+async function  login({UsuarioEmail, UsuarioPassword}) {
+  console.log('UsuarioEmail',UsuarioEmail)
+  console.log('UsuarioPassword',UsuarioPassword)
+  let bodyAEnviar={
+    UsuarioEmail: UsuarioEmail,
+    UsuarioPassword: UsuarioPassword
+  }
+  console.log('login called', bodyAEnviar)
+  try {
+  const requestOptions = {
+    method: "POST", 
+    body:JSON.stringify(bodyAEnviar),
+    headers: { "Content-Type": "application/json" }
+  }
+  const user = await fetch(`${API_URL_LOGIN}`, requestOptions);
+  console.log('user :>> ', user);
+    if (!user.ok) {
+      return {}
+
+  }
+  
+    const userJSON = await user.json();
     const token = Math.random().toString(36).substr(2);
-    if (username === 'vmartinetti@gmail.com' && password === '123123123') {
-      // return handleUserResponse({user: {token, username}})
-    return Promise.resolve(handleUserResponse({user: {token, username}}))
-    }
-    return Promise.reject(null)
-    // return null
-    // end of dummy code
-    // 
-  // return client('login', {username, password})
-  // .then(handleUserResponse)
-  // .catch(error => {
-  //   console.log(error)
-  //   return error
-  // })
+    return handleUserResponse({user: {token,usuarioNombre: userJSON.usuarioNombre,userId: userJSON.userId,UsuarioEmail: userJSON.UsuarioEmail}})
+  }
+  catch(error){
+    console.log('error', error)
+  } 
+
 }
 
-function register({username, password}) {
-  return client('register', {username, password}).then(handleUserResponse)
+function register({username, UsuarioPassword}) {
+  return client('register', {username, UsuarioPassword}).then(handleUserResponse)
 }
 
 async function logout() {

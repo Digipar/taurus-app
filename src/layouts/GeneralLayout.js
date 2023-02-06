@@ -22,7 +22,7 @@ function Copyright(props) {
       <Typography variant="body2" color="text.secondary" align="center" {...props}>
         {'Copyright © '}
         <Link color="inherit" href="https://mui.com/">
-          Your Website
+          Digipar
         </Link>{' '}
         {new Date().getFullYear()}
         {'.'}
@@ -112,13 +112,9 @@ return (
             noWrap
             sx={{ flexGrow: 1 }}
             >
-            Dashboard
+            Taurus
             </Typography>
-            <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-            </Badge>
-            </IconButton>
+    Cerrar sesión
         </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>
