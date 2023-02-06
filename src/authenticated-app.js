@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
-import OrdersPage from './pages/OrdersPage';
 
 const AuthenticatedApp = () => {
     // const {user, logout} = useAuth();
@@ -20,15 +19,7 @@ const AuthenticatedApp = () => {
               crumb: () => 'Escritorio'
             }}
           />
-          <Route exact path="/orders" element={
-              <GeneralLayout>
-                <OrdersPage/>
-              </GeneralLayout>
-            }
-            handle= {{
-              crumb: () => 'Orders'
-            }}
-          />
+       
 
           <Route path="*" element={<h1>Not found</h1>} />
         </Routes>

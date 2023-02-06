@@ -5,13 +5,12 @@ import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useAuth } from "../context/auth-context";
+
 
 const Copyright = (props) => {
   return (
@@ -26,7 +25,7 @@ const Copyright = (props) => {
         color="inherit"
         href="https://mui.com/"
       >
-        Expensy
+        Digipar
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -35,13 +34,15 @@ const Copyright = (props) => {
 };
 
 const SignIn = (props) => {
-  const {login} = useAuth();
+  const { login } = useAuth();
+
   const handleSubmit = (event) => {
+   
     event.preventDefault();
     const data = new FormData(event.currentTarget);
-       // dummy login, check if both fields are filled and redirect to home
-    if (data.get("email") && data.get("password")) {
-      login({username: data.get("email"), password: data.get("password")})
+    if (data.get("UsuarioEmail") && data.get("UsuarioPassword")) {
+      
+      login({UsuarioEmail: data.get("UsuarioEmail"), UsuarioPassword: data.get("UsuarioPassword")})
     }
   };
 
@@ -66,7 +67,7 @@ const SignIn = (props) => {
           component="h1"
           variant="h5"
         >
-          Sign in
+          Ingrese sus credenciales
         </Typography>
         <Box
           component="form"
@@ -78,9 +79,9 @@ const SignIn = (props) => {
             margin="normal"
             required
             fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
+            id="UsuarioEmail"
+            label="Correo electrónico"
+            name="UsuarioEmail"
             autoComplete="email"
             autoFocus
           />
@@ -88,11 +89,11 @@ const SignIn = (props) => {
             margin="normal"
             required
             fullWidth
-            name="password"
-            label="Password"
+            name="UsuarioPassword"
+            label="Contraseña"
             type="password"
-            id="password"
-            autoComplete="current-password"
+            id="UsuarioPassword"
+            autoComplete="current-UsuarioPassword"
           />
           <FormControlLabel
             control={
@@ -101,7 +102,7 @@ const SignIn = (props) => {
                 color="primary"
               />
             }
-            label="Remember me"
+            label="Recordarme"
           />
           <Button
             type="submit"
@@ -109,29 +110,8 @@ const SignIn = (props) => {
             variant="contained"
             sx={{ mt: 3, mb: 2 }}
           >
-            Sign In
+            Ingresar
           </Button>
-          <Grid container>
-            <Grid
-              item
-              xs
-            >
-              <Link
-                href="#"
-                variant="body2"
-              >
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link
-                href="#"
-                variant="body2"
-              >
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
         </Box>
       </Box>
       <Copyright sx={{ mt: 8, mb: 4 }} />
