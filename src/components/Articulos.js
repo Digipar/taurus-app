@@ -20,7 +20,7 @@ const Articulos = () => {
     ];
 
     const [alert, setAlert] = React.useState(false);
-    const [articulos, setClientes] = React.useState([]);
+    const [articulos, setArticulos] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
 
@@ -40,7 +40,7 @@ const Articulos = () => {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
             console.log('articuloData => ', articuloData);
-            setClientes(articuloData)
+            setArticulos(articuloData)
         }
     }, [errorArticulos, fetchArticulos]);
 

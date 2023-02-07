@@ -4,6 +4,7 @@ import Clientes from './components/Clientes';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
 import Articulos from './components/Articulos';
+import Movimientos from './components/Movimientos';
 import Conglomerados from './components/Conglomedaros';
 
 const AuthenticatedApp = () => {
@@ -38,6 +39,15 @@ const AuthenticatedApp = () => {
               crumb: () => 'Clientes'
             }}
           />     
+          <Route exact path="/movimientos" element={
+            <GeneralLayout>
+              <Movimientos />
+            </GeneralLayout>
+          }
+          handle= {{
+            crumb: () => 'Movimientos'
+          }}
+        />  
            <Route exact path="/conglomerados" element={
               <GeneralLayout>
                 <Conglomerados />
