@@ -52,17 +52,14 @@ const Clientes = () => {
 
     return (
         <>
-            <Title>Clientes</Title>
-
-
-            <Grid container justifyContent="flex-end">
+            <Title>Listado de clientes</Title>
+            <Card size="small" sx={{ minWidth: 275 }}>
+                <CardContent>
+                <Grid container justifyContent="flex-end">
                 <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getClientes} disabled={loadingClientes}>
                     Refrescar
                 </Button>
             </Grid>
-
-            <Card size="small" sx={{ minWidth: 275 }}>
-                <CardContent>
                     <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
                     {
                         loadingClientes ? <h4>Cargando...</h4>

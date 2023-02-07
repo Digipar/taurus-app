@@ -21,7 +21,13 @@ const AuthenticatedApp = () => {
               crumb: () => 'Escritorio'
             }}
           />
-          <Route exact path="/articulos" element={<Navigate to="/articulos" />} />
+          <Route exact path="/articulos" element={
+            <GeneralLayout>
+            <Articulos />
+          </GeneralLayout>} 
+          handle= {{
+            crumb: () => 'Artículos'
+          }}/>
            <Route exact path="/clientes" element={
               <GeneralLayout>
                 <Clientes />
@@ -30,8 +36,7 @@ const AuthenticatedApp = () => {
             handle= {{
               crumb: () => 'Clientes'
             }}
-          />
-       
+          />     
 
           <Route path="*" element={<h1>Not found</h1>} />
         </Routes>
