@@ -3,6 +3,7 @@ import { Routes, Route, Navigate } from 'react-router-dom';
 import Clientes from './components/Clientes';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
+import Articulos from './components/Articulos';
 
 const AuthenticatedApp = () => {
     // const {user, logout} = useAuth();
@@ -20,6 +21,13 @@ const AuthenticatedApp = () => {
               crumb: () => 'Escritorio'
             }}
           />
+          <Route exact path="/articulos" element={
+            <GeneralLayout>
+            <Articulos />
+          </GeneralLayout>} 
+          handle= {{
+            crumb: () => 'Artículos'
+          }}/>
            <Route exact path="/clientes" element={
               <GeneralLayout>
                 <Clientes />
@@ -28,8 +36,7 @@ const AuthenticatedApp = () => {
             handle= {{
               crumb: () => 'Clientes'
             }}
-          />
-       
+          />     
 
           <Route path="*" element={<h1>Not found</h1>} />
         </Routes>

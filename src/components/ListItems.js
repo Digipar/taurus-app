@@ -3,6 +3,7 @@ import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import DashboardIcon from '@mui/icons-material/Dashboard';
+import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import { Link } from 'react-router-dom';
 
@@ -14,10 +15,16 @@ export const mainListItems = (
       </ListItemIcon>
       <ListItemText primary="Dashboard" />
     </ListItemButton>
+    <ListItemButton component={Link} to="/articulos">
+      <ListItemIcon>
+      <ArticleIcon/>
+      </ListItemIcon>
+      <ListItemText primary="Artículos" />     
+    </ListItemButton>
     <ListItemButton component={Link} to="/clientes">
       <ListItemIcon>
         <PeopleIcon />
-      </ListItemIcon>
+      </ListItemIcon>     
       <ListItemText primary="Clientes" />
     </ListItemButton>
   </React.Fragment>
