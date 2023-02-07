@@ -2,6 +2,7 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
+import Articulos from './components/Articulos';
 
 const AuthenticatedApp = () => {
     // const {user, logout} = useAuth();
@@ -19,6 +20,7 @@ const AuthenticatedApp = () => {
               crumb: () => 'Escritorio'
             }}
           />
+          <Route exact path="/articulos" element={<Navigate to="/articulos" />} />
        
 
           <Route path="*" element={<h1>Not found</h1>} />
