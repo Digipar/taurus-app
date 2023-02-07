@@ -6,6 +6,7 @@ import DashboardIcon from '@mui/icons-material/Dashboard';
 import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import { Link } from 'react-router-dom';
+import ReorderIcon from '@mui/icons-material/Reorder';
 
 export const mainListItems = (
   <React.Fragment>
@@ -27,6 +28,12 @@ export const mainListItems = (
       </ListItemIcon>     
       <ListItemText primary="Clientes" />
     </ListItemButton>
+    <ListItemButton component={Link} to="/movimientos">
+    <ListItemIcon>
+      <ReorderIcon/>
+    </ListItemIcon>     
+    <ListItemText primary="Movimientos" />
+  </ListItemButton>
   </React.Fragment>
 );
 

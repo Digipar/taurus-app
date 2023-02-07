@@ -46,8 +46,7 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
   console.log('user :>> ', user);
     if (!user.ok) {
       return {}
-
-  }
+    }  
   
     const userJSON = await user.json();
     const token = Math.random().toString(36).substr(2);
@@ -67,15 +66,15 @@ async function logout() {
   window.localStorage.removeItem(localStorageKey)
 }
 
-// an auth provider wouldn't use your client, they'd have their own
-// so that's why we're not just re-using the client
 const authURL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080'
 
 async function client(endpoint, data) {
   const config = {
     method: 'POST',
     body: JSON.stringify(data),
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+    'Content-Type': 'application/json'},
+ 
   }
 
   return window.fetch(`${authURL}/${endpoint}`, config).then(async response => {

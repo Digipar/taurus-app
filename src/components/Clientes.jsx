@@ -80,8 +80,6 @@ const Clientes = () => {
                 </CardContent>
             </Card>
         </>
-
-
     )
 }
 
