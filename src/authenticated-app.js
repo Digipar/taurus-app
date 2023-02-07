@@ -1,5 +1,6 @@
 import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
+import Clientes from './components/Clientes';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
 
@@ -17,6 +18,15 @@ const AuthenticatedApp = () => {
             } 
             handle= {{
               crumb: () => 'Escritorio'
+            }}
+          />
+           <Route exact path="/clientes" element={
+              <GeneralLayout>
+                <Clientes />
+              </GeneralLayout>
+            }
+            handle= {{
+              crumb: () => 'Clientes'
             }}
           />
        
