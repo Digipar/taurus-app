@@ -3,16 +3,18 @@ import Paper from '@mui/material/Paper';
 
 const Dashboard = () => {
     return (
-        <Grid container spacing={3}>
+        <Grid container spacing={3} >
                 {/* Chart */}
-                <Grid item xs={12} md={8} lg={9}>
-                  <Paper
+                <Grid item xs={12} md={8} lg={9} >
+                  <Paper  
                     sx={{
+                      
                       p: 2,
                       display: 'flex',
                       flexDirection: 'column',
                       height: 240,
                     }}
+                    
                   >
                   </Paper>
                 </Grid>
