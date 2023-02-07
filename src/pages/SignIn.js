@@ -10,7 +10,13 @@ import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
 import { useAuth } from "../context/auth-context";
-
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import * as yup from "yup";
+import { useFormik } from 'formik';
+import CardMedia from '@mui/material/CardMedia';
+import { CardActionArea } from '@mui/material';
 
 const Copyright = (props) => {
   return (
@@ -34,17 +40,37 @@ const Copyright = (props) => {
 };
 
 const SignIn = (props) => {
-  const { login } = useAuth();
 
-  const handleSubmit = (event) => {
-   
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-    if (data.get("UsuarioEmail") && data.get("UsuarioPassword")) {
-      
-      login({UsuarioEmail: data.get("UsuarioEmail"), UsuarioPassword: data.get("UsuarioPassword")})
-    }
-  };
+  const { login } = useAuth();
+  const validationSchema = yup.object({
+    UsuarioEmail: yup
+      .string('Enter your email')
+      .email('Ingrese un email válido')
+      .required('Su email es requerido'),
+
+  });
+
+  // const handleSubmit = (event) => {
+
+  //   event.preventDefault();
+  //   const data = new FormData(event.currentTarget);
+  //   if (data.get("UsuarioEmail") && data.get("UsuarioPassword")) {
+
+  //     login({UsuarioEmail: data.get("UsuarioEmail"), UsuarioPassword: data.get("UsuarioPassword")})
+  //   }
+  // };
+  const formik = useFormik({
+    initialValues: {
+      UsuarioEmail: '',
+      UsuarioPassword: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log('values', values)
+      //submit(values)
+      login(values)
+    },
+  });
 
   return (
     <Container
@@ -52,70 +78,91 @@ const SignIn = (props) => {
       maxWidth="xs"
     >
       <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography
-          component="h1"
-          variant="h5"
-        >
-          Ingrese sus credenciales
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1 }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="UsuarioEmail"
-            label="Correo electrónico"
-            name="UsuarioEmail"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="UsuarioPassword"
-            label="Contraseña"
-            type="password"
-            id="UsuarioPassword"
-            autoComplete="current-UsuarioPassword"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                value="remember"
-                color="primary"
-              />
-            }
-            label="Recordarme"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+      <Card sx={{ minWidth: 375, mt: 15 }}>
+        <CardContent>
+          <Box
+            sx={{
+              marginTop: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            Ingresar
-          </Button>
-        </Box>
-      </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
+            <CardActionArea>
+              <CardMedia
+                direction="column"
+                justify="center"
+                component="img"
+                sx={{ height: 60, width: 160 , ml:13}}
+                image="./logoDigipar.png"
+                alt="Digipar"
+              />
+            </CardActionArea>
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{mt:5}}
+            >
+              Ingrese sus credenciales
+            </Typography>
+            <Box
+
+              component="form"
+              onSubmit={formik.handleSubmit}
+              noValidate
+              sx={{ mt: 1 }}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="UsuarioEmail"
+                label="Correo electrónico"
+                name="UsuarioEmail"
+                autoComplete="email"
+                onChange={formik.handleChange}
+                error={formik.touched.UsuarioEmail && Boolean(formik.errors.UsuarioEmail)}
+                helperText={formik.touched.UsuarioEmail && formik.errors.UsuarioEmail}
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="UsuarioPassword"
+                label="Contraseña"
+                type="password"
+                id="UsuarioPassword"
+                autoComplete="current-UsuarioPassword"
+                onChange={formik.handleChange}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    value="remember"
+                    color="primary"
+                  />
+                }
+                label="Recordarme"
+              />
+              <CardActions>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Ingresar
+                </Button>
+              </CardActions>
+            </Box>
+          </Box>
+        </CardContent>
+        <Copyright sx={{ mt: 1, mb: 4 }} />
+      </Card>
+
     </Container>
+
   );
 };
 export default SignIn;
