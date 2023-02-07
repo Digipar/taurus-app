@@ -5,6 +5,7 @@ import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
 import Articulos from './components/Articulos';
 import Movimientos from './components/Movimientos';
+import Conglomerados from './components/Conglomedaros';
 
 const AuthenticatedApp = () => {
     // const {user, logout} = useAuth();
@@ -47,6 +48,15 @@ const AuthenticatedApp = () => {
             crumb: () => 'Movimientos'
           }}
         />  
+           <Route exact path="/conglomerados" element={
+              <GeneralLayout>
+                <Conglomerados />
+              </GeneralLayout>
+            }
+            handle= {{
+              crumb: () => 'Conglomerados'
+            }}
+          />     
 
           <Route path="*" element={<h1>Not found</h1>} />
         </Routes>

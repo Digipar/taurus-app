@@ -1,7 +1,7 @@
 import * as React from 'react'
 import useFetch from '../hooks/use-fetch';
 import Alert from './Alert';
-import { API_URL_CLIENTES } from '../config';
+import { API } from '../config';
 import { DataGrid } from '@mui/x-data-grid';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
@@ -11,76 +11,76 @@ import Title from './Title';
 import Grid from '@mui/material/Grid';
 
 
-const Clientes = () => {
+const Conglomerados = () => {
 
     const columns = [
-        { field: 'Id', headerName: 'ID', width: 100 },
-        { field: 'Nombre', headerName: 'Nombre', width: 130 },
-        { field: 'Tenant', headerName: 'Tenant', width: 130 },
+        { field: 'Id', headerName: 'Código', width: 130 },
+        { field: 'Nombre', headerName: 'Nombre', width: 150 },
+        { field: 'CreadoPor', headerName: 'Creado Por', width: 150 },
     ];
 
     const [alert, setAlert] = React.useState(false);
-    const [clientes, setClientes] = React.useState([]);
+    const [conglomerados, setConglomerados] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchConglomerados, error: errorConglomerados, loading: loadingConglomerados } = useFetch();
 
 
-    const getClientes = React.useCallback(async () => {
+    const getConglomerados = React.useCallback(async () => {
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
-        const clienteData = await fetchClientes(`${API_URL_CLIENTES}/clientes`, reqOptions)
+        const conglomeradoData = await fetchConglomerados(`${API}/conglomerados`, reqOptions)
 
-        if (clienteData.error) {
+        if (conglomeradoData.error) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
-        } else if (errorClientes) {
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: conglomeradoData.message })
+        } else if (errorConglomerados) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorConglomerados })
         } else {
-            console.log('clienteData => ', clienteData);
-            setClientes(clienteData)
+            // console.log('conglomeradoData => ', conglomeradoData);
+            setConglomerados(conglomeradoData)
         }
-    }, [errorClientes, fetchClientes]);
+    }, [errorConglomerados, fetchConglomerados]);
 
 
     React.useEffect(() => {
-        getClientes();
-    }, [getClientes])
+        getConglomerados();
+    }, [getConglomerados])
 
 
     return (
         <>
-            <Title>Listado de clientes</Title>
+            <Title>Listado de conglomerados</Title>
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
                 <Grid container justifyContent="flex-end">
-                <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getClientes} disabled={loadingClientes}>
+                <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getConglomerados} disabled={loadingConglomerados}>
                     Refrescar
                 </Button>
             </Grid>
                     <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
                     {
-                        loadingClientes ? <h4>Cargando...</h4>
+                        loadingConglomerados ? <h4>Cargando...</h4>
                             :
                             <div style={{ height: 400, width: '100%' }}>
                                 <DataGrid
-                                    getRowId={(cliente) => cliente.Id}
-                                    rows={clientes}
+                                    getRowId={(conglomerado) => conglomerado.Id}
+                                    rows={conglomerados}
                                     columns={columns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
                                     checkboxSelection
                                 />
                             </div>
-
-
                     }
                 </CardContent>
             </Card>
         </>
+
+
     )
 }
 
-export default Clientes
+export default Conglomerados;
