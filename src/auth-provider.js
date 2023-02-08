@@ -24,7 +24,7 @@ async function getUserFromToken(token) {
 function handleUserResponse({user}) {
   console.log('user', user)
   window.localStorage.setItem(localStorageKey, user.token)
-  window.localStorage.setItem(localStorageUserData, user.username)
+  window.localStorage.setItem(localStorageUserData, JSON.stringify(user))
   return user
 }
 
@@ -42,14 +42,15 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
     headers: { "Content-Type": "application/json" }
   }
   const user = await fetch(`${API}/login`, requestOptions);
-
+  console.log('user', user)
     if (!user.ok) {
       return {}
     }  
   
     const userJSON = await user.json();
+    console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,usuarioNombre: userJSON.usuarioNombre,userId: userJSON.userId,UsuarioEmail: userJSON.UsuarioEmail}})
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON[0].UsuarioNombre,userId: userJSON[0].Id,UsuarioEmail: userJSON[0].UsuarioEmail}})
   }
   catch(error){
     console.log('error', error)
@@ -57,8 +58,8 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
 
 }
 
-function register({username, UsuarioPassword}) {
-  return client('register', {username, UsuarioPassword}).then(handleUserResponse)
+function register({UsuarioNombre, UsuarioPassword}) {
+  return client('register', {UsuarioNombre, UsuarioPassword}).then(handleUserResponse)
 }
 
 async function logout() {
