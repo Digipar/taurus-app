@@ -1,5 +1,5 @@
 import * as React from 'react'
-import { API_URL_ARTICULOS } from '../config';
+import { API } from '../config';
 import { DataGrid } from '@mui/x-data-grid';
 import Alert from './Alert';
 import Grid from '@mui/material/Grid';
@@ -11,7 +11,6 @@ import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 
 const Articulos = () => {
-    console.log('llega aca')
 
     const columns = [
         { field: 'Id', headerName: 'Código', width: 100 },
@@ -30,7 +29,7 @@ const Articulos = () => {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
-        const articuloData = await fetchArticulos(`${API_URL_ARTICULOS}`, reqOptions)
+        const articuloData = await fetchArticulos(`${API}/articulos`, reqOptions)
 
         if (articuloData.error) {
             setAlert(true);
@@ -39,7 +38,7 @@ const Articulos = () => {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
-            console.log('articuloData => ', articuloData);
+       
             setArticulos(articuloData)
         }
     }, [errorArticulos, fetchArticulos]);
@@ -47,7 +46,7 @@ const Articulos = () => {
 
     React.useEffect(() => {
         getArticulos();
-    }, [getArticulos])
+    }, [])
     return (
         <>
             <Title>Listado de artículos</Title>

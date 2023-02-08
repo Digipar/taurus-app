@@ -49,15 +49,6 @@ const SignIn = (props) => {
 
   });
 
-  // const handleSubmit = (event) => {
-
-  //   event.preventDefault();
-  //   const data = new FormData(event.currentTarget);
-  //   if (data.get("UsuarioEmail") && data.get("UsuarioPassword")) {
-
-  //     login({UsuarioEmail: data.get("UsuarioEmail"), UsuarioPassword: data.get("UsuarioPassword")})
-  //   }
-  // };
   const formik = useFormik({
     initialValues: {
       UsuarioEmail: '',

@@ -1,6 +1,6 @@
 // pretend this is firebase, netlify, or auth0's code.
 // you shouldn't have to implement something like this in your own app
-import { API_URL_LOGIN} from './config';
+import { API} from './config';
 
 const localStorageKey = '__auth_provider_token__'
 const localStorageUserData = '__auth_provider_user_data__'
@@ -29,8 +29,7 @@ function handleUserResponse({user}) {
 }
 
 async function  login({UsuarioEmail, UsuarioPassword}) {
-  console.log('UsuarioEmail',UsuarioEmail)
-  console.log('UsuarioPassword',UsuarioPassword)
+
   let bodyAEnviar={
     UsuarioEmail: UsuarioEmail,
     UsuarioPassword: UsuarioPassword
@@ -42,8 +41,8 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
     body:JSON.stringify(bodyAEnviar),
     headers: { "Content-Type": "application/json" }
   }
-  const user = await fetch(`${API_URL_LOGIN}`, requestOptions);
-  console.log('user :>> ', user);
+  const user = await fetch(`${API}/login`, requestOptions);
+
     if (!user.ok) {
       return {}
     }  
