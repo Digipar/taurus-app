@@ -24,7 +24,7 @@ const Movimientos = () => {
     ];
 
     const [alert, setAlert] = React.useState(false);
-    const [movimientos, setArticulos] = React.useState([]);
+    const [movimientos, setMovimientos] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchMovimientos, error: errorMovimientos, loading: loadingMovimientos } = useFetch();
 
@@ -62,11 +62,11 @@ const Movimientos = () => {
                         setAlert(true);
                         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimientos })
                     } else {
-                        setArticulos(movimientoData)
+                        setMovimientos(movimientoData)
                     }
         }
         getMovimientos();
-    }, [])
+    }, [errorMovimientos, fetchMovimientos])
 
 
     const  refreshMovimientos = async () => {
@@ -82,7 +82,7 @@ const Movimientos = () => {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimientos })
         } else {
-            setArticulos(movimientoData)
+            setMovimientos(movimientoData)
         }
     }
 
