@@ -1,4 +1,4 @@
-import React, { useCallback } from 'react';
+import React from 'react';
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
 import MovimientoForm from '../components/MovimientoForm';
@@ -70,14 +70,19 @@ const MovimientoRegistrar = () => {
         if (respMovimiento.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: respMovimiento.message })
-        } else if (errorRegistrarMovimiento) {
+            return;
+        }
+
+        if (errorRegistrarMovimiento) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorRegistrarMovimiento })
-        } else {
-            setAlert(true);
-            setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento creado con éxito!' })
-            navigate('/movimientos')
+            return;
         }
+
+        setAlert(true);
+        setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento creado con éxito!' })
+        navigate('/movimientos')
+        
     }
 
     
