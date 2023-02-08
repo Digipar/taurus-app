@@ -103,7 +103,7 @@ const MovimientoRegistrar = () => {
             } 
     
             console.log('respCliente => ', respCliente);
-            // setClientes(respCliente)
+            setClientes(respCliente)
         }
         getClientes();
     }, [])
