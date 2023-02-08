@@ -11,7 +11,6 @@ import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 
 const Articulos = () => {
-    console.log('llega aca')
 
     const columns = [
         { field: 'Id', headerName: 'Código', width: 100 },
@@ -47,7 +46,7 @@ const Articulos = () => {
 
     React.useEffect(() => {
         getArticulos();
-    }, [getArticulos])
+    }, [])
     return (
         <>
             <Title>Listado de artículos</Title>
