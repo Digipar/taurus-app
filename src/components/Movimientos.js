@@ -11,7 +11,6 @@ import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 
 const Movimientos = () => {
-    console.log('llega aca')
 
     const columns = [
         { field: 'Id', headerName: 'Código', width: 100 },
