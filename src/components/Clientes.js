@@ -73,8 +73,6 @@ const Clientes = () => {
                                     rowsPerPageOptions={[5]}
                                 />
                             </div>
-
-
                     }
                 </CardContent>
             </Card>
