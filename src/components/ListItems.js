@@ -7,6 +7,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import { Link } from 'react-router-dom';
 import ReorderIcon from '@mui/icons-material/Reorder';
+import BusinessIcon from '@mui/icons-material/Business';
 
 export const mainListItems = (
   <React.Fragment>
@@ -36,7 +37,7 @@ export const mainListItems = (
   </ListItemButton>
     <ListItemButton component={Link} to="/conglomerados">
       <ListItemIcon>
-        <PeopleIcon />
+        <BusinessIcon />
       </ListItemIcon>     
       <ListItemText primary="Conglomerados" />
     </ListItemButton>

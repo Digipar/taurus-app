@@ -22,7 +22,6 @@ const useFetch = () => {
                         break;
                 }
             }
-
             const json = await response.json();
             return json;
         } catch (error) {
