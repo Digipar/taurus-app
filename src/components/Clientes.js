@@ -14,9 +14,9 @@ import Grid from '@mui/material/Grid';
 const Clientes = () => {
 
     const columns = [
-        { field: 'Id', headerName: 'ID', width: 100 },
-        { field: 'Nombre', headerName: 'Nombre', width: 130 },
-        { field: 'Tenant', headerName: 'Tenant', width: 130 },
+        { field: 'Id', headerName: 'ID', width: 150 },
+        { field: 'Nombre', headerName: 'Nombre', width: 250 },
+        { field: 'Tenant', headerName: 'Tenant', width: 200 },
     ];
 
     const [alert, setAlert] = React.useState(false);
@@ -71,7 +71,6 @@ const Clientes = () => {
                                     columns={columns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
-                                    checkboxSelection
                                 />
                             </div>
 
