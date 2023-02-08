@@ -1,16 +1,20 @@
-import * as React from 'react'
+import *  as React from 'react'
 import { API } from '../config';
-import { DataGrid } from '@mui/x-data-grid';
-import Alert from './Alert';
-import Grid from '@mui/material/Grid';
-import Card from '@mui/material/Card';
+import { useAuth } from "../context/auth-context";
 import CardContent from '@mui/material/CardContent';
 import useFetch from '../hooks/use-fetch';
 import Title from './Title';
-import { Button } from '@mui/material';
-import CachedIcon from '@mui/icons-material/Cached';
+import {  Card,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    TablePagination} from '@mui/material';
 
 const Articulos = () => {
+    const { user } = useAuth();
+    console.log('user', user)
 
     const columns = [
         { field: 'Id', headerName: 'Código', width: 130 },
@@ -19,9 +23,15 @@ const Articulos = () => {
     ];
 
     const [alert, setAlert] = React.useState(false);
-    const [articulos, setArticulos] = React.useState([]);
+    const [articulosList, setArticulosList] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
+
+    const [articuloCount, setArticuloCount] = React.useState(0);
+    const [controller, setController] = React.useState({
+        page: 0,
+        rowsPerPage: 10
+    });
 
 
     const getArticulos = React.useCallback(async () => {
@@ -30,7 +40,9 @@ const Articulos = () => {
             headers: { "Content-Type": "application/json" }
         };
         const articuloData = await fetchArticulos(`${API}/articulos`, reqOptions)
-
+        console.log('articuloData', articuloData)
+        setArticuloCount(articuloData.length)
+        setArticulosList(articuloData);
         if (articuloData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
@@ -38,11 +50,25 @@ const Articulos = () => {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
-       
-            setArticulos(articuloData)
+
+            setArticulosList(articuloData)
         }
     }, [errorArticulos, fetchArticulos]);
 
+    const handlePageChange = (event, newPage) => {
+        setController({
+            ...controller,
+            page: newPage
+        });
+    };
+    const handleChangeRowsPerPage = (event) => {
+        console.log('aca')
+        setController({
+            ...controller,
+            rowsPerPage: parseInt(event.target.value, 10),
+            page: 0
+        });
+    };
 
     React.useEffect(() => {
         getArticulos();
@@ -55,28 +81,44 @@ const Articulos = () => {
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
-
-                    <Grid container justifyContent="flex-end">
-                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getArticulos} disabled={loadingArticulos}>
-                            Refrescar
-                        </Button>
-                    </Grid>
-                    <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-                    {
-                        loadingArticulos ? <h4>Cargando...</h4>
-                            :
-                            <div style={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    getRowId={(articulo) => articulo.Id}
-                                    rows={articulos}
-                                    columns={columns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
-                                />
-                            </div>
-
-
-                    }
+                <Table>
+                <TableHead>
+                  <TableRow>
+                    <TableCell>
+                      Codigo
+                    </TableCell>
+                    <TableCell>
+                      Descripción
+                    </TableCell>
+                    <TableCell>
+                    Descripción adicional
+                  </TableCell>
+                  </TableRow>
+                </TableHead>
+                <TableBody>
+                  {articulosList.map((articulo) => (
+                    <TableRow key={articulo.Id}>
+                    <TableCell>
+                    {articulo.Id}
+                  </TableCell>
+                      <TableCell>
+                        {articulo.Descripcion}
+                      </TableCell>
+                      <TableCell>
+                        {articulo.DescripcionAdicional}
+                      </TableCell>
+                    </TableRow>
+                  ))}
+                </TableBody>
+              </Table>
+              <TablePagination
+                component="div"
+                onPageChange={handlePageChange}
+                page={controller.page}
+                count={articuloCount}
+                rowsPerPage={controller.rowsPerPage}
+                onRowsPerPageChange={handleChangeRowsPerPage}
+              />
                 </CardContent>
             </Card>
         </>
