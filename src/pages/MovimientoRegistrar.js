@@ -56,7 +56,7 @@ const MovimientoRegistrar = () => {
             ModificadoPor: user.userId
         }
 
-        console.log('movimientoDataCreate', movimientoDataCreate)
+        console.log('Movimiento Data Create =>', movimientoDataCreate)
 
         const reqOptions = {
             method: 'POST',
