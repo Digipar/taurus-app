@@ -58,32 +58,37 @@ const Movimientos = () => {
                     if (movimientoData.error) {
                         setAlert(true);
                         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
-                    } else if (errorMovimientos) {
+                    } 
+                    if (errorMovimientos) {
                         setAlert(true);
                         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimientos })
-                    } else {
-                        setMovimientos(movimientoData)
-                    }
+                    } 
+                    setMovimientos(movimientoData)
+                    
         }
         getMovimientos();
-    }, [errorMovimientos, fetchMovimientos])
+    }, []) //! fetchMovimientos ciclo infinito
 
 
-    const  refreshMovimientos = async () => {
+    const refreshMovimientos = async () => {
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
         const movimientoData = await fetchMovimientos(`${API}/movimientos`, reqOptions)
+
         if (movimientoData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
-        } else if (errorMovimientos) {
+        }
+        
+        if (errorMovimientos) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimientos })
-        } else {
-            setMovimientos(movimientoData)
         }
+
+        setMovimientos(movimientoData)
+        
     }
 
     return (
@@ -121,4 +126,5 @@ const Movimientos = () => {
         </>
     )
 }
-export default Movimientos
+
+export default Movimientos;
