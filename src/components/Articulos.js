@@ -13,7 +13,7 @@ import CachedIcon from '@mui/icons-material/Cached';
 const Articulos = () => {
 
     const columns = [
-        { field: 'Id', headerName: 'Código', width: 100 },
+        { field: 'Id', headerName: 'Código', width: 130 },
         { field: 'Descripcion', headerName: 'Descripción', width: 350 },
         { field: 'DescripcionAdicional', headerName: 'Descripcion Adicional', width: 550 },
     ];
@@ -72,7 +72,6 @@ const Articulos = () => {
                                     columns={columns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
-                                    checkboxSelection
                                 />
                             </div>
 

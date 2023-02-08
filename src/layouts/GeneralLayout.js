@@ -121,7 +121,7 @@ return (
             Taurus
             </Typography>
            
-            <Button onClick={logout} color="inherit" component="h1"> <LockOutlinedIcon />Cerrar sesión</Button>
+            <Button onClick={logout} color="inherit" component="h1"> <LockOutlinedIcon /> Cerrar sesión</Button>
         </Toolbar>
         </AppBar>
         <Drawer variant="permanent" open={open}>

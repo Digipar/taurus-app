@@ -14,8 +14,8 @@ import Grid from '@mui/material/Grid';
 const Conglomerados = () => {
 
     const columns = [
-        { field: 'Id', headerName: 'Código', width: 130 },
-        { field: 'Nombre', headerName: 'Nombre', width: 150 },
+        { field: 'Id', headerName: 'Código', width: 150 },
+        { field: 'Nombre', headerName: 'Nombre', width: 250 },
         { field: 'CreadoPor', headerName: 'Creado Por', width: 150 },
     ];
 
@@ -71,7 +71,6 @@ const Conglomerados = () => {
                                     columns={columns}
                                     pageSize={5}
                                     rowsPerPageOptions={[5]}
-                                    checkboxSelection
                                 />
                             </div>
                     }

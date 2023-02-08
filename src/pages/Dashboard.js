@@ -9,13 +9,21 @@ const Dashboard = () => {
                   <Paper  
                     sx={{
                       
-                      p: 2,
+                      p: 10,
                       display: 'flex',
                       flexDirection: 'column',
-                      height: 240,
+                      height: 600,
                     }}
                     
                   >
+                 
+                  <img
+                  sx={{ width: 400, height: 20 }}
+                  src={`bienvenido.png`}
+                  srcSet={`bienvenido.png`}
+                  alt='Digipar'
+                  loading="lazy"
+                />
                   </Paper>
                 </Grid>
          
