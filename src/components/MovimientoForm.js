@@ -1,110 +1,153 @@
-import React from 'react'
-import * as yup from "yup";
+import React, { useState, useEffect } from 'react'
+// import * as yup from "yup";
 import Box from "@mui/material/Box";
-import { useFormik } from 'formik';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
+import TextField from '@mui/material/TextField';
+import Autocomplete from '@mui/material/Autocomplete';
 import InputLabel from '@mui/material/InputLabel';
 import Button from "@mui/material/Button";
-import FormHelperText from '@mui/material/FormHelperText';
+// import FormHelperText from '@mui/material/FormHelperText';
 import { Link } from "react-router-dom";
 
 const MovimientoForm = (props) => {
 
-    const schema = yup.object({
-        ClienteId: yup.string().required("El campo Cliente es requerido."),
-        ArticuloId: yup.string().required("El campo Articulo es requerido."),
-        Precio: yup.number().positive("El campo Precio no puede ser negativo.").required("El campo Precio es requerido."),
-        Cantidad: yup.number().required("El campo Cantidad es requerido.")
-    });
+    const [clientes, setClientes] = useState([]);
+    const [clienteSelecionado, setClienteSeleccionado] = useState("");
+    const [articulos, setArticulos] = useState([]);
+    const [articuloSeleccionado, setArticuloSeleccionado] = useState("");
+    const [cantidad, setCantidad] = useState("");
+    const [precio, setPrecio] = useState("");
 
-    const handleSubmitSolicitud = async (values) => {
-        await props.registrarMovimiento(values)
-        resetForm({
-             ClienteId: "",
-             ArticuloId: "",
-             Precio: "",
-             Cantidad: "",
-        });
-     }
 
-    const {
-        values,
-        handleSubmit,
-        handleChange,
-        setFieldError,
-        errors,
-        resetForm
-    } = useFormik({
-        initialValues: {
-            SolicitudTipo: "",
-            PermisoTipo: "",
-            ClienteId: "",
-            PermisoAclaracion: "",
-            FechaDesde: "",
-            CantidadDias: ""
-        },
-        validateOnChange: false,
-        valdiateOnBlur: false,
-        validationSchema: schema,
-        onSubmit(values) {
-            handleSubmitSolicitud(values)
+    useEffect(() => {
+        let clientesTemp = [];
+        props.clientes.map((cliente) => {
+            clientesTemp.push({ id: cliente.Id, label: cliente.Nombre, })
+        })
+        setClientes([...clientesTemp])
+
+    }, [props.clientes])
+
+
+    useEffect(() => {
+        const articulosTemp = [];
+        props.articulos.map((articulo) => {
+            articulosTemp.push({ id: articulo.Id, label: articulo.Descripcion })
+        })
+        setArticulos([...articulosTemp])
+    }, [props.articulos])
+
+
+    const enviar = () => {
+
+        const movDataCreate = {
+            clienteId: clienteSelecionado.id,
+            articuloId: articuloSeleccionado,
+            cantidad: +cantidad,
+            precio: +precio
         }
-    });
 
-    const handleChangeWrapper = (e) => {
-        setFieldError(e.target.name, undefined)
-        handleChange(e);
+        props.registrarMovimiento(movDataCreate)
     }
 
     return (
         <>
+
             <Box
                 component="form"
                 sx={{ marginTop: 2 }}
             ></Box>
-        
-            <FormControl fullWidth error={(errors.ClienteId) ? true : false} sx={{ marginTop: 2 }}>
-                    <InputLabel id="cliente-label">Cliente *</InputLabel>
-                    <Select
-                        labelId="cliente-label"
-                        id="ClienteId"
-                        name="ClienteId"
-                        value={values?.ClienteId}
-                        label="Cliente *"
-                        onChange={handleChangeWrapper}
 
-                    >
-                        {
-                            props.clientes.map(item => {
-                                return (
-                                    <MenuItem key={item.Id} value={item.Id}>{item.Nombre}</MenuItem>
-                                )
-                            })
-                        }
-                    </Select>
-                    <FormHelperText>{errors.ClienteId}</FormHelperText>
-                </FormControl>
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
 
-                <Button
-                    fullWidth
-                    variant="contained"
-                    sx={{ mt: 3, mb: 2 }}
-                    onClick={() => handleSubmit(values)}
-                    disabled={props.dataSaving}
+                <Autocomplete
+                    id="clienteId"
+                    name="clienteId"
+                    disablePortal
+                    onInputChange={(e, newValue) => { setClienteSeleccionado(newValue) }}
+                    onChange={(event, newValue) => {
+                        setClienteSeleccionado(newValue)
+                    }}
+                    options={clientes}
+                    sx={{ width: "*" }}
+                    renderInput={(params) => <TextField {...params} label="Clientes" />}
+                />
+
+            </FormControl>
+
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <InputLabel id="articulo">Articulos *</InputLabel>
+                <Select
+                    labelId="articulo"
+                    id="articuloId"
+                    name="articuloId"
+                    label="Articulos *"
+                    value={articuloSeleccionado}
+                    onChange={(event) => {
+                        setArticuloSeleccionado(event.target.value)
+                    }}
                 >
-                    Grabar
-                </Button>
-                <Button
-                    fullWidth
-                    variant="outlined"
-                    component={Link}
-                    to="/movimientos"
-                    disabled={props.dataSaving}
-                >
-                    Volver
-                </Button>
+                    {
+                        articulos.map(item => {
+                            return (
+                                <MenuItem key={item.Id} value={item.id}>{item.label}</MenuItem>
+                            )
+                        })
+                    }
+
+                </Select>
+
+            </FormControl>
+
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <TextField
+                    name="cantidad"
+                    id="cantidad"
+                    label="Cantidad"
+                    type="number"
+                    inputProps={{ step: 1 }}
+                    value={cantidad}
+                    onChange={(e) => { setCantidad(e.target.value) }}
+                    required
+
+                />
+            </FormControl>
+
+            <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <TextField
+                    name="precio"
+                    id="precio"
+                    label="Precio"
+                    type="number"
+                    inputProps={{ step: 1, min: 0 }}
+                    value={precio}
+                    onChange={(e) => { setPrecio(e.target.value) }}
+                    required
+
+                />
+            </FormControl>
+
+            <Button
+                fullWidth
+                variant="contained"
+                sx={{ mt: 3, mb: 2 }}
+                onClick={() => enviar()}
+                disabled={props.dataSaving}
+            >
+                Grabar
+            </Button>
+            <Button
+                fullWidth
+                variant="outlined"
+                component={Link}
+                to="/movimientos"
+                disabled={props.dataSaving}
+            >
+                Volver
+            </Button>
+
         </>
     )
 }
