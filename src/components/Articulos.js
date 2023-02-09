@@ -22,7 +22,6 @@ import {
     TablePagination
 } from '@mui/material';
 const Articulos = () => {
-    const [filterDescripcion, setFilterDescripcion] = React.useState('Todos');
 
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
@@ -117,11 +116,10 @@ const Articulos = () => {
                 <CardContent>
                     <Box
                         m={1}
-                        //margin
                         display="flex"
                         justifyContent="flex-end"
                         alignItems="flex-end"
-                        //sx={boxDefault}
+                        
                     >
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                             Refrescar
