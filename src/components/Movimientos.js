@@ -25,12 +25,7 @@ import FormControl from '@mui/material/FormControl';
 
 const Movimientos = () => {
 
-    const columns = [
-        { field: 'ArticuloId', headerName: 'Articulo', width: 100 },
-        { field: 'ClienteId', headerName: 'Cliente', width: 300, align: 'center' },
-        { field: 'Cantidad', headerName: 'Cantidad', width: 300 },
-        { field: 'Precio', headerName: 'Precio', width: 300, align: 'right' },
-    ];
+
 
     const [alert, setAlert] = React.useState(false);
     const [movimientosList, setMovimientosList] = React.useState([]);
@@ -135,6 +130,8 @@ const Movimientos = () => {
                     <OutlinedInput
                         onChange={handleChange}
                         type="search"
+                        noValidate
+                        sx={{ mt: 1 }}
                         startAdornment={
                             <InputAdornment position='end'>
                                 <SearchIcon />
