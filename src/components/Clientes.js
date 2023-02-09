@@ -47,7 +47,7 @@ const Clientes = () => {
 
     React.useEffect(() => {
         getClientes();
-    }, [getClientes])
+    }, [])
 
 
     return (

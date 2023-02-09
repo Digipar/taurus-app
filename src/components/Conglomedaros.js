@@ -47,7 +47,7 @@ const Conglomerados = () => {
 
     React.useEffect(() => {
         getConglomerados();
-    }, [getConglomerados])
+    }, [])
 
 
     return (
