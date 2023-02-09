@@ -58,6 +58,15 @@ const AuthenticatedApp = () => {
           crumb: () => 'Registrar nuevo movimiento'
         }}
       />
+      <Route exact path="/movimiento-editar/:id" element={
+        <GeneralLayout>
+          <MovimientoRegistrar />
+        </GeneralLayout>
+      }
+        handle={{
+          crumb: () => 'Editar movimiento'
+        }}
+      />
       <Route exact path="/conglomerados" element={
         <GeneralLayout>
           <Conglomerados />

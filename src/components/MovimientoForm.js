@@ -9,9 +9,76 @@ import Autocomplete from '@mui/material/Autocomplete';
 import InputLabel from '@mui/material/InputLabel';
 import Button from "@mui/material/Button";
 // import FormHelperText from '@mui/material/FormHelperText';
-import { Link } from "react-router-dom";
+import { Link, useParams } from "react-router-dom";
+
+//! Editar
+const movimientosPrueba = [
+    {
+        "Id": "001",
+        "Creado": "2023-02-01T12:53:28Z",
+        "CreadoPor": "Pedro Kaur",
+        "Modificado": "2023-02-01T12:53:28Z",
+        "ModificadoPor": "Pedro Kaur",
+        "Estado": 1,
+        "Precio": 800,
+        "Cantidad": 2,
+        "ArticuloId": "m2o94",
+        "ClienteId": 1000
+    },
+    {
+        "Id": "002",
+        "Creado": "2023-01-12T12:53:28Z",
+        "CreadoPor": "Angelina Alfaro",
+        "Modificado": "2023-01-12T12:53:28Z",
+        "ModificadoPor": "Angelina Alfaro",
+        "Estado": 1,
+        "Precio": 900,
+        "Cantidad": 2,
+        "ArticuloId": "h9kc6",
+        "ClienteId": 1001
+    },
+    {
+        "Id": "003",
+        "Creado": "2023-01-05T12:53:28Z",
+        "CreadoPor": "Pedro Kaur",
+        "Modificado": "2023-01-05T12:53:28Z",
+        "ModificadoPor": "Pedro Kaur",
+        "Estado": 2,
+        "Precio": 1200,
+        "Cantidad": 1,
+        "ArticuloId": "dxhr23",
+        "ClienteId": 1002
+    },
+    {
+        "Id": "004",
+        "Creado": "2023-02-10T12:53:28Z",
+        "CreadoPor": "Mohamed Montenegro",
+        "Modificado": "2023-02-10T12:53:28Z",
+        "ModificadoPor": "Mohamed Montenegro",
+        "Estado": 2,
+        "Precio": 1200,
+        "Cantidad": 1,
+        "ArticuloId": "gft291",
+        "ClienteId": 1003
+    },
+    {
+        "Id": "005",
+        "Creado": "2023-03-11T12:53:28Z",
+        "CreadoPor": "Nestor Jurado",
+        "Modificado": "2023-03-11T12:53:28Z",
+        "ModificadoPor": "Nestor Jurado",
+        "Estado": 2,
+        "Precio": 2000,
+        "Cantidad": 0,
+        "ArticuloId": "krw462",
+        "ClienteId": 1004
+    }
+]
+
+
 
 const MovimientoForm = (props) => {
+
 
     const [clientes, setClientes] = useState([]);
     const [clienteSelecionado, setClienteSeleccionado] = useState("");
@@ -20,6 +87,10 @@ const MovimientoForm = (props) => {
     const [cantidad, setCantidad] = useState("");
     const [precio, setPrecio] = useState("");
 
+    const { id } = useParams();
+    console.log("params movimientoId => ", id)
+
+    
 
     useEffect(() => {
         let clientesTemp = [];
@@ -38,6 +109,15 @@ const MovimientoForm = (props) => {
         })
         setArticulos([...articulosTemp])
     }, [props.articulos])
+
+
+    useEffect(() => {
+        const movimientoCapturado = movimientosPrueba.find(movimiento => {
+            return movimiento.Id === id;
+        })
+        console.log("movimientoCapturado", movimientoCapturado)
+    },[])
+
 
 
     const enviar = () => {
@@ -68,6 +148,7 @@ const MovimientoForm = (props) => {
                     disablePortal
                     onInputChange={(e, newValue) => { setClienteSeleccionado(newValue) }}
                     onChange={(event, newValue) => {
+                        console.log(newValue)
                         setClienteSeleccionado(newValue)
                     }}
                     options={clientes}
@@ -92,7 +173,7 @@ const MovimientoForm = (props) => {
                     {
                         articulos.map(item => {
                             return (
-                                <MenuItem key={item.Id} value={item.id}>{item.label}</MenuItem>
+                                <MenuItem key={item.id} value={item.id}>{item.label}</MenuItem>
                             )
                         })
                     }
