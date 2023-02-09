@@ -12,6 +12,7 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import SearchIcon from '@mui/icons-material/Search';
+import Badge from '@mui/material/Badge';
 import {
     Card,
     Table,
@@ -74,7 +75,7 @@ const Clientes = () => {
     //         setAlert(true);
     //         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
     //     }
-        
+
     //     if (errorClientes) {
     //         setAlert(true);
     //         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
@@ -82,7 +83,7 @@ const Clientes = () => {
 
     //     setClientesList(clienteData)
     // }
-    const refreshClientes = ()=>{
+    const refreshClientes = () => {
         // it re-renders the component
         setClientesList([]);
         getClientes();
@@ -117,7 +118,7 @@ const Clientes = () => {
     };
     const handleChangeRowsPerPage = (event) => {
         console.log('event', event)
-       
+
         setController({
             ...controller,
             rowsPerPage: parseInt(event.target.value, 10),
@@ -135,7 +136,6 @@ const Clientes = () => {
             <Title>Listado de clientes</Title>
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
-
                     <Grid container justifyContent="flex-end">
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
                             Refrescar
@@ -146,6 +146,8 @@ const Clientes = () => {
                         <OutlinedInput
                             onChange={handleChange}
                             type="search"
+                            noValidate
+                            sx={{ mt: 1 }}
                             startAdornment={
                                 <InputAdornment position='end'>
                                     <SearchIcon />
@@ -155,63 +157,64 @@ const Clientes = () => {
                         />
                     </FormControl>
                     <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-                                <Table>
-                                <TableHead>
-                                    <TableRow>
+                    <Table>
+                        <TableHead>
+                            <TableRow>
+                                <TableCell>
+                                    Id
+                                </TableCell>
+                                <TableCell>
+                                    Nombre
+                                </TableCell>
+                                <TableCell>
+                                    Tenant
+                                </TableCell>
+                             
+                            </TableRow>
+                        </TableHead>
+                        <TableBody>
+                            {clientesFiltradas.length ? (
+                                clientesFiltradas.map((cliente) => (
+                                    <TableRow key={cliente.Id}>
                                         <TableCell>
-                                            Id
+                                            {cliente.Id}
                                         </TableCell>
                                         <TableCell>
-                                           Nombre
+                                            {cliente.Nombre}
                                         </TableCell>
                                         <TableCell>
-                                            Tenant
+                                            {cliente.Tenant}
                                         </TableCell>
                                     </TableRow>
-                                </TableHead>
-                                <TableBody>
-                                    {clientesFiltradas.length ? (
-                                        clientesFiltradas.map((cliente) => (
-                                            <TableRow key={cliente.Id}>
-                                                <TableCell>
-                                                    {cliente.Id}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {cliente.Nombre}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {cliente.Tenant}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    ) : (
-                                        clientesList.map((cliente) => (
-                                            <TableRow key={cliente.Id}>
-                                                <TableCell>
-                                                    {cliente.Id}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {cliente.Nombre}
-                                                </TableCell>
-                                                <TableCell>
-                                                    {cliente.Tenant}
-                                                </TableCell>
-                                            </TableRow>
-                                        ))
-                                    )
-                                    }
-        
-                                </TableBody>
-                            </Table>
-                            <TablePagination
-                                component="div"
-                                onPageChange={handlePageChange}
-                                page={controller.page}
-                                count={articuloCount}
-                                rowsPerPage={controller.rowsPerPage}
-                                onRowsPerPageChange={handleChangeRowsPerPage}
-                            />
-                                               
+                                ))
+                            ) : (
+                                clientesList.map((cliente) => (
+                                    <TableRow key={cliente.Id}>
+                                        <TableCell>
+                                            {cliente.Id}
+                                        </TableCell>
+                                        <TableCell>
+                                            {cliente.Nombre}
+                                        </TableCell>
+                                        <TableCell>
+                                            {cliente.Tenant}
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            )
+                            }
+
+                        </TableBody>
+                    </Table>
+                    <TablePagination
+                        component="div"
+                        onPageChange={handlePageChange}
+                        page={controller.page}
+                        count={articuloCount}
+                        rowsPerPage={controller.rowsPerPage}
+                        onRowsPerPageChange={handleChangeRowsPerPage}
+                    />
+
                 </CardContent>
             </Card>
         </>

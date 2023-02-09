@@ -21,9 +21,11 @@ import {
     TableCell,
     TablePagination
 } from '@mui/material';
+
 const Articulos = () => {
 
     const [searchField, setSearchField] = React.useState("");
+
     const [alert, setAlert] = React.useState(false);
     const [articulosList, setArticulosList] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
@@ -34,8 +36,6 @@ const Articulos = () => {
         page: 0,
         rowsPerPage: 10
     });
-
-
     const filtrarArticulos = (searchField) => {
         const filteredArticulos = articulosList.filter(
             articulo => {
@@ -119,7 +119,7 @@ const Articulos = () => {
                         display="flex"
                         justifyContent="flex-end"
                         alignItems="flex-end"
-                        
+
                     >
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                             Refrescar
@@ -131,6 +131,8 @@ const Articulos = () => {
                         <OutlinedInput
                             onChange={handleChange}
                             type="search"
+                            noValidate
+                            sx={{ mt: 1 }}
                             startAdornment={
                                 <InputAdornment position='end'>
                                     <SearchIcon />
