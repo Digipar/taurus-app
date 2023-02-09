@@ -6,14 +6,15 @@ import { useAuth } from "../context/auth-context";
 import { useNavigate } from 'react-router-dom';
 import Alert from '../components/Alert';
 import { Card, CardContent } from '@mui/material';
+import Title from '../components/Title';
 
 
 
 const MovimientoRegistrar = () => {
     const { user } = useAuth();
-    const navigate = useNavigate();
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
-    const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimiento } = useFetch()
+    // const navigate = useNavigate();
+    // const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    // const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimiento } = useFetch()
     const [clientes, setClientes] = React.useState(
         [
             {
@@ -231,10 +232,10 @@ const MovimientoRegistrar = () => {
         const movimientoDataCreate = {
             ...values,
             Estado: 2,
-            CreadoPor: user.userId || null,
+            CreadoPor: user ? user.userId : '',
             Creado: new Date(),
             Modificado: new Date(),
-            ModificadoPor: user.userId || null
+            ModificadoPor: user ? user.userId : ''
         }
 
         console.log('Movimiento Data Create =>', movimientoDataCreate)
@@ -274,10 +275,10 @@ const MovimientoRegistrar = () => {
     return (
         <>
             <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-
+            <Title>Registrar nuevo movimiento</Title>
             <Card sx={{ minWidth: 300 }}>
                 <CardContent>
-                    <MovimientoForm registrarMovimiento={registrarMovimiento} clientes={clientes} articulos={articulos}  dataSaving={loadingMovimiento} />
+                    <MovimientoForm registrarMovimiento={registrarMovimiento} clientes={clientes} articulos={articulos} />
                 </CardContent>
             </Card>
         </>
