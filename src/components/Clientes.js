@@ -146,6 +146,8 @@ const Clientes = () => {
                         <OutlinedInput
                             onChange={handleChange}
                             type="search"
+                            noValidate
+                            sx={{ mt: 1 }}
                             startAdornment={
                                 <InputAdornment position='end'>
                                     <SearchIcon />
