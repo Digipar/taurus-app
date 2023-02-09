@@ -9,6 +9,9 @@ import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
 import FormControl from '@mui/material/FormControl';
 import SearchIcon from '@mui/icons-material/Search';
+import { Button } from '@mui/material';
+import CachedIcon from '@mui/icons-material/Cached';
+import Box from "@mui/material/Box";
 import {
     Card,
     Table,
@@ -35,20 +38,18 @@ const Articulos = () => {
 
 
     const filtrarArticulos = (searchField) => {
-        console.log('Descripcion', searchField)
         const filteredArticulos = articulosList.filter(
             articulo => {
                 return (
                     articulo.Descripcion
                         .toLowerCase()
-                        .includes(searchField.toLowerCase())||
+                        .includes(searchField.toLowerCase()) ||
                     articulo.Id
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
                 );
             }
         );
-        console.log('filteredArticulos', filteredArticulos)
         setArticulosFiltradas(filteredArticulos)
     }
 
@@ -57,8 +58,8 @@ const Articulos = () => {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
-        const articuloData = await fetchArticulos(`${API}/articulos`, reqOptions)
-        console.log('articuloData', articuloData)
+        const articuloData = await fetchArticulos(`${API}/articulos?page=${controller.page}&size=${controller.rowsPerPage}`, reqOptions)
+
         setArticuloCount(articuloData.length)
         setArticulosList(articuloData);
         if (articuloData.error) {
@@ -80,7 +81,8 @@ const Articulos = () => {
         });
     };
     const handleChangeRowsPerPage = (event) => {
-        console.log('aca')
+        console.log('event', event)
+
         setController({
             ...controller,
             rowsPerPage: parseInt(event.target.value, 10),
@@ -91,9 +93,14 @@ const Articulos = () => {
         await getArticulos();
 
     }
+    const refreshArticulos = () => {
+        // it re-renders the component
+        setArticulosList([]);
+        getArticulos();
+    }
 
     const handleChange = e => {
-        console.log('e.target.value', e.target.value)
+
         filtrarArticulos(e.target.value)
         setSearchField(e.target.value);
     };
@@ -105,15 +112,27 @@ const Articulos = () => {
     return (
         <>
             <Title>Listado de artículos</Title>
+
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
+                    <Box
+                        m={1}
+                        //margin
+                        display="flex"
+                        justifyContent="flex-end"
+                        alignItems="flex-end"
+                        //sx={boxDefault}
+                    >
+                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                            Refrescar
+                        </Button>
+                    </Box>
+
                     <FormControl sx={{ m: 2, width: '110ch' }}>
                         <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                         <OutlinedInput
-                           // id='outlined-adornment-amount'
                             onChange={handleChange}
                             type="search"
-                            //value={props.value}
                             startAdornment={
                                 <InputAdornment position='end'>
                                     <SearchIcon />

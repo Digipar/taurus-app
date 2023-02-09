@@ -2,14 +2,25 @@ import * as React from 'react'
 import useFetch from '../hooks/use-fetch';
 import Alert from './Alert';
 import { API } from '../config';
-import { DataGrid } from '@mui/x-data-grid';
-import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Title from './Title';
 import Grid from '@mui/material/Grid';
-
+import InputAdornment from '@mui/material/InputAdornment';
+import OutlinedInput from '@mui/material/OutlinedInput';
+import InputLabel from '@mui/material/InputLabel';
+import FormControl from '@mui/material/FormControl';
+import SearchIcon from '@mui/icons-material/Search';
+import {
+    Card,
+    Table,
+    TableHead,
+    TableBody,
+    TableRow,
+    TableCell,
+    TablePagination
+} from '@mui/material';
 
 const Clientes = () => {
 
@@ -18,19 +29,23 @@ const Clientes = () => {
         { field: 'Nombre', headerName: 'Nombre', width: 250 },
         { field: 'Tenant', headerName: 'Tenant', width: 200 },
     ];
-
+    const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
-    const [clientes, setClientes] = React.useState([]);
+    const [clientesList, setClientesList] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
-
-
+    const [clientesFiltradas, setClientesFiltradas] = React.useState([]);
+    const [articuloCount, setArticuloCount] = React.useState(0);
+    const [controller, setController] = React.useState({
+        page: 0,
+        rowsPerPage: 10
+    });
     const getClientes = React.useCallback(async () => {
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
-        const clienteData = await fetchClientes(`${API}/clientes`, reqOptions)
+        const clienteData = await fetchClientes(`${API}/clientes?page=${controller.page}&size=${controller.rowsPerPage}`, reqOptions)
 
         if (clienteData.error) {
             setAlert(true);
@@ -40,10 +55,75 @@ const Clientes = () => {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             // console.log('clienteData => ', clienteData);
-            setClientes(clienteData)
+            setClientesList(clienteData)
         }
     }, [errorClientes, fetchClientes]);
 
+    // const refreshClientes = async () => {
+
+    //     console.log('clientesFiltradas', clientesFiltradas)
+    //     const reqOptions = {
+    //         method: 'GET',
+    //         headers: { "Content-Type": "application/json" }
+    //     };
+    //     const clienteData = await fetchClientes(`${API}/clientes`, reqOptions)
+
+    //     console.log(' clienteData',  clienteData)
+
+    //     if (clienteData.error) {
+    //         setAlert(true);
+    //         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
+    //     }
+        
+    //     if (errorClientes) {
+    //         setAlert(true);
+    //         setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+    //     }
+
+    //     setClientesList(clienteData)
+    // }
+    const refreshClientes = ()=>{
+        // it re-renders the component
+        setClientesList([]);
+        getClientes();
+    }
+
+    const filtrarClientes = (searchField) => {
+        const filteredClientes = clientesList.filter(
+            cliente => {
+                return (
+                    cliente.Nombre
+                        .toLowerCase()
+                        .includes(searchField.toLowerCase()) ||
+                    cliente.Tenant
+                        .toLowerCase()
+                        .includes(searchField.toLowerCase())
+                );
+            }
+        );
+        setClientesFiltradas(filteredClientes)
+    }
+
+    const handleChange = e => {
+
+        filtrarClientes(e.target.value)
+        setSearchField(e.target.value);
+    };
+    const handlePageChange = (event, newPage) => {
+        setController({
+            ...controller,
+            page: newPage
+        });
+    };
+    const handleChangeRowsPerPage = (event) => {
+        console.log('event', event)
+       
+        setController({
+            ...controller,
+            rowsPerPage: parseInt(event.target.value, 10),
+            page: 0
+        });
+    };
 
     React.useEffect(() => {
         getClientes();
@@ -55,25 +135,83 @@ const Clientes = () => {
             <Title>Listado de clientes</Title>
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
-                <Grid container justifyContent="flex-end">
-                <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getClientes} disabled={loadingClientes}>
-                    Refrescar
-                </Button>
-            </Grid>
+
+                    <Grid container justifyContent="flex-end">
+                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
+                            Refrescar
+                        </Button>
+                    </Grid>
+                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                        <OutlinedInput
+                            onChange={handleChange}
+                            type="search"
+                            startAdornment={
+                                <InputAdornment position='end'>
+                                    <SearchIcon />
+                                </InputAdornment>
+                            }
+                            label='Search'
+                        />
+                    </FormControl>
                     <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-                    {
-                        loadingClientes ? <h4>Cargando...</h4>
-                            :
-                            <div style={{ height: 400, width: '100%' }}>
-                                <DataGrid
-                                    getRowId={(cliente) => cliente.Id}
-                                    rows={clientes}
-                                    columns={columns}
-                                    pageSize={5}
-                                    rowsPerPageOptions={[5]}
-                                />
-                            </div>
-                    }
+                                <Table>
+                                <TableHead>
+                                    <TableRow>
+                                        <TableCell>
+                                            Id
+                                        </TableCell>
+                                        <TableCell>
+                                           Nombre
+                                        </TableCell>
+                                        <TableCell>
+                                            Tenant
+                                        </TableCell>
+                                    </TableRow>
+                                </TableHead>
+                                <TableBody>
+                                    {clientesFiltradas.length ? (
+                                        clientesFiltradas.map((cliente) => (
+                                            <TableRow key={cliente.Id}>
+                                                <TableCell>
+                                                    {cliente.Id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {cliente.Nombre}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {cliente.Tenant}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        clientesList.map((cliente) => (
+                                            <TableRow key={cliente.Id}>
+                                                <TableCell>
+                                                    {cliente.Id}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {cliente.Nombre}
+                                                </TableCell>
+                                                <TableCell>
+                                                    {cliente.Tenant}
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    )
+                                    }
+        
+                                </TableBody>
+                            </Table>
+                            <TablePagination
+                                component="div"
+                                onPageChange={handlePageChange}
+                                page={controller.page}
+                                count={articuloCount}
+                                rowsPerPage={controller.rowsPerPage}
+                                onRowsPerPageChange={handleChangeRowsPerPage}
+                            />
+                                               
                 </CardContent>
             </Card>
         </>
