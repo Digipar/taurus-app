@@ -12,6 +12,7 @@ import Title from '../components/Title';
 
 const MovimientoRegistrar = () => {
     const { user } = useAuth();
+    console.log("user", user)
     // const navigate = useNavigate();
     // const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
     // const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimiento } = useFetch()
@@ -276,7 +277,7 @@ const MovimientoRegistrar = () => {
         <>
             <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
             <Title>Registrar nuevo movimiento</Title>
-            <Card sx={{ minWidth: 300 }}>
+            <Card sx={{ minWidth: 300 }}> 
                 <CardContent>
                     <MovimientoForm registrarMovimiento={registrarMovimiento} clientes={clientes} articulos={articulos} />
                 </CardContent>
