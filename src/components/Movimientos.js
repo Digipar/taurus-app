@@ -235,6 +235,14 @@ const Movimientos = () => {
                                         <TableCell>
                                             {movimiento.Precio}
                                         </TableCell>
+                                        <TableCell>
+                                        <Button startIcon={<ModeEditIcon />} 
+                                        component={Link}
+                                        to={`/movimiento-editar/${movimiento.Id}`}
+                                        variant="text" 
+                                        color='primary'  
+                                        disabled={loadingMovimientos} />
+                                    </TableCell>
                                     </TableRow>
                                 ))
                             ) : (
