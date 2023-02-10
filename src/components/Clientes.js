@@ -55,7 +55,7 @@ const Clientes = () => {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
-            // console.log('clienteData => ', clienteData);
+            //console.log('clienteData => ', clienteData);
             setClientesList(clienteData)
         }
     }, [errorClientes, fetchClientes]);
@@ -171,9 +171,6 @@ const Clientes = () => {
                                 <TableCell>
                                     Tenant
                                 </TableCell>
-                                <TableCell>
-                                    Estado
-                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -193,7 +190,7 @@ const Clientes = () => {
                                     </TableRow>
                                 ))
                             ) : (
-                                clientesList.map((cliente) => (
+                                clientesList.map((cliente) => (                                  
                                     <TableRow key={cliente.Id}>
                                         <TableCell>
                                             {cliente.Id}
@@ -204,13 +201,8 @@ const Clientes = () => {
                                         <TableCell>
                                             {cliente.Tenant}
                                         </TableCell>
-                                        <TableCell>
-                                            {cliente.Estado?(cliente.Estado === 1 ? (<Badge badgeContent='Activo' color="success"></Badge>)
-                                                : cliente.Estado === 2 ? (<Badge badgeContent='Borrador' color="warning"></Badge>)
-                                                    : cliente.Estado === 0 ?<Badge badgeContent='Anulado' color="danger"></Badge>:''):'Anulado'}
-                                        </TableCell>
                                     </TableRow>
-                                ))
+                                    ))
                             )
                             }
 
