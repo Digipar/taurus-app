@@ -205,8 +205,6 @@ const Movimientos = () => {
 
                     >
                       
-
-                      
                     </Box>
                     
                    

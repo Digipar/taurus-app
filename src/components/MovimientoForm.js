@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
 // import * as yup from "yup";
 import Box from "@mui/material/Box";
+import Stack from "@mui/material/Stack";
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
@@ -88,9 +89,9 @@ const MovimientoForm = (props) => {
     const [precio, setPrecio] = useState("");
 
     const { id } = useParams();
-    console.log("params movimientoId => ", id)
+    // console.log("params movimientoId => ", id)
 
-    
+
 
     useEffect(() => {
         let clientesTemp = [];
@@ -116,7 +117,7 @@ const MovimientoForm = (props) => {
             return movimiento.Id === id;
         })
         console.log("movimientoCapturado", movimientoCapturado)
-    },[])
+    }, [])
 
 
 
@@ -135,10 +136,7 @@ const MovimientoForm = (props) => {
     return (
         <>
 
-            <Box
-                component="form"
-                sx={{ marginTop: 2 }}
-            ></Box>
+            
 
             <FormControl fullWidth sx={{ marginTop: 2 }}>
 
@@ -209,25 +207,31 @@ const MovimientoForm = (props) => {
 
                 />
             </FormControl>
+            <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="center"
+                spacing={1}
+            >
+                <Button
 
-            <Button
-                fullWidth
-                variant="contained"
-                sx={{ mt: 3, mb: 2 }}
-                onClick={() => enviar()}
-                disabled={props.dataSaving}
-            >
-                Grabar
-            </Button>
-            <Button
-                fullWidth
-                variant="outlined"
-                component={Link}
-                to="/movimientos"
-                disabled={props.dataSaving}
-            >
-                Volver
-            </Button>
+                    variant="contained"
+                    sx={{ mt: 3, mb: 2 }}
+                    onClick={() => enviar()}
+                    disabled={props.dataSaving}
+                >
+                    Grabar
+                </Button>
+                <Button
+
+                    variant="outlined"
+                    component={Link}
+                    to="/movimientos"
+                    disabled={props.dataSaving}
+                >
+                    Volver
+                </Button>
+            </Stack>
 
         </>
     )
