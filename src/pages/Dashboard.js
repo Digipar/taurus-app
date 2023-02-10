@@ -25,9 +25,7 @@ const Dashboard = () => {
                   loading="lazy"
                 />
                   </Paper>
-                </Grid>
-         
-       
+                </Grid>       
               </Grid>
     )
 }

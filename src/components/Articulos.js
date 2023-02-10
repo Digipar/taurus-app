@@ -23,9 +23,8 @@ import {
 } from '@mui/material';
 
 const Articulos = () => {
-
+    const [width, setWidth] = React.useState(window.innerWidth)
     const [searchField, setSearchField] = React.useState("");
-
     const [alert, setAlert] = React.useState(false);
     const [articulosList, setArticulosList] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
@@ -126,7 +125,7 @@ const Articulos = () => {
                         </Button>
                     </Box>
 
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                    <FormControl sx={{ m: 2, width: '90ch' }} >
                         <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                         <OutlinedInput
                             onChange={handleChange}

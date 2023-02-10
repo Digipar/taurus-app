@@ -131,6 +131,7 @@ const Clientes = () => {
     }, [])
 
 
+
     return (
         <>
             <Title>Listado de clientes</Title>
@@ -169,7 +170,9 @@ const Clientes = () => {
                                 <TableCell>
                                     Tenant
                                 </TableCell>
-                             
+                                <TableCell>
+                                    Estado
+                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -185,6 +188,7 @@ const Clientes = () => {
                                         <TableCell>
                                             {cliente.Tenant}
                                         </TableCell>
+                                     
                                     </TableRow>
                                 ))
                             ) : (
@@ -198,6 +202,11 @@ const Clientes = () => {
                                         </TableCell>
                                         <TableCell>
                                             {cliente.Tenant}
+                                        </TableCell>
+                                        <TableCell>
+                                            {cliente.Estado?(cliente.Estado === 1 ? (<Badge badgeContent='Activo' color="success"></Badge>)
+                                                : cliente.Estado === 2 ? (<Badge badgeContent='Borrador' color="warning"></Badge>)
+                                                    : cliente.Estado === 0 ?<Badge badgeContent='Anulado' color="danger"></Badge>:''):'Anulado'}
                                         </TableCell>
                                     </TableRow>
                                 ))
