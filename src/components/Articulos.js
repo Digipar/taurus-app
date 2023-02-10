@@ -13,6 +13,7 @@ import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Box from "@mui/material/Box";
 import {
+    Grid,
     Card,
     Table,
     TableHead,
@@ -125,26 +126,28 @@ const Articulos = () => {
                         </Button>
                     </Box>
 
-                    <FormControl sx={{ m: 2, width: '90ch' }} >
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
-                                    <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
+                    <Grid container>
+                        <FormControl sx={{ m: 2, width: '110ch' }}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                sx={{ mt: 1 }}
+                                startAdornment={
+                                    <InputAdornment position='end'>
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                label='Search'
+                            />
+                        </FormControl>
+                    </Grid>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>
-                                    Codigo
+                                    Código
                                 </TableCell>
                                 <TableCell>
                                     Descripción

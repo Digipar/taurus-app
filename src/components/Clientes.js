@@ -141,28 +141,29 @@ const Clientes = () => {
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
                             Refrescar
                         </Button>
+
+                        <FormControl sx={{ m: 2, width: '110ch' }}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                sx={{ mt: 1 }}
+                                startAdornment={
+                                    <InputAdornment position='end'>
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                label='Search'
+                            />
+                        </FormControl>
                     </Grid>
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
-                                    <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
                     <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>
-                                    Id
+                                    Código
                                 </TableCell>
                                 <TableCell>
                                     Nombre
