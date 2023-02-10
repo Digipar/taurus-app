@@ -55,7 +55,7 @@ const Clientes = () => {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
-            // console.log('clienteData => ', clienteData);
+            //console.log('clienteData => ', clienteData);
             setClientesList(clienteData)
         }
     }, [errorClientes, fetchClientes]);
@@ -131,6 +131,7 @@ const Clientes = () => {
     }, [])
 
 
+
     return (
         <>
             <Title>Listado de clientes</Title>
@@ -170,7 +171,6 @@ const Clientes = () => {
                                 <TableCell>
                                     Tenant
                                 </TableCell>
-
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -186,10 +186,11 @@ const Clientes = () => {
                                         <TableCell>
                                             {cliente.Tenant}
                                         </TableCell>
+                                     
                                     </TableRow>
                                 ))
                             ) : (
-                                clientesList.map((cliente) => (
+                                clientesList.map((cliente) => (                                  
                                     <TableRow key={cliente.Id}>
                                         <TableCell>
                                             {cliente.Id}
@@ -201,7 +202,7 @@ const Clientes = () => {
                                             {cliente.Tenant}
                                         </TableCell>
                                     </TableRow>
-                                ))
+                                    ))
                             )
                             }
 

@@ -24,9 +24,8 @@ import {
 } from '@mui/material';
 
 const Articulos = () => {
-
+    const [width, setWidth] = React.useState(window.innerWidth)
     const [searchField, setSearchField] = React.useState("");
-
     const [alert, setAlert] = React.useState(false);
     const [articulosList, setArticulosList] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
