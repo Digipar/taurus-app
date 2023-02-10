@@ -5,7 +5,7 @@ import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
 import Articulos from './components/Articulos';
 import Movimientos from './components/Movimientos';
-import Conglomerados from './components/Conglomedaros';
+import Conglomerados from './components/Conglomerados';
 import MovimientoRegistrar from './pages/MovimientoRegistrar';
 
 const AuthenticatedApp = () => {
