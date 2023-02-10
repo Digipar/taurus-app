@@ -106,22 +106,23 @@ const Conglomerados = () => {
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={refreshConglomerados} disabled={loadingConglomerados}>
                             Refrescar
                         </Button>
+
+                        <FormControl sx={{ m: 2, width: '1080px' }}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                sx={{ mt: 1 }}
+                                startAdornment={
+                                    <InputAdornment position='end'>
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                label='Search'
+                            />
+                        </FormControl>
                     </Grid>
-                    <FormControl sx={{ m: 5, width: '110ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
-                                    <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
                     <Table>
                         <TableHead>
                             <TableRow>
