@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react'
+import { useFormik } from 'formik';
 // import * as yup from "yup";
-import Box from "@mui/material/Box";
+// import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
@@ -12,74 +13,9 @@ import Button from "@mui/material/Button";
 // import FormHelperText from '@mui/material/FormHelperText';
 import { Link, useParams } from "react-router-dom";
 
-//! Editar
-const movimientosPrueba = [
-    {
-        "Id": "001",
-        "Creado": "2023-02-01T12:53:28Z",
-        "CreadoPor": "Pedro Kaur",
-        "Modificado": "2023-02-01T12:53:28Z",
-        "ModificadoPor": "Pedro Kaur",
-        "Estado": 1,
-        "Precio": 800,
-        "Cantidad": 2,
-        "ArticuloId": "m2o94",
-        "ClienteId": 1000
-    },
-    {
-        "Id": "002",
-        "Creado": "2023-01-12T12:53:28Z",
-        "CreadoPor": "Angelina Alfaro",
-        "Modificado": "2023-01-12T12:53:28Z",
-        "ModificadoPor": "Angelina Alfaro",
-        "Estado": 1,
-        "Precio": 900,
-        "Cantidad": 2,
-        "ArticuloId": "h9kc6",
-        "ClienteId": 1001
-    },
-    {
-        "Id": "003",
-        "Creado": "2023-01-05T12:53:28Z",
-        "CreadoPor": "Pedro Kaur",
-        "Modificado": "2023-01-05T12:53:28Z",
-        "ModificadoPor": "Pedro Kaur",
-        "Estado": 2,
-        "Precio": 1200,
-        "Cantidad": 1,
-        "ArticuloId": "dxhr23",
-        "ClienteId": 1002
-    },
-    {
-        "Id": "004",
-        "Creado": "2023-02-10T12:53:28Z",
-        "CreadoPor": "Mohamed Montenegro",
-        "Modificado": "2023-02-10T12:53:28Z",
-        "ModificadoPor": "Mohamed Montenegro",
-        "Estado": 2,
-        "Precio": 1200,
-        "Cantidad": 1,
-        "ArticuloId": "gft291",
-        "ClienteId": 1003
-    },
-    {
-        "Id": "005",
-        "Creado": "2023-03-11T12:53:28Z",
-        "CreadoPor": "Nestor Jurado",
-        "Modificado": "2023-03-11T12:53:28Z",
-        "ModificadoPor": "Nestor Jurado",
-        "Estado": 2,
-        "Precio": 2000,
-        "Cantidad": 0,
-        "ArticuloId": "krw462",
-        "ClienteId": 1004
-    }
-]
-
 
 
 const MovimientoForm = (props) => {
-
 
     const [clientes, setClientes] = useState([]);
     const [clienteSelecionado, setClienteSeleccionado] = useState("");
@@ -88,9 +24,8 @@ const MovimientoForm = (props) => {
     const [cantidad, setCantidad] = useState("");
     const [precio, setPrecio] = useState("");
 
-    const { id } = useParams();
-    // console.log("params movimientoId => ", id)
-
+    // const { idParam } = useParams();
+    // console.log("params movimientoId => ", idParam)
 
 
     useEffect(() => {
@@ -102,7 +37,6 @@ const MovimientoForm = (props) => {
 
     }, [props.clientes])
 
-
     useEffect(() => {
         const articulosTemp = [];
         props.articulos.map((articulo) => {
@@ -111,15 +45,16 @@ const MovimientoForm = (props) => {
         setArticulos([...articulosTemp])
     }, [props.articulos])
 
+    //! Editar (prueba)
+    // useEffect(() => {
+    //     const movimientoCapturado = movimientosPrueba.find(movimiento => {
+    //         return movimiento.Id === id;
+    //     })
+    //     console.log("movimientoCapturado", movimientoCapturado)
+    // }, [])
 
-    useEffect(() => {
-        const movimientoCapturado = movimientosPrueba.find(movimiento => {
-            return movimiento.Id === id;
-        })
-        console.log("movimientoCapturado", movimientoCapturado)
-    }, [])
 
-
+   
 
     const enviar = () => {
 
@@ -130,13 +65,13 @@ const MovimientoForm = (props) => {
             precio: +precio
         }
 
-        props.registrarMovimiento(movDataCreate)
+        // props.registrarMovimiento(movDataCreate)
     }
 
     return (
         <>
 
-            
+
 
             <FormControl fullWidth sx={{ marginTop: 2 }}>
 
@@ -149,7 +84,9 @@ const MovimientoForm = (props) => {
                         console.log(newValue)
                         setClienteSeleccionado(newValue)
                     }}
+                    forcePopupIcon={true}
                     options={clientes}
+                    value={clienteSelecionado}
                     sx={{ width: "*" }}
                     renderInput={(params) => <TextField {...params} label="Clientes" />}
                 />
@@ -163,10 +100,10 @@ const MovimientoForm = (props) => {
                     id="articuloId"
                     name="articuloId"
                     label="Articulos *"
-                    value={articuloSeleccionado}
                     onChange={(event) => {
                         setArticuloSeleccionado(event.target.value)
                     }}
+                    value={articuloSeleccionado}
                 >
                     {
                         articulos.map(item => {
@@ -177,7 +114,6 @@ const MovimientoForm = (props) => {
                     }
 
                 </Select>
-
             </FormControl>
 
             <FormControl fullWidth sx={{ marginTop: 2 }}>
@@ -217,6 +153,7 @@ const MovimientoForm = (props) => {
 
                     variant="contained"
                     sx={{ mt: 3, mb: 2 }}
+                    // onClick={() => handleSubmit()}
                     onClick={() => enviar()}
                     disabled={props.dataSaving}
                 >

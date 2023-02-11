@@ -7,6 +7,7 @@ import { useNavigate } from 'react-router-dom';
 import Alert from '../components/Alert';
 import { Card, CardContent } from '@mui/material';
 import Title from '../components/Title';
+import SignupForm from '../components/Test';
 
 
 
@@ -269,9 +270,9 @@ const MovimientoRegistrar = () => {
     }
 
     
-    React.useEffect(() => {
-        // getClientes();
-    }, [])
+    // React.useEffect(() => {
+    //     getClientes();
+    // }, [])
 
     return (
         <>
@@ -279,6 +280,7 @@ const MovimientoRegistrar = () => {
             <Title>Registrar nuevo movimiento</Title>
             <Card sx={{ minWidth: 300 }}> 
                 <CardContent>
+                    {/* <SignupForm/> */}
                     <MovimientoForm registrarMovimiento={registrarMovimiento} clientes={clientes} articulos={articulos} />
                 </CardContent>
             </Card>
