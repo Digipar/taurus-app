@@ -48,8 +48,9 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
     }  
   
     const userJSON = await user.json();
+    console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,UsuarioNombre: userJSON[0].UsuarioNombre,userId: userJSON[0].Id,UsuarioEmail: userJSON[0].UsuarioEmail}})
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON.UsuarioNombre,userId: userJSON.Id,UsuarioEmail: userJSON.UsuarioEmail}})
   }
   catch(error){
     console.log('error', error)
