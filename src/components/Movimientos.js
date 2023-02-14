@@ -39,7 +39,7 @@ const Movimientos = () => {
             headers: { "Content-Type": "application/json" }
         };
         const movimientoData = await fetchMovimientos(`${API}/movimiento`, reqOptions)
-        // console.log("movimientos => , ", movimientoData)
+        console.log("movimientos => , ", movimientoData)
 
         if (movimientoData.error) {
             setAlert(true);

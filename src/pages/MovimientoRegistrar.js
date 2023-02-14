@@ -2,7 +2,6 @@ import React, {useCallback} from 'react';
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
 import MovimientoForm from '../components/MovimientoForm';
-import { useAuth } from "../context/auth-context";
 import { useNavigate } from 'react-router-dom';
 import Alert from '../components/Alert';
 import { Card, CardContent } from '@mui/material';
@@ -84,11 +83,8 @@ const MovimientoRegistrar = () => {
 
         const movimientoDataCreate = {
             ...values,
-            Estado: 2,
-            // CreadoPor: user ? user.userId : '',
-            Creado: new Date(),
-            Modificado: new Date(),
-            // ModificadoPor: user ? user.userId : ''
+            estado: 2,
+           
         }
 
         console.log('Movimiento Data Create =>', movimientoDataCreate)

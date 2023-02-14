@@ -13,15 +13,13 @@ import Button from "@mui/material/Button";
 import FormHelperText from '@mui/material/FormHelperText';
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
-import Alert from '../components/Alert';
-import { CleaningServices } from '@mui/icons-material';
-
-
-
 
 const MovimientoForm = (props) => {
-    // const { idParam } = useParams();
-    // const { user } = useAuth();
+    const { idParam } = useParams();
+    const { user } = useAuth();
+   
+    console.log('user =>', user);
+    console.log('idParam', idParam);
 
     const [movLoading, setMovLoading] = React.useState(false)
     const [clientes, setClientes] = useState([]);
@@ -66,10 +64,8 @@ const MovimientoForm = (props) => {
        
         validationSchema: Yup.object({
             precio: Yup.number()
-               
                 .required('Campo precio es requerido.'),
             cantidad: Yup.number()
-                
                 .required('Campo cantidad es requerido.'),
             Articulos: Yup.string()
                 .required("El campo articulo es requerido."),
@@ -79,15 +75,28 @@ const MovimientoForm = (props) => {
 
     formik.handleSubmit = (e) => {
         e.preventDefault();
-        console.log('Valor del Autocomplete:', clienteSeleccionado)
+        // console.log('Valor del Autocomplete:', clienteSeleccionado)
         if(clienteSeleccionado !== "") {
             formik.values.cliente = clienteSeleccionado
-            //Aqui guardas en la base datos
+            console.log("datos finales =>", formik.values)
+            let movData = {
+                clienteId: formik.values.cliente,
+                articuloId: formik.values.articulo,
+                cantidad: formik.values.cantidad,
+                precio: formik.values.precio,
+                creadoPor: user ? user.userId : '',
+                modificadoPor: user ? user.userId : '',
+                creado: new Date(),
+                modificado: new Date()
+            }
+
+            console.log("movData", movData)
+
+           // props.registrarMovimiento(movData)
 
         } else {
             setErrorCliente("Seleccione un cliente")
         }
-        console.log('Form Data => ', formik.values)
     }
 
 
