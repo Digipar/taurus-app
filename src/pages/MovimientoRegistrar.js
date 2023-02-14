@@ -14,7 +14,7 @@ const MovimientoRegistrar = () => {
     // const navigate = useNavigate();
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
-    // const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimiento } = useFetch()
+
     const [clientes, setClientes] = React.useState([]);
     const [articulos, setArticulos] = React.useState([]);
     const [alert, setAlert] = React.useState(false);
@@ -28,8 +28,6 @@ const MovimientoRegistrar = () => {
         };
 
         const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
-
-        console.log("Articulos => , ", articulosData);
 
         if (articulosData.error) {
             setAlert(true);
@@ -53,7 +51,6 @@ const MovimientoRegistrar = () => {
             headers: { "Content-Type": "application/json" }
         };
         const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
-        console.log("clientes => , ", clientesData);
 
         if (clientesData.error) {
             setAlert(true);
@@ -87,7 +84,7 @@ const MovimientoRegistrar = () => {
            
         }
 
-        console.log('Movimiento Data Create =>', movimientoDataCreate)
+        // console.log('Movimiento Data Create =>', movimientoDataCreate)
 
         // const reqOptions = {
         //     method: 'POST',

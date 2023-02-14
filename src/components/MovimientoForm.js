@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Box from "@mui/material/Box";
@@ -13,22 +13,65 @@ import Button from "@mui/material/Button";
 import FormHelperText from '@mui/material/FormHelperText';
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
+import { API } from '../config';
+import useFetch from '../hooks/use-fetch';
+
 
 const MovimientoForm = (props) => {
-    const { idParam } = useParams();
-    const { user } = useAuth();
-   
-    console.log('user =>', user);
-    console.log('idParam', idParam);
+    const { id } = useParams();
+    const user = useAuth();
+    // console.log("🚀 ~ file: MovimientoForm.js:23 ~ MovimientoForm ~ user", user)
+
+    const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
 
     const [movLoading, setMovLoading] = React.useState(false)
     const [clientes, setClientes] = useState([]);
     const [articulos, setArticulos] = useState([]);
-    const [clienteSeleccionado, setClienteSeleccionado] = React.useState("")
+    const [clienteSeleccionado, setClienteSeleccionado] = React.useState({id:"", label:""});
     const [alert, setAlert] = React.useState(false);
+    const [alertOptions, setAlertOptions] = React.useState({});
+
     const [errorCliente, setErrorCliente] = useState(null)
 
 
+
+    const getMovimientoById = useCallback(async () => {
+        const reqOptions = {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" }
+        };
+        const movimientoData = await fetchMovimiento(`${API}/movimiento/${id}`, reqOptions)
+
+        if (movimientoData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
+            return;
+        }
+
+        if (errorMovimiento) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
+            return;
+        }
+
+        // console.log('Movimiento a editar: ', movimientoData)
+        setClienteSeleccionado({id: 2, label: 'Nalani Ballam'})
+
+
+
+    }, []);
+
+    
+    useEffect(() => {
+        if (id) {
+            getMovimientoById(); 
+        }
+    }, [clientes])
+
+    useEffect(() => {
+        // console.log('Aqui:' , clienteSeleccionado)
+        setErrorCliente("");
+    }, [clienteSeleccionado])
 
     useEffect(() => {
         let clientesTemp = [];
@@ -36,7 +79,6 @@ const MovimientoForm = (props) => {
             return clientesTemp.push({ id: cliente.id, label: cliente.nombre, })
         })
         setClientes([...clientesTemp])
-
     }, [props.clientes])
 
     useEffect(() => {
@@ -47,12 +89,8 @@ const MovimientoForm = (props) => {
         setArticulos([...articulosTemp])
     }, [props.articulos])
 
-    // useEffect(() => {
-    //     const movimientoCapturado = movimientosPrueba.find(movimiento => {
-    //         return movimiento.Id === id;
-    //     })
-    //     console.log("movimientoCapturado", movimientoCapturado)
-    // }, [])
+
+
 
     const formik = useFormik({
         initialValues: {
@@ -61,7 +99,7 @@ const MovimientoForm = (props) => {
             cantidad: '',
             precio: ''
         },
-       
+
         validationSchema: Yup.object({
             precio: Yup.number()
                 .required('Campo precio es requerido.'),
@@ -69,16 +107,17 @@ const MovimientoForm = (props) => {
                 .required('Campo cantidad es requerido.'),
             Articulos: Yup.string()
                 .required("El campo articulo es requerido."),
-                
+
         })
     })
 
     formik.handleSubmit = (e) => {
         e.preventDefault();
         // console.log('Valor del Autocomplete:', clienteSeleccionado)
-        if(clienteSeleccionado !== "") {
-            formik.values.cliente = clienteSeleccionado
-            console.log("datos finales =>", formik.values)
+        if (clienteSeleccionado?.id) {
+            console.log(clienteSeleccionado)
+            console.log('user', user)
+            formik.values.cliente = clienteSeleccionado.id
             let movData = {
                 clienteId: formik.values.cliente,
                 articuloId: formik.values.articulo,
@@ -90,9 +129,9 @@ const MovimientoForm = (props) => {
                 modificado: new Date()
             }
 
-            console.log("movData", movData)
+             console.log("data final =>", movData)
 
-           // props.registrarMovimiento(movData)
+            //props.registrarMovimiento(movData)
 
         } else {
             setErrorCliente("Seleccione un cliente")
@@ -112,22 +151,13 @@ const MovimientoForm = (props) => {
                     <Autocomplete
                         id="cliente"
                         name="cliente"
-                        disablePortal
-                        onInputChange={(e, newValue) => {setClienteSeleccionado(newValue)}}
-                        inputValue={clienteSeleccionado.label}
-                        onChange={(e, newValue) => {
-                            console.log(newValue)
-                            if(newValue){
-                                setErrorCliente("")
-                                setClienteSeleccionado(newValue.id)
-                            } else {
-                                setClienteSeleccionado("")
-                            }
-                        }}
-                        forcePopupIcon={true}
                         options={clientes}
-                        freeSolo={true}
-                        value={clienteSeleccionado.id}
+                        getOptionLabel={(cliente) => cliente.label }
+                        getOptionSelected={(option, value) => option.label === value.label }
+                        onChange={(event, newValue) => {
+                            setClienteSeleccionado(newValue)
+                        }}
+                        value={clienteSeleccionado}
                         sx={{ width: "*" }}
                         renderInput={(params) => <TextField {...params} label="Clientes" />}
                     />
