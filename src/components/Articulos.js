@@ -14,11 +14,8 @@ import Toolbar from '@mui/material/Toolbar';
 import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
 import Paper from '@mui/material/Paper';
-import Checkbox from '@mui/material/Checkbox';
 import IconButton from '@mui/material/IconButton';
 import Tooltip from '@mui/material/Tooltip';
-import FormControlLabel from '@mui/material/FormControlLabel';
-import Switch from '@mui/material/Switch';
 import DeleteIcon from '@mui/icons-material/Delete';
 import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
@@ -146,25 +143,14 @@ function EnhancedTableToolbar(props) {
                 }),
             }}
         >
-            {numSelected > 0 ? (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    color="inherit"
-                    variant="subtitle1"
-                    component="div"
-                >
-                    {numSelected} selected
-                </Typography>
-            ) : (
-                <Typography
-                    sx={{ flex: '1 1 100%' }}
-                    variant="h6"
-                    id="tableTitle"
-                    component="div"
-                >
-                    Listado de Articulos
-                </Typography>
-            )}
+            <Typography
+                sx={{ flex: '1 1 100%' }}
+                variant="h6"
+                id="tableTitle"
+                component="div"
+            >
+                Listado de Articulos
+            </Typography>
 
             {numSelected > 0 ? (
                 <Tooltip title="Delete">
@@ -195,10 +181,11 @@ export default function EnhancedTable() {
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [articulosList, setArticulosList] = React.useState([]);
-    const [articulosCount,setArticulosCount]=React.useState([]);
+    const [articulosCount, setArticulosCount] = React.useState([]);
+    const [articulosTotal, setArticulosTotal] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const [isShown, setIsShown] = React.useState(false);
-    const [articulosFiltrados, setArticulosFiltrados] = React.useState([]);
+    const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
@@ -208,7 +195,7 @@ export default function EnhancedTable() {
         setOrderBy(property);
     };
     const filtrarArticulos = (searchField) => {
-        const filteredArticulos = articulosList.filter(
+        const articulosList = articulosTotal.filter(
             articulo => {
                 return (
                     articulo.descripcion
@@ -218,14 +205,13 @@ export default function EnhancedTable() {
                 );
             }
         );
-        console.log('filteredArticulos', filteredArticulos)
-        if(filteredArticulos){
-            const timeoutID = setTimeout(() => {
-                setIsShown(true);
-                setArticulosFiltrados(filteredArticulos)
-              }, 1000);
+        console.log('articulosList', articulosList)
+        if (articulosList.length) {
+            setTimeout(function () {
+                setArticulosList(articulosList)
+                setMostrarPaginacion(false)
+            }, 5000);
         }
-       
     }
 
     const handleChange = e => {
@@ -264,26 +250,26 @@ export default function EnhancedTable() {
     };
 
     const handleChangePage = (event, newPage) => {
- 
+
         getArticulos(newPage)
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
-        let rowsPerPageNew= event.target.value         
+        let rowsPerPageNew = event.target.value
         setRowsPerPage(event.target.value)
-        getArticulos(0,rowsPerPageNew)
+        getArticulos(0, rowsPerPageNew)
     };
 
     const getArticulosCount = React.useCallback(async () => {
-     
+
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" },
         };
-   
+
         const articuloCount = await fetchArticulos(`${API}/articulo-count`, reqOptions)
-    
+
 
         if (articuloCount.error) {
             setAlert(true);
@@ -292,18 +278,39 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
-            console.log('articuloCount => ', articuloCount);
+
             setArticulosCount(articuloCount)
         }
     }, [errorArticulos, fetchArticulos]);
+    const getArticulosTotal = React.useCallback(async () => {
 
-    const getArticulos = React.useCallback(async (newPage,rowsPerPageNew) => {
- 
-        let bodyAEnviar = {
-            pageNumber: !newPage?0:newPage,
-            pageCount: !rowsPerPageNew?10:rowsPerPageNew
+        const reqOptions = {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" },
+        };
+
+        const articuloTotal = await fetchArticulos(`${API}/articulo`, reqOptions)
+
+
+        if (articuloTotal.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloTotal.message })
+        } else if (errorArticulos) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
+        } else {
+            //console.log('articuloTotal => ', articuloTotal);
+            setArticulosTotal(articuloTotal)
         }
-        console.log('bodyAEnviar', bodyAEnviar)
+    }, [errorArticulos, fetchArticulos]);
+
+    const getArticulos = React.useCallback(async (newPage, rowsPerPageNew) => {
+
+        let bodyAEnviar = {
+            pageNumber: !newPage ? 0 : newPage,
+            pageCount: !rowsPerPageNew ? 10 : rowsPerPageNew
+        }
+
         const reqOptions = {
             method: 'POST',
             headers: { "Content-Type": "application/json" },
@@ -319,7 +326,7 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
-            console.log('articuloData => ', articuloData);
+
             setArticulosList(articuloData)
         }
     }, [errorArticulos, fetchArticulos]);
@@ -328,21 +335,24 @@ export default function EnhancedTable() {
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
     const refreshArticulos = () => {
+        setSearchField("")
         setArticulosList([]);
         getArticulos();
+        setMostrarPaginacion(true)
     }
-    console.log('page', page)
-        
+
+
     React.useEffect(() => {
         getArticulos();
         getArticulosCount();
+        getArticulosTotal()
     }, [])
 
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 5 }}>
                 <Grid container justifyContent="flex-end">
-                    <Button startIcon={<CachedIcon />} sx={{mt:3, mr:3}} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Refrescar
                     </Button>
                 </Grid>
@@ -360,61 +370,65 @@ export default function EnhancedTable() {
                         }
                         label='Search'
                     />
-                 
                 </FormControl>
+                <Grid container justifyContent="flex-end">
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                        Limpiar
+                    </Button>
+                </Grid>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>
-                <Table
+                    <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={dense ? 'small' : 'medium'}
-                    >                  
+                    >
                         <EnhancedTableHead
-                        numSelected={selected.length}
-                        order={order}
-                        orderBy={orderBy}
-                        onSelectAllClick={handleSelectAllClick}
-                        onRequestSort={handleRequestSort}
-                        rowCount={articulosList.length}
-                    />                
-                    <TableBody>
-                        {stableSort(articulosList, getComparator(order, orderBy))
-                          
-                            .map((row, index) => {
-                                const isItemSelected = isSelected(row.id);
-                                const labelId = `enhanced-table-checkbox-${index}`;
+                            numSelected={selected.length}
+                            order={order}
+                            orderBy={orderBy}
+                            onSelectAllClick={handleSelectAllClick}
+                            onRequestSort={handleRequestSort}
+                            rowCount={articulosList.length}
+                        />
+                        <TableBody>
+                            {stableSort(articulosList, getComparator(order, orderBy))
 
-                                return (
-                                    <TableRow
-                                        hover
-                                        onClick={(event) => handleClick(event, row.descripcion)}
-                                        role="checkbox"
-                                        aria-checked={isItemSelected}
-                                        tabIndex={-1}
-                                        key={row.id}
-                                        selected={isItemSelected}
-                                    >
-                                        <TableCell>
-                                        </TableCell>
-                                        <TableCell
-                                            component="th"
-                                            id={labelId}
-                                            scope="row"
-                                            padding="none"
+                                .map((row, index) => {
+                                    const isItemSelected = isSelected(row.id);
+                                    const labelId = `enhanced-table-checkbox-${index}`;
+
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={(event) => handleClick(event, row.descripcion)}
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row.id}
+                                            selected={isItemSelected}
                                         >
-                                            {row.id}
-                                        </TableCell>
-                                        <TableCell align="left">{row.descripcion}</TableCell>
-                                        <TableCell align="left">{row.descripcionAdicional}</TableCell>
-                                    </TableRow>
-                                );
-                            })}                       
-                      
-                    </TableBody>           
-                  
+                                            <TableCell>
+                                            </TableCell>
+                                            <TableCell
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                padding="none"
+                                            >
+                                                {row.id}
+                                            </TableCell>
+                                            <TableCell align="left">{row.descripcion}</TableCell>
+                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
+
+                        </TableBody>
+
                     </Table>
                 </TableContainer>
-                <TablePagination
+                {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"
                     count={articulosCount.length}
@@ -422,7 +436,7 @@ export default function EnhancedTable() {
                     page={page}
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
-                />
+                /> : ''}
             </Paper>
         </Box>
     );
