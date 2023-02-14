@@ -20,7 +20,8 @@ import SearchIcon from '@mui/icons-material/Search';
 import InputAdornment from '@mui/material/InputAdornment';
 import OutlinedInput from '@mui/material/OutlinedInput';
 import InputLabel from '@mui/material/InputLabel';
-import Badge from '@mui/material/Badge';
+import Chip from '@mui/material/Chip';
+import Typography from '@mui/material/Typography';
 
 const Conglomerados = () => {
 
@@ -35,6 +36,7 @@ const Conglomerados = () => {
         page: 0,
         rowsPerPage: 10
     });
+
     const handleChange = e => {
 
         filtrarConglomerados(e.target.value)
@@ -129,9 +131,6 @@ const Conglomerados = () => {
                                 <TableCell>
                                     Nombre
                                 </TableCell>
-                                <TableCell>
-                                    Estado
-                                </TableCell>
                             </TableRow>
                         </TableHead>
                         <TableBody>
@@ -139,12 +138,9 @@ const Conglomerados = () => {
                                 conglomeradosFiltrados.map((conglomerado) => (
                                     <TableRow key={conglomerado.Id}>
                                         <TableCell>
-                                            {conglomerado.Nombre}
-                                        </TableCell>
-                                        <TableCell>
-                                            {conglomerado.Estado == 1 ? (<Badge badgeContent='Activo' color="success">
-                                            </Badge>) : <Badge badgeContent='Borrador' color="warning">
-                                            </Badge>}
+                                            {conglomerado.Nombre}{'\n'}
+                                            {conglomerado.Estado == 2 ? (<Chip label="Borrador" color="warning" variant="outlined" />)
+                                                : conglomerado.Estado == 0 ? (<Chip label="Anulado" color="danger" variant="outlined" />) : ('')}
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -152,14 +148,10 @@ const Conglomerados = () => {
                                 conglomeradosList.map((conglomerado) => (
                                     <TableRow key={conglomerado.Id}>
                                         <TableCell>
-                                            {conglomerado.Nombre}
-                                        </TableCell>
-                                        <TableCell>
-                                            {conglomerado.Estado == 1 ? (<Badge badgeContent='Activo' color="success">
-                                            </Badge>) : <Badge badgeContent='Borrador' color="warning">
-
-                                            </Badge>}
-
+                                            {conglomerado.Nombre} {'\n'}
+                                            {conglomerado.Estado == 2 ? (<Chip label="Borrador" color="warning" variant="outlined" />)
+                                                : conglomerado.Estado == 0 ? (<Chip label="Anulado" color="danger" variant="outlined" />) : ('')}
+                                                                           
                                         </TableCell>
                                     </TableRow>
                                 ))
