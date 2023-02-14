@@ -14,6 +14,7 @@ import FormHelperText from '@mui/material/FormHelperText';
 import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import Alert from '../components/Alert';
+import { CleaningServices } from '@mui/icons-material';
 
 
 
@@ -25,7 +26,10 @@ const MovimientoForm = (props) => {
     const [movLoading, setMovLoading] = React.useState(false)
     const [clientes, setClientes] = useState([]);
     const [articulos, setArticulos] = useState([]);
-    // const [clienteSeleccionado, setClienteSeleccionado] = React.useState('')
+    const [clienteSeleccionado, setClienteSeleccionado] = React.useState("")
+    const [alert, setAlert] = React.useState(false);
+    const [errorCliente, setErrorCliente] = useState(null)
+
 
 
     useEffect(() => {
@@ -75,6 +79,14 @@ const MovimientoForm = (props) => {
 
     formik.handleSubmit = (e) => {
         e.preventDefault();
+        console.log('Valor del Autocomplete:', clienteSeleccionado)
+        if(clienteSeleccionado !== "") {
+            formik.values.cliente = clienteSeleccionado
+            //Aqui guardas en la base datos
+
+        } else {
+            setErrorCliente("Seleccione un cliente")
+        }
         console.log('Form Data => ', formik.values)
     }
 
@@ -92,17 +104,31 @@ const MovimientoForm = (props) => {
                         id="cliente"
                         name="cliente"
                         disablePortal
-                        onInputChange={formik.handleChange}
-                        // inputValue={formik.values.cliente}
-                        onChange={formik.handleChange}
+                        onInputChange={(e, newValue) => {setClienteSeleccionado(newValue)}}
+                        inputValue={clienteSeleccionado.label}
+                        onChange={(e, newValue) => {
+                            console.log(newValue)
+                            if(newValue){
+                                setErrorCliente("")
+                                setClienteSeleccionado(newValue.id)
+                            } else {
+                                setClienteSeleccionado("")
+                            }
+                        }}
                         forcePopupIcon={true}
                         options={clientes}
                         freeSolo={true}
-                        value={formik.values.cliente}
+                        value={clienteSeleccionado.id}
                         sx={{ width: "*" }}
                         renderInput={(params) => <TextField {...params} label="Clientes" />}
                     />
-
+                    {
+                        errorCliente && (
+                            <p>{
+                                errorCliente
+                            }</p>
+                        )
+                    }
                 </FormControl>
 
                 <FormControl fullWidth error={(formik.errors.articulo) ? true : false} sx={{ marginTop: 2 }}>
