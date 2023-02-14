@@ -58,7 +58,7 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-const encabezadoClientes = [
+const encabezadoArticulos = [
     {
         id: 'id',
         numeric: false,
@@ -71,14 +71,6 @@ const encabezadoClientes = [
         disablePadding: false,
         label: 'Nombre',
     },
-    {
-        id: 'tenantId',
-        numeric: false,
-        disablePadding: false,
-        label: 'Tenant',
-    },
-
-
 ];
 
 function EnhancedTableHead(props) {
@@ -94,7 +86,7 @@ function EnhancedTableHead(props) {
                 <TableCell >
 
                 </TableCell>
-                {encabezadoClientes.map((encabezado) => (
+                {encabezadoArticulos.map((encabezado) => (
                     <TableCell
                         key={encabezado.id}
                         align={encabezado.numeric ? 'right' : 'left'}
@@ -149,7 +141,7 @@ function EnhancedTableToolbar(props) {
                 id="tableTitle"
                 component="div"
             >
-                Listado de Clientes
+                Listado de Tenants
             </Typography>
 
             {numSelected > 0 ? (
@@ -180,35 +172,35 @@ export default function EnhancedTable() {
     const [page, setPage] = React.useState(0);
     const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
-    const [clientesList, setClientesList] = React.useState([]);
-    const [clientesCount, setClientesCount] = React.useState([]);
-    const [clientesTotal, setClientesTotal] = React.useState([]);
+    const [tenantsList, setTenantsList] = React.useState([]);
+    const [tenantsCount, setTenantsCount] = React.useState([]);
+    const [tenantsTotal, setTenantsTotal] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
     const [isShown, setIsShown] = React.useState(false);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchTenants, error: errorTenants, loading: loadingArticulos } = useFetch();
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
         setOrderBy(property);
     };
-    const filtrarClientes = (searchField) => {
-        const clientesList = clientesTotal.filter(
-            cliente => {
+    const filtrarTenants = (searchField) => {
+        const tenantsList = tenantsTotal.filter(
+            tenant => {
                 return (
-                    cliente.nombre
+                    tenant.nombre
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
 
                 );
             }
         );
-    
-        if (clientesList.length) {
+        console.log('tenantsList', tenantsList)
+        if (tenantsList.length) {
             setTimeout(function () {
-                setClientesList(clientesList)
+                setTenantsList(tenantsList)
                 setMostrarPaginacion(false)
             }, 5000);
         }
@@ -216,13 +208,13 @@ export default function EnhancedTable() {
 
     const handleChange = e => {
 
-        filtrarClientes(e.target.value)
+        filtrarTenants(e.target.value)
         setSearchField(e.target.value);
     };
 
     const handleSelectAllClick = (event) => {
         if (event.target.checked) {
-            const newSelected = clientesList.map((n) => n.id);
+            const newSelected = tenantsList.map((n) => n.id);
             setSelected(newSelected);
             return;
         }
@@ -251,60 +243,60 @@ export default function EnhancedTable() {
 
     const handleChangePage = (event, newPage) => {
 
-        getClientes(newPage)
+        getTenants(newPage)
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
         let rowsPerPageNew = event.target.value
         setRowsPerPage(event.target.value)
-        getClientes(0, rowsPerPageNew)
+        getTenants(0, rowsPerPageNew)
     };
 
-    const getClientesCount = React.useCallback(async () => {
+    const getTenantsCount = React.useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" },
         };
 
-        const clienteCount = await fetchClientes(`${API}/cliente-count`, reqOptions)
+        const tenantCount = await fetchTenants(`${API}/tenant-count`, reqOptions)
 
 
-        if (clienteCount.error) {
+        if (tenantCount.error) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteCount.message })
-        } else if (errorClientes) {
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantCount.message })
+        } else if (errorTenants) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
 
-            setClientesCount(clienteCount)
+            setTenantsCount(tenantCount)
         }
-    }, [errorClientes, fetchClientes]);
-    const getClientesTotal = React.useCallback(async () => {
+    }, [errorTenants, fetchTenants]);
+    const getTenantsTotal = React.useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" },
         };
 
-        const clienteTotal = await fetchClientes(`${API}/cliente`, reqOptions)
+        const tenantsTotal = await fetchTenants(`${API}/tenant`, reqOptions)
 
 
-        if (clienteTotal.error) {
+        if (tenantsTotal.error) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteTotal.message })
-        } else if (errorClientes) {
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantsTotal.message })
+        } else if (errorTenants) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
-            //console.log('clienteTotal => ', clienteTotal);
-            setClientesTotal(clienteTotal)
+            console.log('tenantsTotal => ', tenantsTotal);
+            setTenantsTotal(tenantsTotal)
         }
-    }, [errorClientes, fetchClientes]);
+    }, [errorTenants, fetchTenants]);
 
-    const getClientes = React.useCallback(async (newPage, rowsPerPageNew) => {
+    const getTenants = React.useCallback(async (newPage, rowsPerPageNew) => {
 
         let bodyAEnviar = {
             pageNumber: !newPage ? 0 : newPage,
@@ -317,48 +309,42 @@ export default function EnhancedTable() {
             body: JSON.stringify(bodyAEnviar),
         };
 
-        const clienteData = await fetchClientes(`${API}/cliente`, reqOptions)
+        const tenantData = await fetchTenants(`${API}/tenant`, reqOptions)
 
-        if (clienteData.error) {
+        if (tenantData.error) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
-        } else if (errorClientes) {
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantData.message })
+        } else if (errorTenants) {
             setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
 
-            setClientesList(clienteData)
+            setTenantsList(tenantData)
         }
-    }, [errorClientes, fetchClientes]);
+    }, [errorTenants, fetchTenants]);
 
 
-    const isSelected = (nombre) => selected.indexOf(nombre) !== -1;
+    const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
     const refreshArticulos = () => {
         setSearchField("")
-        setClientesList([]);
-        getClientes();
-        setMostrarPaginacion(true)
-    }
-    const resetForm=()=>{
-        setSearchField("")
-        setClientesList([]);
-        getClientes();
+        setTenantsList([]);
+        getTenants();
         setMostrarPaginacion(true)
     }
 
 
     React.useEffect(() => {
-        getClientes();
-        getClientesCount();
-        getClientesTotal()
+        getTenants();
+        getTenantsCount();
+        getTenantsTotal()
     }, [])
 
     return (
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 5 }}>
                 <Grid container justifyContent="flex-end">
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingClientes}>
+                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Refrescar
                     </Button>
                 </Grid>
@@ -371,14 +357,14 @@ export default function EnhancedTable() {
                         sx={{ mt: 1 }}
                         startAdornment={
                             <InputAdornment position='end'>
-                                <SearchIcon/>
+                                <SearchIcon />
                             </InputAdornment>
                         }
                         label='Search'
                     />
                 </FormControl>
                 <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' value="Reset Form" onClick={() => resetForm()} disabled={loadingClientes}>
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Limpiar
                     </Button>
                 </Grid>
@@ -395,10 +381,10 @@ export default function EnhancedTable() {
                             orderBy={orderBy}
                             onSelectAllClick={handleSelectAllClick}
                             onRequestSort={handleRequestSort}
-                            rowCount={clientesList.length}
+                            rowCount={tenantsList.length}
                         />
                         <TableBody>
-                            {stableSort(clientesList, getComparator(order, orderBy))
+                            {stableSort(tenantsList, getComparator(order, orderBy))
 
                                 .map((row, index) => {
                                     const isItemSelected = isSelected(row.id);
@@ -407,7 +393,7 @@ export default function EnhancedTable() {
                                     return (
                                         <TableRow
                                             hover
-                                            onClick={(event) => handleClick(event, row.nombre)}
+                                            onClick={(event) => handleClick(event, row.descripcion)}
                                             role="checkbox"
                                             aria-checked={isItemSelected}
                                             tabIndex={-1}
@@ -425,7 +411,7 @@ export default function EnhancedTable() {
                                                 {row.id}
                                             </TableCell>
                                             <TableCell align="left">{row.nombre}</TableCell>
-                                            <TableCell align="left">{row.tenantId}</TableCell>
+                                        
                                         </TableRow>
                                     );
                                 })}
@@ -437,7 +423,7 @@ export default function EnhancedTable() {
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"
-                    count={clientesCount.length}
+                    count={tenantsCount.length}
                     rowsPerPage={rowsPerPage}
                     page={page}
                     onPageChange={handleChangePage}
