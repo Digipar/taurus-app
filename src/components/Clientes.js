@@ -36,7 +36,7 @@ const Clientes = () => {
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
     const [clientesFiltradas, setClientesFiltradas] = React.useState([]);
-    const [articuloCount, setArticuloCount] = React.useState(0);
+    const [articuloCount, setArticuloCount] = React.useState();
     const [controller, setController] = React.useState({
         page: 0,
         rowsPerPage: 10
