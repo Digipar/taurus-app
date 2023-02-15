@@ -15,24 +15,35 @@ import { Link, useParams } from "react-router-dom";
 import { useAuth } from "../context/auth-context";
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
+import { useNavigate } from 'react-router-dom';
 
 
 const MovimientoForm = (props) => {
     const { id } = useParams();
     const user = useAuth();
-    // console.log("🚀 ~ file: MovimientoForm.js:23 ~ MovimientoForm ~ user", user)
+    const userData = JSON.parse(user.user);
+    const navigate = useNavigate();
+
+    // console.log("userData", userData);
 
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
+    const { fetchData: fetchUpdateMovimiento, error: errorUpdateMovimiento, loading: loadingUpdateMovimiento } = useFetch();
 
     const [movLoading, setMovLoading] = React.useState(false)
     const [clientes, setClientes] = useState([]);
     const [articulos, setArticulos] = useState([]);
-    const [clienteSeleccionado, setClienteSeleccionado] = React.useState({id:"", label:""});
+    const [clienteSeleccionado, setClienteSeleccionado] = React.useState({ id: "", label: "" });
+    const [initialValues, setInitialValues] = React.useState({
+        cliente: "",
+        articulo: "",
+        cantidad: "",
+        precio: ""
+    });
+    // const [editNewValues, setEditNewValues] = React.useState({});
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
-
     const [errorCliente, setErrorCliente] = useState(null)
-
+    const [modoEditar, setModoEditar] = useState(false)
 
 
     const getMovimientoById = useCallback(async () => {
@@ -40,6 +51,7 @@ const MovimientoForm = (props) => {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
+
         const movimientoData = await fetchMovimiento(`${API}/movimiento/${id}`, reqOptions)
 
         if (movimientoData.error) {
@@ -54,22 +66,71 @@ const MovimientoForm = (props) => {
             return;
         }
 
-        // console.log('Movimiento a editar: ', movimientoData)
-        setClienteSeleccionado({id: 2, label: 'Nalani Ballam'})
+        let movDataEditar = {
+            cliente: clienteSeleccionado.id,
+            articulo: movimientoData.articuloId,
+            cantidad: movimientoData.cantidad,
+            precio: +movimientoData.precio,
+        }
 
+        // initial values = estructura form (ej. name)
+        setInitialValues(movDataEditar);
+
+        // Necesario para el autocomplete 
+        setClienteSeleccionado({ id: movimientoData.cliente.id, label: movimientoData.cliente.nombre });
 
 
     }, []);
 
-    
+
+    const updateMovimiento = async () => {
+
+        let movEditFinal = {
+            clienteId: clienteSeleccionado.id,
+            articuloId: formik.values.articulo,
+            cantidad: formik.values.cantidad,
+            precio: +formik.values.precio,
+        }
+        
+        // console.log('objFinal', objFinal)
+        
+        const reqOptions = {
+            method: 'PUT',
+            body: JSON.stringify(movEditFinal),
+            headers: { "Content-Type": "application/json" }
+        };
+
+        console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
+
+        const updateMovimientoData = await fetchUpdateMovimiento(`${API}/movimiento/${id}`, reqOptions);
+
+        if (updateMovimientoData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: updateMovimientoData.message })
+            return;
+        }
+
+        if (errorUpdateMovimiento) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorUpdateMovimiento })
+            return;
+        }
+
+        setAlert(true);
+        setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento actualizado con éxito!' })
+        navigate('/movimientos')
+
+    }
+
+   
     useEffect(() => {
         if (id) {
-            getMovimientoById(); 
+            setModoEditar(true);
+            getMovimientoById();
         }
-    }, [clientes])
+    }, [])
 
     useEffect(() => {
-        // console.log('Aqui:' , clienteSeleccionado)
         setErrorCliente("");
     }, [clienteSeleccionado])
 
@@ -90,48 +151,48 @@ const MovimientoForm = (props) => {
     }, [props.articulos])
 
 
-
-
     const formik = useFormik({
-        initialValues: {
-            cliente: '',
-            articulo: '',
-            cantidad: '',
-            precio: ''
-        },
+        
+        initialValues: initialValues,
+        enableReinitialize: true,
 
         validationSchema: Yup.object({
             precio: Yup.number()
                 .required('Campo precio es requerido.'),
             cantidad: Yup.number()
                 .required('Campo cantidad es requerido.'),
-            Articulos: Yup.string()
+            articulo: Yup.string()
                 .required("El campo articulo es requerido."),
 
         })
     })
 
     formik.handleSubmit = (e) => {
+        console.log('cliente seleccionado', clienteSeleccionado)
         e.preventDefault();
-        // console.log('Valor del Autocomplete:', clienteSeleccionado)
-        if (clienteSeleccionado?.id) {
-            console.log(clienteSeleccionado)
-            console.log('user', user)
+
+        //! Editar movimiento
+        if (modoEditar) {
+            updateMovimiento();
+        }
+
+        //! Crear movimiento
+        if (clienteSeleccionado?.id && !modoEditar) {
             formik.values.cliente = clienteSeleccionado.id
             let movData = {
                 clienteId: formik.values.cliente,
                 articuloId: formik.values.articulo,
                 cantidad: formik.values.cantidad,
                 precio: formik.values.precio,
-                creadoPor: user ? user.userId : '',
-                modificadoPor: user ? user.userId : '',
+                creadoPor: userData ? userData?.userId : '',
+                modificadoPor: userData ? userData?.userId : '',
                 creado: new Date(),
                 modificado: new Date()
             }
 
-             console.log("data final =>", movData)
+            //  console.log("data final =>", movData)
 
-            //props.registrarMovimiento(movData)
+            props.registrarMovimiento(movData)
 
         } else {
             setErrorCliente("Seleccione un cliente")
@@ -139,6 +200,8 @@ const MovimientoForm = (props) => {
     }
 
 
+    
+    
     return (
         <>
             <Box
@@ -152,8 +215,7 @@ const MovimientoForm = (props) => {
                         id="cliente"
                         name="cliente"
                         options={clientes}
-                        getOptionLabel={(cliente) => cliente.label }
-                        getOptionSelected={(option, value) => option.label === value.label }
+                        getOptionSelected={(option, value) => option.label === value.label}
                         onChange={(event, newValue) => {
                             setClienteSeleccionado(newValue)
                         }}
@@ -170,7 +232,7 @@ const MovimientoForm = (props) => {
                     }
                 </FormControl>
 
-                <FormControl fullWidth error={(formik.errors.articulo) ? true : false} sx={{ marginTop: 2 }}>
+                <FormControl fullWidth error={formik.errors.articulo && true} sx={{ marginTop: 2 }}>
                     <InputLabel id="articulo">Articulos *</InputLabel>
                     <Select
                         labelId="articulo"

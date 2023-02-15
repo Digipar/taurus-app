@@ -11,9 +11,10 @@ import Title from '../components/Title';
 
 const MovimientoRegistrar = () => {
   
-    // const navigate = useNavigate();
+    const navigate = useNavigate();
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
+    const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimientos } = useFetch();
 
     const [clientes, setClientes] = React.useState([]);
     const [articulos, setArticulos] = React.useState([]);
@@ -28,6 +29,8 @@ const MovimientoRegistrar = () => {
         };
 
         const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
+
+        // console.log("Articulos =>", articulosData)
 
         if (articulosData.error) {
             setAlert(true);
@@ -50,8 +53,11 @@ const MovimientoRegistrar = () => {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
-        const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
 
+        // console.log('GET CLIENTE =>', API + `/cliente`)
+
+        const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
+      
         if (clientesData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clientesData.message })
@@ -71,6 +77,7 @@ const MovimientoRegistrar = () => {
     React.useEffect(() => {
         getArticulos();
         getClientes();
+
     }, [])
 
    
@@ -84,32 +91,37 @@ const MovimientoRegistrar = () => {
            
         }
 
-        // console.log('Movimiento Data Create =>', movimientoDataCreate)
+        console.log('Movimiento Data Create =>', movimientoDataCreate)
 
-        // const reqOptions = {
-        //     method: 'POST',
-        //     body: JSON.stringify(movimientoDataCreate),
-        //     headers: { "Content-Type": "application/json" }
-        // };
-        // const respMovimiento = await fetchRegistrarMovimiento(`${API}/movimiento`, reqOptions);
+        const reqOptions = {
+            method: 'POST',
+            body: JSON.stringify(movimientoDataCreate),
+            headers: { "Content-Type": "application/json" }
+        };
 
-        // console.log('respMovimiento => ', respMovimiento);
+        console.log("reqOptions", reqOptions)
+        console.log("API", API + '/movimiento');
+        console.log("body => ", JSON.parse(reqOptions.body))
 
-        // if (respMovimiento.error) {
-        //     setAlert(true);
-        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: respMovimiento.message })
-        //     return;
-        // }
+        const respMovimiento = await fetchRegistrarMovimiento(`${API}/movimiento`, reqOptions);
 
-        // if (errorRegistrarMovimiento) {
-        //     setAlert(true);
-        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorRegistrarMovimiento })
-        //     return;
-        // }
+        console.log("[POST] respMovimiento => ", respMovimiento)
 
-        // setAlert(true);
-        // setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento creado con éxito!' })
-        // navigate('/movimientos')
+        if (respMovimiento.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: respMovimiento.message })
+            return;
+        }
+
+        if (errorRegistrarMovimiento) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorRegistrarMovimiento })
+            return;
+        }
+
+        setAlert(true);
+        setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento creado con éxito!' })
+        navigate('/movimientos')
         
     }
 

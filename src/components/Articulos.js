@@ -216,7 +216,7 @@ export default function EnhancedTable() {
         }
     }
     const {user} = useAuth()
-    console.log('user', user)
+    // console.log('user', user)
 
     const handleChange = e => {
 
@@ -323,6 +323,8 @@ export default function EnhancedTable() {
 
         const articuloData = await fetchArticulos(`${API}/articulo`, reqOptions)
 
+        console.log("Articulo => ", articuloData);
+        
         if (articuloData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
