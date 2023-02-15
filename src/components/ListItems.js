@@ -7,7 +7,7 @@ import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import { Link } from 'react-router-dom';
 import ReorderIcon from '@mui/icons-material/Reorder';
-import BusinessIcon from '@mui/icons-material/Business';
+import RoofingIcon from '@mui/icons-material/Roofing';
 
 export const mainListItems = (
   <React.Fragment>
@@ -19,34 +19,34 @@ export const mainListItems = (
     </ListItemButton>
     <ListItemButton component={Link} to="/articulos">
       <ListItemIcon>
-      <ArticleIcon/>
+        <ArticleIcon />
       </ListItemIcon>
-      <ListItemText primary="Artículos" />     
+      <ListItemText primary="Artículos" />
     </ListItemButton>
     <ListItemButton component={Link} to="/clientes">
       <ListItemIcon>
         <PeopleIcon />
-      </ListItemIcon>     
+      </ListItemIcon>
       <ListItemText primary="Clientes" />
     </ListItemButton>
     <ListItemButton component={Link} to="/movimientos">
-    <ListItemIcon>
-      <ReorderIcon/>
-    </ListItemIcon>     
-    <ListItemText primary="Movimientos" />
-  </ListItemButton>
-    <ListItemButton component={Link} to="/conglomerados">
       <ListItemIcon>
-        <BusinessIcon />
-      </ListItemIcon>     
-      <ListItemText primary="Conglomerados" />
+        <ReorderIcon />
+      </ListItemIcon>
+      <ListItemText primary="Movimientos" />
+    </ListItemButton>
+    <ListItemButton component={Link} to="/tenant">
+      <ListItemIcon>
+        <RoofingIcon />
+      </ListItemIcon>
+      <ListItemText primary="Tenants" />
     </ListItemButton>
   </React.Fragment>
 );
 
 export const secondaryListItems = (
   <React.Fragment>
-   
+
 
   </React.Fragment>
 );

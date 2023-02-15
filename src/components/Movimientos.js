@@ -10,6 +10,8 @@ import CachedIcon from '@mui/icons-material/Cached';
 import { Link } from "react-router-dom";
 import SearchIcon from '@mui/icons-material/Search';
 import {
+    Stack,
+    Box,
     Card,
     Table,
     TableHead,
@@ -129,12 +131,13 @@ const Movimientos = () => {
         const filteredArticulos = movimientos.filter(
             movimiento => {
                 return (
-                    movimiento.ArticuloId
+                    movimiento.Id
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
-                    // || movimiento.ClienteId
-                    //     .toLowerCase()
-                    //     .includes(searchField.toLowerCase())
+                    || movimiento.ArticuloId
+                        .toLowerCase()
+                        .includes(searchField.toLowerCase())
+                   
                 );
             }
         );
@@ -175,33 +178,59 @@ const Movimientos = () => {
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
-                    <Grid container justifyContent="flex-end">
-                        <Button startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
+               
+                <Stack
+                        direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={1}
+                      >
+
+                <Button startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
                             Nuevo movimiento
                         </Button>
 
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getMovimientos} disabled={loadingMovimientos}>
                             Refrescar
                         </Button>
+                      </Stack>
+                    
+                    
+                  
+                    <Box
+                      
+                        display="flex"
+                        justifyContent="flex-end"
+                        alignItems="flex-end"
+
+                    >
+                      
+                    </Box>
+                    
+                   
+                    <Grid container>
+                        <FormControl sx={{ m: 2, width: '1080px' }}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                sx={{ mt: 1 }}
+                                startAdornment={
+                                    <InputAdornment position='end'>
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                label='Search'
+                            />
+                        </FormControl>
                     </Grid>
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
-                                    <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
                     <Table>
                         <TableHead>
                             <TableRow>
+                                <TableCell>
+                                    Código
+                                </TableCell>
                                 <TableCell>
                                     Articulo
                                 </TableCell>
@@ -223,6 +252,9 @@ const Movimientos = () => {
                             {movimientosFiltrados.length ? (
                                 movimientosFiltrados.map((movimiento) => (
                                     <TableRow key={movimiento.Id}>
+                                        <TableCell>
+                                            {movimiento.Id}
+                                        </TableCell>
                                         <TableCell>
                                             {movimiento.ArticuloId}
                                         </TableCell>
@@ -248,6 +280,9 @@ const Movimientos = () => {
                             ) : (
                                 movimientos.map((movimiento) => (
                                     <TableRow key={movimiento.Id}>
+                                        <TableCell>
+                                            {movimiento.Id}
+                                        </TableCell>
                                         <TableCell>
                                             {movimiento.ArticuloId}
                                         </TableCell>

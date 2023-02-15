@@ -4,8 +4,8 @@ import Clientes from './components/Clientes';
 import GeneralLayout from './layouts/GeneralLayout';
 import Dashboard from './pages/Dashboard';
 import Articulos from './components/Articulos';
+import Tenants from './components/Tenants';
 import Movimientos from './components/Movimientos';
-import Conglomerados from './components/Conglomedaros';
 import MovimientoRegistrar from './pages/MovimientoRegistrar';
 
 const AuthenticatedApp = () => {
@@ -67,17 +67,16 @@ const AuthenticatedApp = () => {
           crumb: () => 'Editar movimiento'
         }}
       />
-      <Route exact path="/conglomerados" element={
+      <Route exact path="/tenant" element={
         <GeneralLayout>
-          <Conglomerados />
+          <Tenants/>
         </GeneralLayout>
       }
         handle={{
-          crumb: () => 'Conglomerados'
+          crumb: () => 'Tenants'
         }}
       />
-
-      <Route path="*" element={<h1>Not found</h1>} />
+      <Route path="*" element={<h1>Not found</h1>}/>
     </Routes>
   )
 }
