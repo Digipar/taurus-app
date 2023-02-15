@@ -211,6 +211,8 @@ export default function EnhancedTable() {
             }, 3000);
         }
     }
+
+
     const handleChange = e => {
 
         filtrarArticulos(e.target.value)
@@ -326,6 +328,8 @@ export default function EnhancedTable() {
 
         const articuloData = await fetchArticulos(`${API}/articulo`, reqOptions)
 
+        console.log("Articulo => ", articuloData);
+        
         if (articuloData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
