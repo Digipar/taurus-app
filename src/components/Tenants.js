@@ -28,6 +28,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
+import Chip from '@mui/material/Chip';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -193,21 +194,19 @@ export default function EnhancedTable() {
                     tenant.nombre
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
-
                 );
             }
         );
-        console.log('tenantsList', tenantsList)
+        //console.log('tenantsList', tenantsList)
         if (tenantsList.length) {
             setTimeout(function () {
                 setTenantsList(tenantsList)
                 setMostrarPaginacion(false)
-            }, 5000);
+            }, 3000);
         }
     }
 
     const handleChange = e => {
-
         filtrarTenants(e.target.value)
         setSearchField(e.target.value);
     };
@@ -243,7 +242,7 @@ export default function EnhancedTable() {
 
     const handleChangePage = (event, newPage) => {
 
-        getTenants(newPage)
+        getTenants(newPage,rowsPerPage)
         setPage(newPage);
     };
 
@@ -261,8 +260,6 @@ export default function EnhancedTable() {
         };
 
         const tenantCount = await fetchTenants(`${API}/tenant-count`, reqOptions)
-
-
         if (tenantCount.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantCount.message })
@@ -270,10 +267,10 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
-
             setTenantsCount(tenantCount)
         }
     }, [errorTenants, fetchTenants]);
+
     const getTenantsTotal = React.useCallback(async () => {
 
         const reqOptions = {
@@ -282,8 +279,6 @@ export default function EnhancedTable() {
         };
 
         const tenantsTotal = await fetchTenants(`${API}/tenant`, reqOptions)
-
-
         if (tenantsTotal.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantsTotal.message })
@@ -291,7 +286,17 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
-            console.log('tenantsTotal => ', tenantsTotal);
+         
+            tenantsTotal.map(element => {
+                if(element.estado !=1){
+                    if (element.estado == 2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
             setTenantsTotal(tenantsTotal)
         }
     }, [errorTenants, fetchTenants]);
@@ -318,6 +323,16 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
+            tenantData.map(element => {
+                if(element.estado !=1){
+                    if (element.estado == 2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
 
             setTenantsList(tenantData)
         }
@@ -354,6 +369,7 @@ export default function EnhancedTable() {
                         onChange={handleChange}
                         type="search"
                         noValidate
+                        value={searchField}
                         sx={{ mt: 1 }}
                         startAdornment={
                             <InputAdornment position='end'>
@@ -410,7 +426,7 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.nombre}</TableCell>
+                                            <TableCell align="left">{row.nombre} {row.estado!=1?((<Chip label={row.estado=='Borrador'?'Borrador':row.estado=='Anulado'?'Anulado':''} color={row.estado=='Borrador'?"warning":"error"} variant="outlined"/>)):''}</TableCell>
                                         
                                         </TableRow>
                                     );

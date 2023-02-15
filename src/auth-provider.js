@@ -28,11 +28,11 @@ function handleUserResponse({user}) {
   return user
 }
 
-async function  login({UsuarioEmail, UsuarioPassword}) {
+async function  login({correo, contrasenha}) {
 
   let bodyAEnviar={
-    UsuarioEmail: UsuarioEmail,
-    UsuarioPassword: UsuarioPassword
+    correo: correo,
+    contrasenha: contrasenha
   }
   console.log('login called', bodyAEnviar)
   try {
@@ -50,7 +50,7 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
     const userJSON = await user.json();
     console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,UsuarioNombre: userJSON.UsuarioNombre,userId: userJSON.Id,UsuarioEmail: userJSON.UsuarioEmail}})
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON.UsuarioNombre,userId: userJSON.Id,correo: userJSON.correo}})
   }
   catch(error){
     console.log('error', error)
@@ -58,8 +58,8 @@ async function  login({UsuarioEmail, UsuarioPassword}) {
 
 }
 
-function register({UsuarioNombre, UsuarioPassword}) {
-  return client('register', {UsuarioNombre, UsuarioPassword}).then(handleUserResponse)
+function register({UsuarioNombre, contrasenha}) {
+  return client('register', {UsuarioNombre, contrasenha}).then(handleUserResponse)
 }
 
 async function logout() {

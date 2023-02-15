@@ -42,7 +42,7 @@ const SignIn = (props) => {
 
   const { login } = useAuth();
   const validationSchema = yup.object({
-    UsuarioEmail: yup
+    correo: yup
       .string('Enter your email')
       .email('Ingrese un email válido')
       .required('Su email es requerido'),
@@ -51,8 +51,8 @@ const SignIn = (props) => {
 
   const formik = useFormik({
     initialValues: {
-      UsuarioEmail: '',
-      UsuarioPassword: ''
+      correo: '',
+      contrasenha: ''
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
@@ -106,24 +106,24 @@ const SignIn = (props) => {
                 margin="normal"
                 required
                 fullWidth
-                id="UsuarioEmail"
+                id="correo"
                 label="Correo electrónico"
-                name="UsuarioEmail"
+                name="correo"
                 autoComplete="email"
                 onChange={formik.handleChange}
-                error={formik.touched.UsuarioEmail && Boolean(formik.errors.UsuarioEmail)}
-                helperText={formik.touched.UsuarioEmail && formik.errors.UsuarioEmail}
+                error={formik.touched.correo && Boolean(formik.errors.correo)}
+                helperText={formik.touched.correo && formik.errors.correo}
                 autoFocus
               />
               <TextField
                 margin="normal"
                 required
                 fullWidth
-                name="UsuarioPassword"
+                name="contrasenha"
                 label="Contraseña"
                 type="password"
-                id="UsuarioPassword"
-                autoComplete="current-UsuarioPassword"
+                id="contrasenha"
+                autoComplete="current-contrasenha"
                 onChange={formik.handleChange}
               />
               <FormControlLabel

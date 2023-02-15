@@ -28,6 +28,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
+import Chip from '@mui/material/Chip';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -201,21 +202,18 @@ export default function EnhancedTable() {
                     cliente.nombre
                         .toLowerCase()
                         .includes(searchField.toLowerCase())
-
                 );
             }
-        );
-    
+        );    
         if (clientesList.length) {
             setTimeout(function () {
                 setClientesList(clientesList)
                 setMostrarPaginacion(false)
-            }, 5000);
+            }, 3000);
         }
     }
 
     const handleChange = e => {
-
         filtrarClientes(e.target.value)
         setSearchField(e.target.value);
     };
@@ -251,7 +249,7 @@ export default function EnhancedTable() {
 
     const handleChangePage = (event, newPage) => {
 
-        getClientes(newPage)
+        getClientes(newPage,rowsPerPage)
         setPage(newPage);
     };
 
@@ -300,6 +298,16 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             //console.log('clienteTotal => ', clienteTotal);
+            clienteTotal.map(element => {
+                if(element.estado !=1){
+                    if (element.estado == 2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
             setClientesTotal(clienteTotal)
         }
     }, [errorClientes, fetchClientes]);
@@ -326,6 +334,16 @@ export default function EnhancedTable() {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
+            clienteData.map(element => {
+                if(element.estado !=1){
+                    if (element.estado == 2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
 
             setClientesList(clienteData)
         }
@@ -334,9 +352,14 @@ export default function EnhancedTable() {
 
     const isSelected = (nombre) => selected.indexOf(nombre) !== -1;
 
-    const refreshArticulos = () => {
+    const refreshClientes = () => {
         setSearchField("")
         setClientesList([]);
+        getClientes();
+        setMostrarPaginacion(true)
+    }
+    const limpiarClientes=()=>{
+        setSearchField("")
         getClientes();
         setMostrarPaginacion(true)
     }
@@ -358,7 +381,7 @@ export default function EnhancedTable() {
         <Box sx={{ width: '100%' }}>
             <Paper sx={{ width: '100%', mb: 5 }}>
                 <Grid container justifyContent="flex-end">
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingClientes}>
+                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
                         Refrescar
                     </Button>
                 </Grid>
@@ -368,6 +391,7 @@ export default function EnhancedTable() {
                         onChange={handleChange}
                         type="search"
                         noValidate
+                        value={searchField}
                         sx={{ mt: 1 }}
                         startAdornment={
                             <InputAdornment position='end'>
@@ -378,7 +402,7 @@ export default function EnhancedTable() {
                     />
                 </FormControl>
                 <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' value="Reset Form" onClick={() => resetForm()} disabled={loadingClientes}>
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' value="Reset Form"  onClick={limpiarClientes} disabled={loadingClientes}>
                         Limpiar
                     </Button>
                 </Grid>
@@ -424,7 +448,7 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.nombre}</TableCell>
+                                            <TableCell align="left">{row.nombre} {row.estado!=1?((<Chip label={row.estado=='Borrador'?'Borrador':row.estado=='Anulado'?'Anulado':''} color={row.estado=='Borrador'?"warning":"error"} variant="outlined"/>)):''}</TableCell>
                                             <TableCell align="left">{row.tenantId}</TableCell>
                                         </TableRow>
                                     );
