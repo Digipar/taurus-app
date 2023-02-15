@@ -28,7 +28,7 @@ import SearchIcon from '@mui/icons-material/Search';
 import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
-import {useAuth} from "../context/auth-context";
+import Chip from '@mui/material/Chip';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -79,8 +79,6 @@ const encabezadoArticulos = [
         disablePadding: false,
         label: 'Descripción Adicional',
     },
-
-
 ];
 
 function EnhancedTableHead(props) {
@@ -185,8 +183,7 @@ export default function EnhancedTable() {
     const [articulosList, setArticulosList] = React.useState([]);
     const [articulosCount, setArticulosCount] = React.useState([]);
     const [articulosTotal, setArticulosTotal] = React.useState([]);
-    const [alertOptions, setAlertOptions] = React.useState({});
-    const [isShown, setIsShown] = React.useState(false);
+    const [alertOptions, setAlertOptions] = React.useState({});  
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
@@ -207,12 +204,11 @@ export default function EnhancedTable() {
                 );
             }
         );
-        console.log('articulosList', articulosList)
         if (articulosList.length) {
             setTimeout(function () {
                 setArticulosList(articulosList)
                 setMostrarPaginacion(false)
-            }, 5000);
+            }, 3000);
         }
     }
     const handleChange = e => {
@@ -301,6 +297,16 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
             //console.log('articuloTotal => ', articuloTotal);
+            articuloTotal.map(element => {
+                if(element.estado !=1){
+                    if (element.estado ==2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
             setArticulosTotal(articuloTotal)
         }
     }, [errorArticulos, fetchArticulos]);
@@ -328,6 +334,17 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
 
+              articuloData.map(element => {
+                if(element.estado !=1){
+                    if (element.estado ==2){
+                        element.estado ='Borrador'
+                    }else{
+                        element.estado='Anulado'
+                    }
+                }          
+                
+            });
+
             setArticulosList(articuloData)
         }
     }, [errorArticulos, fetchArticulos]);
@@ -338,6 +355,11 @@ export default function EnhancedTable() {
     const refreshArticulos = () => {
         setSearchField("")
         setArticulosList([]);
+        getArticulos();
+        setMostrarPaginacion(true)
+    }
+    const limpiarArticulos=()=>{
+        setSearchField("")
         getArticulos();
         setMostrarPaginacion(true)
     }
@@ -363,6 +385,7 @@ export default function EnhancedTable() {
                         onChange={handleChange}
                         type="search"
                         noValidate
+                        value={searchField}
                         sx={{ mt: 1 }}
                         startAdornment={
                             <InputAdornment position='end'>
@@ -373,7 +396,7 @@ export default function EnhancedTable() {
                     />
                 </FormControl>
                 <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
                         Limpiar
                     </Button>
                 </Grid>
@@ -419,8 +442,8 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.descripcion}</TableCell>
-                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>
+                                            <TableCell align="left">{row.descripcion} {row.estado!=1?((<Chip label={row.estado=='Borrador'?'Borrador':row.estado=='Anulado'?'Anulado':''} color={row.estado=='Borrador'?"warning":"error"} variant="outlined"/>)):''}</TableCell>
+                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>                                         
                                         </TableRow>
                                     );
                                 })}
