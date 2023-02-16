@@ -328,7 +328,7 @@ export default function EnhancedTable() {
 
         const articuloData = await fetchArticulos(`${API}/articulo`, reqOptions)
 
-        console.log("Articulo => ", articuloData);
+        //console.log("Articulo => ", articuloData);
         
         if (articuloData.error) {
             setAlert(true);
