@@ -29,6 +29,8 @@ import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -59,7 +61,7 @@ function stableSort(array, comparator) {
     return stabilizedThis.map((el) => el[0]);
 }
 
-const encabezadoArticulos = [
+const encabezadoTenants = [
     {
         id: 'id',
         numeric: false,
@@ -87,7 +89,7 @@ function EnhancedTableHead(props) {
                 <TableCell >
 
                 </TableCell>
-                {encabezadoArticulos.map((encabezado) => (
+                {encabezadoTenants.map((encabezado) => (
                     <TableCell
                         key={encabezado.id}
                         align={encabezado.numeric ? 'right' : 'left'}
@@ -181,7 +183,7 @@ export default function EnhancedTable() {
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
-    const { fetchData: fetchTenants, error: errorTenants, loading: loadingArticulos } = useFetch();
+    const { fetchData: fetchTenants, error: errorTenants, loading: loadingTenants } = useFetch();
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -341,7 +343,7 @@ export default function EnhancedTable() {
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
-    const refreshArticulos = () => {
+    const refreshTenants = () => {
         setSearchField("")
         setTenantsList([]);
         getTenants();
@@ -356,14 +358,19 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 5 }}>
-                <Grid container justifyContent="flex-end">
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
-                        Refrescar
-                    </Button>
-                </Grid>
-                <FormControl sx={{ ml: 3, width: '110ch' }}>
+        <Card size="small" sx={{ minWidth: 275 }}>
+        <CardContent>
+            <Grid container justifyContent="flex-end">
+                <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshTenants} disabled={loadingTenants}>
+                    Refrescar
+                </Button>
+            </Grid>
+            <Box m={1}
+                display="flex"
+                justifyContent="flex-end"
+                alignItems="flex-end">
+
+                <FormControl sx={{ m: 2, width: '110ch' }}>
                     <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                     <OutlinedInput
                         onChange={handleChange}
@@ -379,8 +386,9 @@ export default function EnhancedTable() {
                         label='Search'
                     />
                 </FormControl>
+            </Box>
                 <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshTenants} disabled={loadingTenants}>
                         Limpiar
                     </Button>
                 </Grid>
@@ -445,7 +453,7 @@ export default function EnhancedTable() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 /> : ''}
-            </Paper>
-        </Box>
+                </CardContent>
+                </Card>
     );
 }

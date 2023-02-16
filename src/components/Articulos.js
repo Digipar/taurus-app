@@ -29,7 +29,8 @@ import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
-
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -376,33 +377,35 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Box m={1}
-            display="flex"
-            justifyContent="flex-end"
-            alignItems="flex-end">
-
-            <Paper sx={{ width: '100%', mb: 5 }}>
+        <Card size="small" sx={{ minWidth: 275 }}>
+            <CardContent>
                 <Grid container justifyContent="flex-end">
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Refrescar
                     </Button>
                 </Grid>
-                <FormControl sx={{ m: 2, width: '110ch' }}>
-                    <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                    <OutlinedInput
-                        onChange={handleChange}
-                        type="search"
-                        noValidate
-                        value={searchField}
-                        sx={{ mt: 1 }}
-                        startAdornment={
-                            <InputAdornment position='end'>
-                                <SearchIcon />
-                            </InputAdornment>
-                        }
-                        label='Search'
-                    />
-                </FormControl>
+                <Box m={1}
+                    display="flex"
+                    justifyContent="flex-end"
+                    alignItems="flex-end">
+
+                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                        <OutlinedInput
+                            onChange={handleChange}
+                            type="search"
+                            noValidate
+                            value={searchField}
+                            sx={{ mt: 1 }}
+                            startAdornment={
+                                <InputAdornment position='end'>
+                                    <SearchIcon />
+                                </InputAdornment>
+                            }
+                            label='Search'
+                        />
+                    </FormControl>
+                </Box>
                 <Grid container justifyContent="flex-end">
                     <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
                         Limpiar
@@ -469,7 +472,9 @@ export default function EnhancedTable() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 /> : ''}
-            </Paper>
-        </Box>
+
+            </CardContent>
+        </Card>
+
     );
 }

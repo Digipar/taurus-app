@@ -29,6 +29,8 @@ import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -204,7 +206,7 @@ export default function EnhancedTable() {
                         .includes(searchField.toLowerCase())
                 );
             }
-        );    
+        );
         if (clientesList.length) {
             setTimeout(function () {
                 setClientesList(clientesList)
@@ -249,7 +251,7 @@ export default function EnhancedTable() {
 
     const handleChangePage = (event, newPage) => {
 
-        getClientes(newPage,rowsPerPage)
+        getClientes(newPage, rowsPerPage)
         setPage(newPage);
     };
 
@@ -299,14 +301,14 @@ export default function EnhancedTable() {
         } else {
             //console.log('clienteTotal => ', clienteTotal);
             clienteTotal.map(element => {
-                if(element.estado !=1){
-                    if (element.estado == 2){
-                        element.estado ='Borrador'
-                    }else{
-                        element.estado='Anulado'
+                if (element.estado != 1) {
+                    if (element.estado == 2) {
+                        element.estado = 'Borrador'
+                    } else {
+                        element.estado = 'Anulado'
                     }
-                }          
-                
+                }
+
             });
             setClientesTotal(clienteTotal)
         }
@@ -335,14 +337,14 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             clienteData.map(element => {
-                if(element.estado !=1){
-                    if (element.estado == 2){
-                        element.estado ='Borrador'
-                    }else{
-                        element.estado='Anulado'
+                if (element.estado != 1) {
+                    if (element.estado == 2) {
+                        element.estado = 'Borrador'
+                    } else {
+                        element.estado = 'Anulado'
                     }
-                }          
-                
+                }
+
             });
 
             setClientesList(clienteData)
@@ -358,12 +360,12 @@ export default function EnhancedTable() {
         getClientes();
         setMostrarPaginacion(true)
     }
-    const limpiarClientes=()=>{
+    const limpiarClientes = () => {
         setSearchField("")
         getClientes();
         setMostrarPaginacion(true)
     }
-    const resetForm=()=>{
+    const resetForm = () => {
         setSearchField("")
         setClientesList([]);
         getClientes();
@@ -378,34 +380,35 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 5 }}>
+        <Card size="small" sx={{ minWidth: 275 }}>
+            <CardContent>
                 <Grid container justifyContent="flex-end">
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
                         Refrescar
                     </Button>
                 </Grid>
-                <FormControl sx={{ ml: 3, width: '110ch' }}>
-                    <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                    <OutlinedInput
-                        onChange={handleChange}
-                        type="search"
-                        noValidate
-                        value={searchField}
-                        sx={{ mt: 1 }}
-                        startAdornment={
-                            <InputAdornment position='end'>
-                                <SearchIcon/>
-                            </InputAdornment>
-                        }
-                        label='Search'
-                    />
-                </FormControl>
-                <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' value="Reset Form"  onClick={limpiarClientes} disabled={loadingClientes}>
-                        Limpiar
-                    </Button>
-                </Grid>
+                <Box m={1}
+                    display="flex"
+                    justifyContent="flex-end"
+                    alignItems="flex-end">
+
+                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                        <OutlinedInput
+                            onChange={handleChange}
+                            type="search"
+                            noValidate
+                            value={searchField}
+                            sx={{ mt: 1 }}
+                            startAdornment={
+                                <InputAdornment position='end'>
+                                    <SearchIcon />
+                                </InputAdornment>
+                            }
+                            label='Search'
+                        />
+                    </FormControl>
+                </Box>
                 <EnhancedTableToolbar numSelected={selected.length} />
                 <TableContainer>
                     <Table
@@ -448,7 +451,7 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.nombre} {row.estado!=1?((<Chip label={row.estado=='Borrador'?'Borrador':row.estado=='Anulado'?'Anulado':''} color={row.estado=='Borrador'?"warning":"error"} variant="outlined"/>)):''}</TableCell>
+                                            <TableCell align="left">{row.nombre} {row.estado != 1 ? ((<Chip label={row.estado == 'Borrador' ? 'Borrador' : row.estado == 'Anulado' ? 'Anulado' : ''} color={row.estado == 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
                                             <TableCell align="left">{row.tenantId}</TableCell>
                                         </TableRow>
                                     );
@@ -467,7 +470,7 @@ export default function EnhancedTable() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 /> : ''}
-            </Paper>
-        </Box>
+            </CardContent>
+        </Card>
     );
 }
