@@ -1,13 +1,13 @@
-import * as React from 'react'
+import { useCallback, useState, useEffect } from 'react'
 import { Button } from '@mui/material';
 import { API } from '../config';
 import AddIcon from '@mui/icons-material/Add';
-import Grid from '@mui/material/Grid';
 import CardContent from '@mui/material/CardContent';
 import useFetch from '../hooks/use-fetch';
 import Title from './Title';
 import CachedIcon from '@mui/icons-material/Cached';
 import { Link } from "react-router-dom";
+import Tooltip from '@mui/material/Tooltip';
 // import SearchIcon from '@mui/icons-material/Search';
 import {
     Stack,
@@ -21,59 +21,91 @@ import {
 } from '@mui/material';
 
 import ModeEditIcon from '@mui/icons-material/ModeEdit';
+import MovimientoFiltro from './MovimientoFiltro';
 
 const Movimientos = () => {
 
-    const [alert, setAlert] = React.useState(false);
-    const [movimientos, setMovimientos] = React.useState([])
-    const [alertOptions, setAlertOptions] = React.useState({});
+    const [alert, setAlert] = useState(false);
+    const [movimientos, setMovimientos] = useState([])
+    const [clientes, setClientes] = useState([])
+    const [alertOptions, setAlertOptions] = useState({});
     const { fetchData: fetchMovimientos, error: errorMovimientos, loading: loadingMovimientos } = useFetch();
-    
-
-    const [searchField, setSearchField] = React.useState("");
+    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
 
 
-    const getMovimientos = React.useCallback(async () => {
+    const getMovimientos = useCallback(async () => {
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
         };
         const movimientoData = await fetchMovimientos(`${API}/movimiento`, reqOptions)
-         console.log("movimientos => , ", movimientoData)
+        console.log("movimientos => , ", movimientoData)
 
         if (movimientoData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
-        } 
+            return;
+        }
 
         if (errorMovimientos) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimientos })
+            return;
         }
 
-        setMovimientos(movimientoData); 
+        setMovimientos(movimientoData);
 
 
     }, [errorMovimientos, fetchMovimientos]);
 
 
-    React.useEffect(() => {
+
+    const getClientes = useCallback(async () => {
+
+        const reqOptions = {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" }
+        };
+
+        const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
+
+        if (clientesData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clientesData.message })
+            return;
+        }
+
+        if (errorClientes) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
+            return;
+        }
+
+        setClientes(clientesData)
+
+    }, [errorClientes, fetchClientes]);
+
+
+    useEffect(() => {
         getMovimientos();
+        getClientes();
     }, [])
 
     return (
         <>
             <Title>Listado de movimientos</Title>
 
+            <MovimientoFiltro clientes={clientes}/>
+
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
-               
-                <Stack
+
+                    <Stack
                         direction="row"
                         justifyContent="space-between"
                         alignItems="center"
                         spacing={1}
-                      >
+                    >
 
                         <Button startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
                             Nuevo movimiento
@@ -82,25 +114,20 @@ const Movimientos = () => {
                         <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getMovimientos} disabled={loadingMovimientos}>
                             Refrescar
                         </Button>
-                      </Stack>
-                    
-                    
-                  
+                    </Stack>
+
                     <Box
                         display="flex"
                         justifyContent="flex-end"
                         alignItems="flex-end"
                     >
-                      
                     </Box>
-                    
-                   
-        
+
                     <Table>
                         <TableHead>
                             <TableRow>
                                 <TableCell>
-                                    Código
+                                    Id
                                 </TableCell>
                                 <TableCell>
                                     Articulo
@@ -127,10 +154,10 @@ const Movimientos = () => {
                                             {movimiento.id}
                                         </TableCell>
                                         <TableCell>
-                                            {movimiento.articuloId}
+                                            {movimiento.articulo.descripcion}
                                         </TableCell>
                                         <TableCell>
-                                            {movimiento.clienteId}
+                                            {movimiento.cliente.nombre}
                                         </TableCell>
                                         <TableCell>
                                             {movimiento.cantidad}
@@ -139,12 +166,14 @@ const Movimientos = () => {
                                             {movimiento.precio}
                                         </TableCell>
                                         <TableCell>
-                                            <Button startIcon={<ModeEditIcon />} 
-                                            component={Link}
-                                            to={`/movimiento-editar/${movimiento.id}`}
-                                            variant="text" 
-                                            color='primary'  
-                                            disabled={loadingMovimientos} />
+                                            <Tooltip title="Editar">
+                                                <Button startIcon={<ModeEditIcon />}
+                                                    component={Link}
+                                                    to={`/movimiento-editar/${movimiento.id}`}
+                                                    variant="text"
+                                                    color='primary'
+                                                    disabled={loadingMovimientos} />
+                                            </Tooltip>
                                         </TableCell>
                                     </TableRow>
                                 ))
@@ -152,14 +181,7 @@ const Movimientos = () => {
 
                         </TableBody>
                     </Table>
-                    {/* <TablePagination
-                        component="div"
-                        onPageChange={handlePageChange}
-                        page={controller.page}
-                        count={movimientoCount}
-                        rowsPerPage={controller.rowsPerPage}
-                        onRowsPerPageChange={handleChangeRowsPerPage}
-                    /> */}
+
                 </CardContent>
             </Card>
         </>

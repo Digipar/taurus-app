@@ -16,6 +16,7 @@ import { useAuth } from "../context/auth-context";
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
 import { useNavigate } from 'react-router-dom';
+import Title from './Title';
 
 
 const MovimientoForm = (props) => {
@@ -91,9 +92,9 @@ const MovimientoForm = (props) => {
             cantidad: formik.values.cantidad,
             precio: +formik.values.precio,
         }
-        
+
         // console.log('objFinal', objFinal)
-        
+
         const reqOptions = {
             method: 'PUT',
             body: JSON.stringify(movEditFinal),
@@ -122,7 +123,7 @@ const MovimientoForm = (props) => {
 
     }
 
-   
+
     useEffect(() => {
         if (id) {
             setModoEditar(true);
@@ -152,7 +153,7 @@ const MovimientoForm = (props) => {
 
 
     const formik = useFormik({
-        
+
         initialValues: initialValues,
         enableReinitialize: true,
 
@@ -200,10 +201,13 @@ const MovimientoForm = (props) => {
     }
 
 
-    
-    
+
+
     return (
         <>
+            {
+                id ? <Title>Editar nuevo movimiento</Title> : <Title>Registrar nuevo movimiento</Title>
+            }
             <Box
                 component="form" onSubmit={formik.handleSubmit}
                 sx={{ marginTop: 2 }}
