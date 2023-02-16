@@ -128,7 +128,6 @@ const MovimientoRegistrar = () => {
     return (
         <>
             <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-            <Title>Registrar nuevo movimiento</Title>
             <Card sx={{ minWidth: 300 }}> 
                 <CardContent>
                     <MovimientoForm registrarMovimiento={registrarMovimiento} clientes={clientes} articulos={articulos} />
