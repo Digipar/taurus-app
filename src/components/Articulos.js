@@ -29,7 +29,8 @@ import Grid from '@mui/material/Grid';
 import { Button } from '@mui/material';
 import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
-
+import Card from '@mui/material/Card';
+import CardContent from '@mui/material/CardContent';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -183,7 +184,7 @@ export default function EnhancedTable() {
     const [articulosList, setArticulosList] = React.useState([]);
     const [articulosCount, setArticulosCount] = React.useState([]);
     const [articulosTotal, setArticulosTotal] = React.useState([]);
-    const [alertOptions, setAlertOptions] = React.useState({});  
+    const [alertOptions, setAlertOptions] = React.useState({});
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
@@ -250,7 +251,7 @@ export default function EnhancedTable() {
 
     const handleChangePage = (event, newPage) => {
 
-        getArticulos(newPage,rowsPerPage)
+        getArticulos(newPage, rowsPerPage)
         setPage(newPage);
     };
 
@@ -300,14 +301,14 @@ export default function EnhancedTable() {
         } else {
             //console.log('articuloTotal => ', articuloTotal);
             articuloTotal.map(element => {
-                if(element.estado !=1){
-                    if (element.estado ==2){
-                        element.estado ='Borrador'
-                    }else{
-                        element.estado='Anulado'
+                if (element.estado != 1) {
+                    if (element.estado == 2) {
+                        element.estado = 'Borrador'
+                    } else {
+                        element.estado = 'Anulado'
                     }
-                }          
-                
+                }
+
             });
             setArticulosTotal(articuloTotal)
         }
@@ -328,8 +329,8 @@ export default function EnhancedTable() {
 
         const articuloData = await fetchArticulos(`${API}/articulo`, reqOptions)
 
-        console.log("Articulo => ", articuloData);
-        
+        //console.log("Articulo => ", articuloData);
+
         if (articuloData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
@@ -338,15 +339,15 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
 
-              articuloData.map(element => {
-                if(element.estado !=1){
-                    if (element.estado ==2){
-                        element.estado ='Borrador'
-                    }else{
-                        element.estado='Anulado'
+            articuloData.map(element => {
+                if (element.estado != 1) {
+                    if (element.estado == 2) {
+                        element.estado = 'Borrador'
+                    } else {
+                        element.estado = 'Anulado'
                     }
-                }          
-                
+                }
+
             });
 
             setArticulosList(articuloData)
@@ -362,7 +363,7 @@ export default function EnhancedTable() {
         getArticulos();
         setMostrarPaginacion(true)
     }
-    const limpiarArticulos=()=>{
+    const limpiarArticulos = () => {
         setSearchField("")
         getArticulos();
         setMostrarPaginacion(true)
@@ -376,29 +377,35 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Box sx={{ width: '100%' }}>
-            <Paper sx={{ width: '100%', mb: 5 }}>
+        <Card size="small" sx={{ minWidth: 275 }}>
+            <CardContent>
                 <Grid container justifyContent="flex-end">
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Refrescar
                     </Button>
                 </Grid>
-                <FormControl sx={{ ml: 3, width: '110ch' }}>
-                    <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                    <OutlinedInput
-                        onChange={handleChange}
-                        type="search"
-                        noValidate
-                        value={searchField}
-                        sx={{ mt: 1 }}
-                        startAdornment={
-                            <InputAdornment position='end'>
-                                <SearchIcon />
-                            </InputAdornment>
-                        }
-                        label='Search'
-                    />
-                </FormControl>
+                <Box m={1}
+                    display="flex"
+                    justifyContent="flex-end"
+                    alignItems="flex-end">
+
+                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                        <OutlinedInput
+                            onChange={handleChange}
+                            type="search"
+                            noValidate
+                            value={searchField}
+                            sx={{ mt: 1 }}
+                            startAdornment={
+                                <InputAdornment position='end'>
+                                    <SearchIcon />
+                                </InputAdornment>
+                            }
+                            label='Search'
+                        />
+                    </FormControl>
+                </Box>
                 <Grid container justifyContent="flex-end">
                     <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
                         Limpiar
@@ -446,8 +453,8 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.descripcion} {row.estado!=1?((<Chip label={row.estado=='Borrador'?'Borrador':row.estado=='Anulado'?'Anulado':''} color={row.estado=='Borrador'?"warning":"error"} variant="outlined"/>)):''}</TableCell>
-                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>                                         
+                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado == 'Borrador' ? 'Borrador' : row.estado == 'Anulado' ? 'Anulado' : ''} color={row.estado == 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>
                                         </TableRow>
                                     );
                                 })}
@@ -465,7 +472,9 @@ export default function EnhancedTable() {
                     onPageChange={handleChangePage}
                     onRowsPerPageChange={handleChangeRowsPerPage}
                 /> : ''}
-            </Paper>
-        </Box>
+
+            </CardContent>
+        </Card>
+
     );
 }
