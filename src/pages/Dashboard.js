@@ -5,8 +5,7 @@ const Dashboard = () => {
     return (
         <Grid container spacing={3} >
                 {/* Chart */}
-                <Grid item xs={10} md={8} lg={9} >
-                   
+                <Grid item xs={10} md={8} lg={9} >                   
                   <img
                   sx={{ width: 500, height: 450 }}
                   src={`bienvenido.png`}

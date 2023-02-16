@@ -45,17 +45,15 @@ async function  login({correo, contrasenha}) {
   console.log('user', user)
     if (!user.ok) {
       return {}
-    }  
-  
+    }    
     const userJSON = await user.json();
     console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,UsuarioNombre: userJSON.UsuarioNombre,userId: userJSON.Id,correo: userJSON.correo}})
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON.nombre,userId: userJSON.Id,correo: userJSON.correo}})
   }
   catch(error){
     console.log('error', error)
   } 
-
 }
 
 function register({UsuarioNombre, contrasenha}) {
