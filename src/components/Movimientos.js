@@ -63,7 +63,7 @@ const Movimientos = () => {
     }, [errorMovimientos, fetchMovimientos]);
 
     const getClientes = useCallback(async () => {
-        console.log('2 - getClientes');
+        // console.log('2 - getClientes');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -88,7 +88,7 @@ const Movimientos = () => {
     }, [errorClientes, fetchClientes]);
 
     const getArticulos = useCallback(async () => {
-        console.log('3 - getArticulos');
+        // console.log('3 - getArticulos');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -111,8 +111,6 @@ const Movimientos = () => {
 
     }, [errorArticulos, fetchArticulos]);
 
-  
-
 
     // const getData = async () => {
     //     console.log('[- GET DATA -]')
@@ -121,6 +119,11 @@ const Movimientos = () => {
     //     await getArticulos();
     //     // funcion filtrar
     // }
+
+    const getDataFilter = (dataFiltrada) => {
+        console.log('[Movimientos] datos filtrado', dataFiltrada)
+        setMovimientos(dataFiltrada)
+    }
 
     useEffect(() => {
         getMovimientos();
@@ -132,7 +135,7 @@ const Movimientos = () => {
         <>
             <Title>Listado de movimientos</Title>
 
-            <MovimientoFiltro clientes={clientes} articulos={articulos} />
+            <MovimientoFiltro clientes={clientes} articulos={articulos} onFilter={getDataFilter} />
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>

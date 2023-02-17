@@ -101,7 +101,7 @@ const MovimientoForm = (props) => {
             headers: { "Content-Type": "application/json" }
         };
 
-        console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
+        // console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
 
         const updateMovimientoData = await fetchUpdateMovimiento(`${API}/movimiento/${id}`, reqOptions);
 
