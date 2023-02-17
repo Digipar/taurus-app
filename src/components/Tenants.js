@@ -31,6 +31,8 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -184,6 +186,8 @@ export default function EnhancedTable() {
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
     const { fetchData: fetchTenants, error: errorTenants, loading: loadingTenants } = useFetch();
+    const [tenantListlength, setTenantListLength] = React.useState(false);
+
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -205,6 +209,10 @@ export default function EnhancedTable() {
                 setTenantsList(tenantsList)
                 setMostrarPaginacion(false)
             }, 3000);
+        }else {
+            setTimeout(function () {
+                setTenantListLength(true)
+            }, 2000);
         }
     }
 
@@ -343,7 +351,8 @@ export default function EnhancedTable() {
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
-    const refreshTenants = () => {
+    const limpiarTenants = () => {
+        setTenantListLength(false)
         setSearchField("")
         setTenantsList([]);
         getTenants();
@@ -361,7 +370,7 @@ export default function EnhancedTable() {
         <Card size="small" sx={{ minWidth: 275 }}>
         <CardContent>
             <Grid container justifyContent="flex-end">
-                <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshTenants} disabled={loadingTenants}>
+                <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={limpiarTenants} disabled={loadingTenants}>
                     Refrescar
                 </Button>
             </Grid>
@@ -388,12 +397,12 @@ export default function EnhancedTable() {
                 </FormControl>
             </Box>
                 <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={refreshTenants} disabled={loadingTenants}>
+                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarTenants} disabled={loadingTenants}>
                         Limpiar
                     </Button>
                 </Grid>
                 <EnhancedTableToolbar numSelected={selected.length} />
-                <TableContainer>
+                {!tenantListlength ?<TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
@@ -443,7 +452,12 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer>
+                </TableContainer>: <Stack sx={{ width: '100%' }} spacing={2}>
+                <Alert variant="outlined" severity="warning">
+                    Cliente no encontrado
+                </Alert>
+
+            </Stack>}
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"

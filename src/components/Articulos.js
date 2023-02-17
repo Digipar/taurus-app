@@ -31,6 +31,8 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -188,6 +190,7 @@ export default function EnhancedTable() {
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
+    const [articuloListlength, setArticuloListLength] = React.useState(false);
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -205,14 +208,19 @@ export default function EnhancedTable() {
                 );
             }
         );
+        console.log('articulosList', articulosList)
         if (articulosList.length) {
             setTimeout(function () {
+                setArticuloListLength(false)
                 setArticulosList(articulosList)
                 setMostrarPaginacion(false)
             }, 3000);
+        } else {
+            setTimeout(function () {
+                setArticuloListLength(true)
+            }, 2000);
         }
     }
-
 
     const handleChange = e => {
 
@@ -364,6 +372,7 @@ export default function EnhancedTable() {
         setMostrarPaginacion(true)
     }
     const limpiarArticulos = () => {
+        setArticuloListLength(false)
         setSearchField("")
         getArticulos();
         setMostrarPaginacion(true)
@@ -412,7 +421,7 @@ export default function EnhancedTable() {
                     </Button>
                 </Grid>
                 <EnhancedTableToolbar numSelected={selected.length} />
-                <TableContainer>
+                {!articuloListlength ? <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
@@ -462,7 +471,13 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer>
+                </TableContainer> : <Stack sx={{ width: '100%' }} spacing={2}>
+                    <Alert variant="outlined" severity="warning">
+                        Articulo no encontrado
+                    </Alert>
+
+                </Stack>}
+
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"
