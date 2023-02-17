@@ -101,7 +101,7 @@ const MovimientoForm = (props) => {
             headers: { "Content-Type": "application/json" }
         };
 
-        console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
+        // console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
 
         const updateMovimientoData = await fetchUpdateMovimiento(`${API}/movimiento/${id}`, reqOptions);
 
@@ -219,7 +219,7 @@ const MovimientoForm = (props) => {
                         id="cliente"
                         name="cliente"
                         options={clientes}
-                        getOptionSelected={(option, value) => option.label === value.label}
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
                         onChange={(event, newValue) => {
                             setClienteSeleccionado(newValue)
                         }}

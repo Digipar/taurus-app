@@ -27,17 +27,17 @@ import MovimientoFiltro from './MovimientoFiltro';
 const Movimientos = () => {
 
     const [alert, setAlert] = useState(false);
+    const [alertOptions, setAlertOptions] = useState({});
     const [movimientos, setMovimientos] = useState([])
     const [clientes, setClientes] = useState([])
     const [articulos, setArticulos] = useState([])
-    const [alertOptions, setAlertOptions] = useState({});
     const { fetchData: fetchMovimientos, error: errorMovimientos, loading: loadingMovimientos } = useFetch();
     const { fetchData: fetchClientes, error: errorClientes } = useFetch();
     const { fetchData: fetchArticulos, error: errorArticulos } = useFetch();
 
 
     const getMovimientos = useCallback(async () => {
-        console.log('1 - getMovimientos');
+        // console.log('1 - getMovimientos');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -63,7 +63,7 @@ const Movimientos = () => {
     }, [errorMovimientos, fetchMovimientos]);
 
     const getClientes = useCallback(async () => {
-        console.log('2 - getClientes');
+        // console.log('2 - getClientes');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -88,7 +88,7 @@ const Movimientos = () => {
     }, [errorClientes, fetchClientes]);
 
     const getArticulos = useCallback(async () => {
-        console.log('3 - getArticulos');
+        // console.log('3 - getArticulos');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -111,16 +111,11 @@ const Movimientos = () => {
 
     }, [errorArticulos, fetchArticulos]);
 
-  
 
-
-    // const getData = async () => {
-    //     console.log('[- GET DATA -]')
-    //     await getMovimientos();
-    //     await getClientes();
-    //     await getArticulos();
-    //     // funcion filtrar
-    // }
+    const getDataFilter = (dataFiltrada) => {
+        console.log('[Movimientos] datos filtrado', dataFiltrada)
+        setMovimientos(dataFiltrada)
+    }
 
     useEffect(() => {
         getMovimientos();
@@ -132,7 +127,7 @@ const Movimientos = () => {
         <>
             <Title>Listado de movimientos</Title>
 
-            <MovimientoFiltro clientes={clientes} articulos={articulos} />
+            <MovimientoFiltro clientes={clientes} articulos={articulos} getMovimientos={getMovimientos} onFilter={getDataFilter}  />
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>

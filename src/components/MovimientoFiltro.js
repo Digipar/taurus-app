@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react'
+import React, { useState, useEffect, useCallback } from 'react'
 import { Card, TextField, Stack } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -18,6 +18,10 @@ import SearchIcon from '@mui/icons-material/Search';
 import ReplayIcon from '@mui/icons-material/Replay';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import MenuItem from '@mui/material/MenuItem';
+import useFetch from '../hooks/use-fetch';
+import { API } from '../config';
+
+
 
 
 const Item = styled(Paper)(({ theme }) => ({
@@ -34,9 +38,15 @@ const MovimientoFiltro = (props) => {
     const [clientes, setClientes] = useState([]);
     const [articulo, setArticulo] = useState('');
     const [articulos, setArticulos] = useState([]);
+    // const [dataFilter, setDataFilter] = useState({});
+    const [alert, setAlert] = React.useState(false);
+    const [alertOptions, setAlertOptions] = React.useState({});
+    const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
+
 
     useEffect(() => {
         let clientesTemp = [];
+        // console.log("props.clientes", props.clientes)
         props.clientes.map((cliente) => {
             return clientesTemp.push({ id: cliente.id, label: cliente.nombre, })
         })
@@ -51,12 +61,69 @@ const MovimientoFiltro = (props) => {
         setArticulos([...articulosTemp])
     }, [props.articulos])
 
-
     useEffect(() => {
         setErrorCliente("");
-        console.log('clientes =>', clientes);
-        console.log('articulos => ', articulos);
-    }, [])
+        // console.log('articulo selecionado => ', articulo);
+        // console.log('cliente seleccionado => ', clienteSeleccionado);
+    }, [clienteSeleccionado, articulo])
+
+    const limpiarFiltro = () => {
+        setArticulo('');
+        setClienteSeleccionado({ id: "", label: "" });
+        props.getMovimientos()
+    }
+
+    const filtrarMovimientos = async () => {
+
+        let filterData = {}
+
+        if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+            filterData = {
+                ...filterData,
+                clienteId: clienteSeleccionado.id
+            }
+        }
+     
+
+        if(articulo !== ''){
+            filterData = {
+               ...filterData,
+               articuloId: articulo
+            }
+        }
+
+        // console.log('filter Data  =>', filterData);
+
+        const reqOptions = {
+            method: 'POST',
+            body: JSON.stringify({
+                filter:{ ...filterData }
+            }),
+            headers: { "Content-Type": "application/json" }
+        };
+
+        console.log('Filtro final => ', JSON.parse(reqOptions.body));
+
+        const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
+
+        if (movimientoData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
+            return;
+        }
+
+        if (errorMovimiento) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
+            return;
+        }
+
+        // console.log('dato filtrado => ', movimientoData);
+
+        props.onFilter(movimientoData)
+
+    };
+
 
     return (
         <>
@@ -138,11 +205,11 @@ const MovimientoFiltro = (props) => {
                                 spacing={1}
                             >
 
-                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary'>
+                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary' onClick={filtrarMovimientos}>
                                     Buscar
                                 </Button>
 
-                                <Button startIcon={<ReplayIcon />} variant="text" color='primary'>
+                                <Button startIcon={<ReplayIcon />} variant="text" color='primary' onClick={limpiarFiltro}>
                                     Limpiar
                                 </Button>
                             </Stack>
