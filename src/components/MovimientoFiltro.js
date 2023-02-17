@@ -38,6 +38,7 @@ const MovimientoFiltro = (props) => {
     const [clientes, setClientes] = useState([]);
     const [articulo, setArticulo] = useState('');
     const [articulos, setArticulos] = useState([]);
+    // const [dataFilter, setDataFilter] = useState({});
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
@@ -62,26 +63,46 @@ const MovimientoFiltro = (props) => {
 
     useEffect(() => {
         setErrorCliente("");
-        // console.log('clientes =>', clientes);
-        // console.log('articulos => ', articulos);
-        // console.log('clienteSeleccionado => ', clienteSeleccionado);
-    }, [clienteSeleccionado])
+        // console.log('articulo selecionado => ', articulo);
+        // console.log('cliente seleccionado => ', clienteSeleccionado);
+    }, [clienteSeleccionado, articulo])
 
+    const limpiarFiltro = () => {
+        setArticulo('');
+        setClienteSeleccionado({ id: "", label: "" });
+        props.getMovimientos()
+    }
 
-    const filtrarMovimientos = useCallback(async (clienteSeleccionado) => {
+    const filtrarMovimientos = async () => {
+
+        let filterData = {}
+
+        if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+            filterData = {
+                ...filterData,
+                clienteId: clienteSeleccionado.id
+            }
+        }
+     
+
+        if(articulo !== ''){
+            filterData = {
+               ...filterData,
+               articuloId: articulo
+            }
+        }
+
+        // console.log('filter Data  =>', filterData);
 
         const reqOptions = {
             method: 'POST',
             body: JSON.stringify({
-                filter:
-                {
-                    clienteId: clienteSeleccionado
-                }
+                filter:{ ...filterData }
             }),
             headers: { "Content-Type": "application/json" }
         };
 
-        // console.log('body filtro => ', JSON.parse(reqOptions.body));
+        console.log('Filtro final => ', JSON.parse(reqOptions.body));
 
         const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
 
@@ -97,11 +118,11 @@ const MovimientoFiltro = (props) => {
             return;
         }
 
-        console.log('dato filtrado => ', movimientoData);
+        // console.log('dato filtrado => ', movimientoData);
 
         props.onFilter(movimientoData)
 
-    }, []);
+    };
 
 
     return (
@@ -184,11 +205,11 @@ const MovimientoFiltro = (props) => {
                                 spacing={1}
                             >
 
-                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary' onClick={() => filtrarMovimientos(clienteSeleccionado.id)}>
+                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary' onClick={filtrarMovimientos}>
                                     Buscar
                                 </Button>
 
-                                <Button startIcon={<ReplayIcon />} variant="text" color='primary'>
+                                <Button startIcon={<ReplayIcon />} variant="text" color='primary' onClick={limpiarFiltro}>
                                     Limpiar
                                 </Button>
                             </Stack>

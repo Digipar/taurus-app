@@ -219,7 +219,7 @@ const MovimientoForm = (props) => {
                         id="cliente"
                         name="cliente"
                         options={clientes}
-                        getOptionSelected={(option, value) => option.label === value.label}
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
                         onChange={(event, newValue) => {
                             setClienteSeleccionado(newValue)
                         }}
