@@ -4,7 +4,9 @@ import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
+import InputLabel from '@mui/material/InputLabel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Select from '@mui/material/Select';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
@@ -15,11 +17,13 @@ import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ReplayIcon from '@mui/icons-material/Replay';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
+import MenuItem from '@mui/material/MenuItem';
+
 
 const Item = styled(Paper)(({ theme }) => ({
     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
     ...theme.typography.body2,
-    textAlign: 'center',
+    // textAlign: 'center',
     color: theme.palette.text.secondary,
 }));
 
@@ -28,6 +32,8 @@ const MovimientoFiltro = (props) => {
     const [errorCliente, setErrorCliente] = useState(null)
     const [clienteSeleccionado, setClienteSeleccionado] = useState({ id: "", label: "" });
     const [clientes, setClientes] = useState([]);
+    const [articulo, setArticulo] = useState('');
+    const [articulos, setArticulos] = useState([]);
 
     useEffect(() => {
         let clientesTemp = [];
@@ -37,10 +43,19 @@ const MovimientoFiltro = (props) => {
         setClientes([...clientesTemp])
     }, [props.clientes])
 
+    useEffect(() => {
+        const articulosTemp = [];
+        props.articulos.map((articulo) => {
+            articulosTemp.push({ id: articulo.id, label: articulo.descripcion })
+        })
+        setArticulos([...articulosTemp])
+    }, [props.articulos])
+
 
     useEffect(() => {
         setErrorCliente("");
-        console.log('clientes', clientes);
+        console.log('clientes =>', clientes);
+        console.log('articulos => ', articulos);
     }, [])
 
     return (
@@ -63,14 +78,14 @@ const MovimientoFiltro = (props) => {
                             sx={{ flexGrow: 1 }}
                         >
                             <Grid container spacing={1}>
-                                <Grid xs={4} sx={{ marginLeft: 1 }}>
+                                <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
                                     <Item>
                                         <FormControl fullWidth>
                                             <Autocomplete
                                                 id="cliente"
                                                 name="cliente"
                                                 options={clientes}
-                                                getOptionSelected={(option, value) => option.label === value.label}
+                                                isOptionEqualToValue={(option, value) => option.label === value.label}
                                                 onChange={(event, newValue) => {
                                                     setClienteSeleccionado(newValue)
                                                 }}
@@ -86,6 +101,32 @@ const MovimientoFiltro = (props) => {
                                                 )
                                             }
                                         </FormControl>
+                                    </Item>
+                                </Grid>
+                                <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
+                                    <Item>
+                                        <FormControl fullWidth>
+                                            <InputLabel id="articulo">Articulos</InputLabel>
+                                            <Select
+                                                labelId="articulo"
+                                                id="articulo"
+                                                name="articulo"
+                                                label="Articulos"
+                                                value={articulo}
+                                                onChange={(e) => { setArticulo(e.target.value) }}
+                                                required
+                                            >
+                                                {
+
+                                                    articulos.map(item => {
+                                                        return (
+                                                            <MenuItem key={item.id} value={item.id}>{item.label}</MenuItem>
+                                                        )
+                                                    })
+                                                }
+                                            </Select>
+                                        </FormControl>
+
                                     </Item>
                                 </Grid>
                             </Grid>
