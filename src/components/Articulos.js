@@ -310,7 +310,7 @@ export default function EnhancedTable() {
             //console.log('articuloTotal => ', articuloTotal);
             articuloTotal.map(element => {
                 if (element.estado != 1) {
-                    if (element.estado == 2) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -348,8 +348,8 @@ export default function EnhancedTable() {
         } else {
 
             articuloData.map(element => {
-                if (element.estado != 1) {
-                    if (element.estado == 2) {
+                if (element.estado !== 1) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -363,7 +363,7 @@ export default function EnhancedTable() {
     }, [errorArticulos, fetchArticulos]);
 
 
-    const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
+    const isSelected = (descripcion) => selected.indexOf(descripcion) !==-1;
 
     const refreshArticulos = () => {
         setSearchField("")
@@ -462,7 +462,7 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado == 'Borrador' ? 'Borrador' : row.estado == 'Anulado' ? 'Anulado' : ''} color={row.estado == 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
                                             <TableCell align="left">{row.descripcionAdicional}</TableCell>
                                         </TableRow>
                                     );
