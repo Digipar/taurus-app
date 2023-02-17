@@ -31,6 +31,8 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
+import Alert from '@mui/material/Alert';
+import Stack from '@mui/material/Stack';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -192,6 +194,7 @@ export default function EnhancedTable() {
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const [clienteListlength, setClienteListLength] = React.useState(false);
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -212,6 +215,10 @@ export default function EnhancedTable() {
                 setClientesList(clientesList)
                 setMostrarPaginacion(false)
             }, 3000);
+        } else {
+            setTimeout(function () {
+                setClienteListLength(true)
+            }, 2000);
         }
     }
 
@@ -363,16 +370,9 @@ export default function EnhancedTable() {
     const limpiarClientes = () => {
         setSearchField("")
         getClientes();
+        setClienteListLength(false)
         setMostrarPaginacion(true)
     }
-    const resetForm = () => {
-        setSearchField("")
-        setClientesList([]);
-        getClientes();
-        setMostrarPaginacion(true)
-    }
-
-
     React.useEffect(() => {
         getClientes();
         getClientesCount();
@@ -409,8 +409,13 @@ export default function EnhancedTable() {
                         />
                     </FormControl>
                 </Box>
+                <Grid container justifyContent="flex-end">
+                <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarClientes} disabled={loadingClientes}>
+                    Limpiar
+                </Button>
+            </Grid>
                 <EnhancedTableToolbar numSelected={selected.length} />
-                <TableContainer>
+                {!clienteListlength ? <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
@@ -460,7 +465,12 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer>
+                </TableContainer> : <Stack sx={{ width: '100%' }} spacing={2}>
+                    <Alert variant="outlined" severity="warning">
+                        Cliente no encontrado
+                    </Alert>
+
+                </Stack>}
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"

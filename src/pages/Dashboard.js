@@ -1,5 +1,3 @@
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
 import image from "../img/bienvenido.png"; 
 
 const Dashboard = () => {
