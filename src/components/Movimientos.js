@@ -8,6 +8,7 @@ import Title from './Title';
 import CachedIcon from '@mui/icons-material/Cached';
 import { Link } from "react-router-dom";
 import Tooltip from '@mui/material/Tooltip';
+import Divider from '@mui/material/Divider';
 // import SearchIcon from '@mui/icons-material/Search';
 import {
     Stack,
@@ -28,12 +29,15 @@ const Movimientos = () => {
     const [alert, setAlert] = useState(false);
     const [movimientos, setMovimientos] = useState([])
     const [clientes, setClientes] = useState([])
+    const [articulos, setArticulos] = useState([])
     const [alertOptions, setAlertOptions] = useState({});
     const { fetchData: fetchMovimientos, error: errorMovimientos, loading: loadingMovimientos } = useFetch();
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchClientes, error: errorClientes } = useFetch();
+    const { fetchData: fetchArticulos, error: errorArticulos } = useFetch();
 
 
     const getMovimientos = useCallback(async () => {
+        console.log('1 - getMovimientos');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -58,10 +62,8 @@ const Movimientos = () => {
 
     }, [errorMovimientos, fetchMovimientos]);
 
-
-
     const getClientes = useCallback(async () => {
-
+        console.log('2 - getClientes');
         const reqOptions = {
             method: 'GET',
             headers: { "Content-Type": "application/json" }
@@ -85,17 +87,52 @@ const Movimientos = () => {
 
     }, [errorClientes, fetchClientes]);
 
+    const getArticulos = useCallback(async () => {
+        console.log('3 - getArticulos');
+        const reqOptions = {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" }
+        };
+
+        const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
+
+        if (articulosData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articulosData.message })
+        }
+
+        if (errorArticulos) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
+        }
+
+        setArticulos(articulosData);
+
+
+    }, [errorArticulos, fetchArticulos]);
+
+  
+
+
+    // const getData = async () => {
+    //     console.log('[- GET DATA -]')
+    //     await getMovimientos();
+    //     await getClientes();
+    //     await getArticulos();
+    //     // funcion filtrar
+    // }
 
     useEffect(() => {
         getMovimientos();
         getClientes();
+        getArticulos();
     }, [])
 
     return (
         <>
             <Title>Listado de movimientos</Title>
 
-            <MovimientoFiltro clientes={clientes}/>
+            <MovimientoFiltro clientes={clientes} articulos={articulos} />
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
@@ -115,6 +152,8 @@ const Movimientos = () => {
                             Refrescar
                         </Button>
                     </Stack>
+                    <Divider />
+
 
                     <Box
                         display="flex"
