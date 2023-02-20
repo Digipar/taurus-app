@@ -9,13 +9,10 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
-import { Link as RouterLink } from "react-router-dom";
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from '../components/ListItems';
 import { useAuth } from "../context/auth-context";
 import {  Button } from '@mui/material';
@@ -85,7 +82,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
 const mdTheme = createTheme(esES);
 
 function GeneralLayoutContetn(props) {
-  const { user, logout } = useAuth();
+  const {logout } = useAuth();
 const [open, setOpen] = React.useState(true);
 const toggleDrawer = () => {
     setOpen(!open);

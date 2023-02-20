@@ -13,11 +13,6 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
@@ -33,6 +28,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import BackspaceIcon from '@mui/icons-material/Backspace';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -68,7 +64,7 @@ const encabezadoClientes = [
         id: 'id',
         numeric: false,
         disablePadding: true,
-        label: 'Id',
+        label: 'ID',
     },
     {
         id: 'nombre',
@@ -87,7 +83,7 @@ const encabezadoClientes = [
 ];
 
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    const {order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -107,6 +103,7 @@ function EnhancedTableHead(props) {
                         sortDirection={orderBy === encabezado.id ? order : false}
                     >
                         <TableSortLabel
+                            sx={{ fontWeight: 'bold' }}
                             active={orderBy === encabezado.id}
                             direction={orderBy === encabezado.id ? order : 'asc'}
                             onClick={createSortHandler(encabezado.id)}
@@ -157,19 +154,6 @@ function EnhancedTableToolbar(props) {
                 Listado de Clientes
             </Typography>
 
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Lista Filtrada">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
         </Toolbar>
     );
 }
@@ -183,16 +167,13 @@ export default function EnhancedTable() {
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [clientesList, setClientesList] = React.useState([]);
     const [clientesCount, setClientesCount] = React.useState([]);
     const [clientesTotal, setClientesTotal] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
-    const [isShown, setIsShown] = React.useState(false);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
-    const [alert, setAlert] = React.useState(false);
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
     const [clienteListlength, setClienteListLength] = React.useState(false);
     const handleRequestSort = (event, property) => {
@@ -279,10 +260,8 @@ export default function EnhancedTable() {
 
 
         if (clienteCount.error) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteCount.message })
         } else if (errorClientes) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
 
@@ -300,16 +279,14 @@ export default function EnhancedTable() {
 
 
         if (clienteTotal.error) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteTotal.message })
         } else if (errorClientes) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             //console.log('clienteTotal => ', clienteTotal);
             clienteTotal.map(element => {
-                if (element.estado != 1) {
-                    if (element.estado == 2) {
+                if (element.estado !== 1) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -337,15 +314,15 @@ export default function EnhancedTable() {
         const clienteData = await fetchClientes(`${API}/cliente`, reqOptions)
 
         if (clienteData.error) {
-            setAlert(true);
+         
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
         } else if (errorClientes) {
-            setAlert(true);
+          
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             clienteData.map(element => {
-                if (element.estado != 1) {
-                    if (element.estado == 2) {
+                if (element.estado !== 1) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -382,17 +359,25 @@ export default function EnhancedTable() {
     return (
         <Card size="small" sx={{ minWidth: 275 }}>
             <CardContent>
-                <Grid container justifyContent="flex-end">
+                <Grid container direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}>
+
+                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 3 }} color='primary'>
+                        Clientes
+                    </Typography>
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
                         Refrescar
                     </Button>
                 </Grid>
                 <Box m={1}
-                    display="flex"
-                    justifyContent="flex-end"
-                    alignItems="flex-end">
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}
+                    display="flex">
 
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                    <FormControl sx={{ ml: 2, width: '95ch' }}>
                         <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                         <OutlinedInput
                             onChange={handleChange}
@@ -408,18 +393,16 @@ export default function EnhancedTable() {
                             label='Search'
                         />
                     </FormControl>
+                    <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarClientes} disabled={loadingClientes}>
+                        Limpiar
+                    </Button>
                 </Box>
-                <Grid container justifyContent="flex-end">
-                <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarClientes} disabled={loadingClientes}>
-                    Limpiar
-                </Button>
-            </Grid>
-                <EnhancedTableToolbar numSelected={selected.length} />
+
                 {!clienteListlength ? <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size={'medium'}
                     >
                         <EnhancedTableHead
                             numSelected={selected.length}
@@ -456,7 +439,7 @@ export default function EnhancedTable() {
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.nombre} {row.estado != 1 ? ((<Chip label={row.estado == 'Borrador' ? 'Borrador' : row.estado == 'Anulado' ? 'Anulado' : ''} color={row.estado == 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
                                             <TableCell align="left">{row.tenantId}</TableCell>
                                         </TableRow>
                                     );

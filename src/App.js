@@ -1,5 +1,4 @@
-import React from "react";import { Routes, Route, Navigate, useNavigate } from "react-router-dom";
-import SignIn from "./pages/SignIn";
+import React from "react";
 import {useAuth} from "./context/auth-context";
 import {FullPageSpinner} from "./components/lib";
 
