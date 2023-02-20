@@ -38,7 +38,6 @@ const MovimientoFiltro = (props) => {
     const [clientes, setClientes] = useState([]);
     const [articulo, setArticulo] = useState('');
     const [articulos, setArticulos] = useState([]);
-    // const [dataFilter, setDataFilter] = useState({});
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
@@ -46,20 +45,19 @@ const MovimientoFiltro = (props) => {
 
     useEffect(() => {
         let clientesTemp = [];
-        // console.log("props.clientes", props.clientes)
         props.clientes.map((cliente) => {
             return clientesTemp.push({ id: cliente.id, label: cliente.nombre, })
         })
         setClientes([...clientesTemp])
     }, [props.clientes])
 
-    useEffect(() => {
-        const articulosTemp = [];
-        props.articulos.map((articulo) => {
-            articulosTemp.push({ id: articulo.id, label: articulo.descripcion })
-        })
-        setArticulos([...articulosTemp])
-    }, [props.articulos])
+    // useEffect(() => {
+    //     const articulosTemp = [];
+    //     props.articulos.map((articulo) => {
+    //         articulosTemp.push({ id: articulo.id, label: articulo.descripcion })
+    //     })
+    //     setArticulos([...articulosTemp])
+    // }, [props.articulos])
 
     useEffect(() => {
         setErrorCliente("");
@@ -84,15 +82,12 @@ const MovimientoFiltro = (props) => {
             }
         }
      
-
-        if(articulo !== ''){
-            filterData = {
-               ...filterData,
-               articuloId: articulo
-            }
-        }
-
-        // console.log('filter Data  =>', filterData);
+        // if(articulo !== ''){
+        //     filterData = {
+        //        ...filterData,
+        //        articuloId: articulo
+        //     }
+        // }
 
         const reqOptions = {
             method: 'POST',
@@ -102,7 +97,7 @@ const MovimientoFiltro = (props) => {
             headers: { "Content-Type": "application/json" }
         };
 
-        console.log('Filtro final => ', JSON.parse(reqOptions.body));
+        // console.log('Filtro final => ', JSON.parse(reqOptions.body));
 
         const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
 
@@ -151,6 +146,7 @@ const MovimientoFiltro = (props) => {
                                             <Autocomplete
                                                 id="cliente"
                                                 name="cliente"
+                                                // filterOptions={(x) => x}
                                                 options={clientes}
                                                 isOptionEqualToValue={(option, value) => option.label === value.label}
                                                 onChange={(event, newValue) => {
@@ -170,32 +166,12 @@ const MovimientoFiltro = (props) => {
                                         </FormControl>
                                     </Item>
                                 </Grid>
-                                <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
+                                {/* <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
                                     <Item>
-                                        <FormControl fullWidth>
-                                            <InputLabel id="articulo">Articulos</InputLabel>
-                                            <Select
-                                                labelId="articulo"
-                                                id="articulo"
-                                                name="articulo"
-                                                label="Articulos"
-                                                value={articulo}
-                                                onChange={(e) => { setArticulo(e.target.value) }}
-                                                required
-                                            >
-                                                {
-
-                                                    articulos.map(item => {
-                                                        return (
-                                                            <MenuItem key={item.id} value={item.id}>{item.label}</MenuItem>
-                                                        )
-                                                    })
-                                                }
-                                            </Select>
-                                        </FormControl>
+                                       
 
                                     </Item>
-                                </Grid>
+                                </Grid> */}
                             </Grid>
 
                             <Stack
