@@ -26,9 +26,10 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import BackspaceIcon from '@mui/icons-material/Backspace';
+import Lottie from 'react-lottie-player';
+import lottieJson from '../img/lottie.json';
+import Stack from '@mui/material/Stack';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -83,7 +84,7 @@ const encabezadoClientes = [
 ];
 
 function EnhancedTableHead(props) {
-    const {order, orderBy, onRequestSort } =
+    const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -195,11 +196,11 @@ export default function EnhancedTable() {
             setTimeout(function () {
                 setClientesList(clientesList)
                 setMostrarPaginacion(false)
-            }, 3000);
+            }, 4000);
         } else {
             setTimeout(function () {
                 setClienteListLength(true)
-            }, 2000);
+            }, 4000);
         }
     }
 
@@ -314,10 +315,10 @@ export default function EnhancedTable() {
         const clienteData = await fetchClientes(`${API}/cliente`, reqOptions)
 
         if (clienteData.error) {
-         
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteData.message })
         } else if (errorClientes) {
-          
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
             clienteData.map(element => {
@@ -448,12 +449,12 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer> : <Stack sx={{ width: '100%' }} spacing={2}>
-                    <Alert variant="outlined" severity="warning">
-                        Cliente no encontrado
-                    </Alert>
-
-                </Stack>}
+                </TableContainer> :   <Stack  alignItems="center"> <Lottie
+                loop
+                animationData={lottieJson}
+                play
+                style={{ width: 250, height: 250, flex: 1}}
+            /></Stack>}
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"
