@@ -13,11 +13,6 @@ import TableSortLabel from '@mui/material/TableSortLabel';
 import Toolbar from '@mui/material/Toolbar';
 import InputAdornment from '@mui/material/InputAdornment';
 import Typography from '@mui/material/Typography';
-import Paper from '@mui/material/Paper';
-import IconButton from '@mui/material/IconButton';
-import Tooltip from '@mui/material/Tooltip';
-import DeleteIcon from '@mui/icons-material/Delete';
-import FilterListIcon from '@mui/icons-material/FilterList';
 import { visuallyHidden } from '@mui/utils';
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
@@ -31,9 +26,10 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Alert from '@mui/material/Alert';
-import Stack from '@mui/material/Stack';
 import BackspaceIcon from '@mui/icons-material/Backspace';
+import Lottie from 'react-lottie-player'
+import lottieJson from '../img/lottie.json'
+import Stack from '@mui/material/Stack';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -86,7 +82,7 @@ const encabezadoArticulos = [
 ];
 
 function EnhancedTableHead(props) {
-    const { onSelectAllClick, order, orderBy, numSelected, rowCount, onRequestSort } =
+    const { order, orderBy, onRequestSort } =
         props;
     const createSortHandler = (property) => (event) => {
         onRequestSort(event, property);
@@ -106,7 +102,7 @@ function EnhancedTableHead(props) {
                         sortDirection={orderBy === encabezado.id ? order : false}
                     >
                         <TableSortLabel
-                            sx={{fontWeight: 'bold'}}
+                            sx={{ fontWeight: 'bold' }}
                             active={orderBy === encabezado.id}
                             direction={orderBy === encabezado.id ? order : 'asc'}
                             onClick={createSortHandler(encabezado.id)}
@@ -161,7 +157,6 @@ export default function EnhancedTable() {
     const [orderBy, setOrderBy] = React.useState('calories');
     const [selected, setSelected] = React.useState([]);
     const [page, setPage] = React.useState(0);
-    const [dense, setDense] = React.useState(false);
     const [rowsPerPage, setRowsPerPage] = React.useState(10);
     const [articulosList, setArticulosList] = React.useState([]);
     const [articulosCount, setArticulosCount] = React.useState([]);
@@ -169,7 +164,6 @@ export default function EnhancedTable() {
     const [alertOptions, setAlertOptions] = React.useState({});
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
-    const [alert, setAlert] = React.useState(false);
     const [articuloListlength, setArticuloListLength] = React.useState(false);
     const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
     const handleRequestSort = (event, property) => {
@@ -188,17 +182,16 @@ export default function EnhancedTable() {
                 );
             }
         );
-        console.log('articulosList', articulosList)
         if (articulosList.length) {
             setTimeout(function () {
                 setArticuloListLength(false)
                 setArticulosList(articulosList)
                 setMostrarPaginacion(false)
-            }, 3000);
+            }, 4000);
         } else {
             setTimeout(function () {
                 setArticuloListLength(true)
-            }, 2000);
+            }, 4000);
         }
     }
 
@@ -260,10 +253,8 @@ export default function EnhancedTable() {
 
 
         if (articuloCount.error) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloCount.message })
         } else if (errorArticulos) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
 
@@ -281,15 +272,13 @@ export default function EnhancedTable() {
 
 
         if (articuloTotal.error) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloTotal.message })
         } else if (errorArticulos) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
             //console.log('articuloTotal => ', articuloTotal);
             articuloTotal.map(element => {
-                if (element.estado != 1) {
+                if (element.estado !== 1) {
                     if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
@@ -320,10 +309,8 @@ export default function EnhancedTable() {
         //console.log("Articulo => ", articuloData);
 
         if (articuloData.error) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
         } else if (errorArticulos) {
-            setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
 
@@ -373,7 +360,7 @@ export default function EnhancedTable() {
                     alignItems="center"
                     spacing={2}>
 
-                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb:3}} color='primary'>
+                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 3 }} color='primary'>
                         Artículos
                     </Typography>
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
@@ -405,12 +392,12 @@ export default function EnhancedTable() {
                     <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
                         Limpiar
                     </Button>
-                </Box>                
+                </Box>
                 {!articuloListlength ? <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
-                        size={dense ? 'small' : 'medium'}
+                        size={'medium'}
                     >
                         <EnhancedTableHead
                             numSelected={selected.length}
@@ -444,11 +431,11 @@ export default function EnhancedTable() {
                                                 id={labelId}
                                                 scope="row"
                                                 padding="none"
-                                                
+
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.descripcion} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
                                             <TableCell align="left">{row.descripcionAdicional}</TableCell>
                                         </TableRow>
                                     );
@@ -457,12 +444,15 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer> : <Stack sx={{ width: '100%' }} spacing={2}>
-                    <Alert variant="outlined" severity="warning">
-                        Articulo no encontrado
-                    </Alert>
+                </TableContainer> :
+                    <Stack  alignItems="center"> <Lottie
+                        loop
+                        animationData={lottieJson}
+                        play
+                        style={{ width: 250, height: 250, flex: 1}}
+                    /></Stack>
 
-                </Stack>}
+                }
 
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}

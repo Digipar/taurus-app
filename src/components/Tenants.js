@@ -26,9 +26,10 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
 import BackspaceIcon from '@mui/icons-material/Backspace';
+import Lottie from 'react-lottie-player'
+import lottieJson from '../img/lottie.json'
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -179,11 +180,11 @@ export default function EnhancedTable() {
             setTimeout(function () {
                 setTenantsList(tenantsList)
                 setMostrarPaginacion(false)
-            }, 3000);
+            }, 4000);
         } else {
             setTimeout(function () {
                 setTenantListLength(true)
-            }, 2000);
+            }, 4000);
         }
     }
 
@@ -242,10 +243,10 @@ export default function EnhancedTable() {
 
         const tenantCount = await fetchTenants(`${API}/tenant-count`, reqOptions)
         if (tenantCount.error) {
-           
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantCount.message })
         } else if (errorTenants) {
-           
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
             setTenantsCount(tenantCount)
@@ -261,7 +262,7 @@ export default function EnhancedTable() {
 
         const tenantsTotal = await fetchTenants(`${API}/tenant`, reqOptions)
         if (tenantsTotal.error) {
-  
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantsTotal.message })
         } else if (errorTenants) {
 
@@ -298,7 +299,7 @@ export default function EnhancedTable() {
         const tenantData = await fetchTenants(`${API}/tenant`, reqOptions)
 
         if (tenantData.error) {
-        
+
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantData.message })
         } else if (errorTenants) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
@@ -426,12 +427,12 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
-                </TableContainer> : <Stack sx={{ width: '100%' }} spacing={2}>
-                    <Alert variant="outlined" severity="warning">
-                        Tenant no encontrado
-                    </Alert>
-
-                </Stack>}
+                </TableContainer> :   <Stack  alignItems="center"> <Lottie
+                loop
+                animationData={lottieJson}
+                play
+                style={{ width: 250, height: 250, flex: 1}}
+            /></Stack>}
                 {mostrarPaginacion ? <TablePagination
                     rowsPerPageOptions={[10, 25, 50]}
                     component="div"
