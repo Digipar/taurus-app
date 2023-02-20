@@ -19,6 +19,7 @@ import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from '../components/ListItems';
 import { useAuth } from "../context/auth-context";
 import {  Button } from '@mui/material';
+import { esES } from '@mui/material/locale';
 import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 
 
@@ -81,7 +82,7 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-const mdTheme = createTheme();
+const mdTheme = createTheme(esES);
 
 function GeneralLayoutContetn(props) {
   const { user, logout } = useAuth();
@@ -124,7 +125,7 @@ return (
             <Button onClick={logout} color="inherit" component="h1"> <LockOutlinedIcon /> Cerrar sesión</Button>
         </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={open}>
         <Toolbar
             sx={{
             display: 'flex',
@@ -133,7 +134,13 @@ return (
             px: [1],
             }}
         >
+        <img
+        src="./logoDashboard.png"
+        loading="lazy"
+        alt=""
+      /> 
             <IconButton onClick={toggleDrawer}>
+           
             <ChevronLeftIcon />
             </IconButton>
         </Toolbar>

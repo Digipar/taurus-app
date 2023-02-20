@@ -33,6 +33,7 @@ import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Alert from '@mui/material/Alert';
 import Stack from '@mui/material/Stack';
+import BackspaceIcon from '@mui/icons-material/Backspace';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -68,7 +69,7 @@ const encabezadoArticulos = [
         id: 'id',
         numeric: false,
         disablePadding: true,
-        label: 'Id',
+        label: 'ID',
     },
     {
         id: 'descripcion',
@@ -105,6 +106,7 @@ function EnhancedTableHead(props) {
                         sortDirection={orderBy === encabezado.id ? order : false}
                     >
                         <TableSortLabel
+                            sx={{fontWeight: 'bold'}}
                             active={orderBy === encabezado.id}
                             direction={orderBy === encabezado.id ? order : 'asc'}
                             onClick={createSortHandler(encabezado.id)}
@@ -146,28 +148,6 @@ function EnhancedTableToolbar(props) {
                 }),
             }}
         >
-            <Typography
-                sx={{ flex: '1 1 100%' }}
-                variant="h6"
-                id="tableTitle"
-                component="div"
-            >
-                Listado de Articulos
-            </Typography>
-
-            {numSelected > 0 ? (
-                <Tooltip title="Delete">
-                    <IconButton>
-                        <DeleteIcon />
-                    </IconButton>
-                </Tooltip>
-            ) : (
-                <Tooltip title="Lista Filtrada">
-                    <IconButton>
-                        <FilterListIcon />
-                    </IconButton>
-                </Tooltip>
-            )}
         </Toolbar>
     );
 }
@@ -310,7 +290,7 @@ export default function EnhancedTable() {
             //console.log('articuloTotal => ', articuloTotal);
             articuloTotal.map(element => {
                 if (element.estado != 1) {
-                    if (element.estado == 2) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -348,8 +328,8 @@ export default function EnhancedTable() {
         } else {
 
             articuloData.map(element => {
-                if (element.estado != 1) {
-                    if (element.estado == 2) {
+                if (element.estado !== 1) {
+                    if (element.estado === 2) {
                         element.estado = 'Borrador'
                     } else {
                         element.estado = 'Anulado'
@@ -388,17 +368,25 @@ export default function EnhancedTable() {
     return (
         <Card size="small" sx={{ minWidth: 275 }}>
             <CardContent>
-                <Grid container justifyContent="flex-end">
+                <Grid container direction="row"
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}>
+
+                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb:3}} color='primary'>
+                        Artículos
+                    </Typography>
                     <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                         Refrescar
                     </Button>
                 </Grid>
                 <Box m={1}
-                    display="flex"
-                    justifyContent="flex-end"
-                    alignItems="flex-end">
+                    justifyContent="space-between"
+                    alignItems="center"
+                    spacing={2}
+                    display="flex">
 
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
+                    <FormControl sx={{ ml: 2, width: '95ch' }}>
                         <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                         <OutlinedInput
                             onChange={handleChange}
@@ -414,13 +402,10 @@ export default function EnhancedTable() {
                             label='Search'
                         />
                     </FormControl>
-                </Box>
-                <Grid container justifyContent="flex-end">
-                    <Button sx={{ mt: 2, mr: 3 }} variant="contained" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
+                    <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
                         Limpiar
                     </Button>
-                </Grid>
-                <EnhancedTableToolbar numSelected={selected.length} />
+                </Box>                
                 {!articuloListlength ? <TableContainer>
                     <Table
                         sx={{ minWidth: 750 }}
@@ -459,10 +444,11 @@ export default function EnhancedTable() {
                                                 id={labelId}
                                                 scope="row"
                                                 padding="none"
+                                                
                                             >
                                                 {row.id}
                                             </TableCell>
-                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado == 'Borrador' ? 'Borrador' : row.estado == 'Anulado' ? 'Anulado' : ''} color={row.estado == 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.descripcion} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
                                             <TableCell align="left">{row.descripcionAdicional}</TableCell>
                                         </TableRow>
                                     );

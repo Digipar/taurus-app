@@ -454,7 +454,7 @@ export default function EnhancedTable() {
                     </Table>
                 </TableContainer>: <Stack sx={{ width: '100%' }} spacing={2}>
                 <Alert variant="outlined" severity="warning">
-                    Cliente no encontrado
+                    Tenant no encontrado
                 </Alert>
 
             </Stack>}
