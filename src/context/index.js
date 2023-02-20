@@ -4,9 +4,9 @@ import { UserProvider } from "./user-context";
 const AppProviders = ({ children }) => {
   return <AuthProvider>
     <UserProvider>
-    {children}
+      {children}
     </UserProvider>
-    </AuthProvider>;
+  </AuthProvider>;
 };
 
 export { AppProviders }
