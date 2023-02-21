@@ -6,6 +6,7 @@ import AccordionDetails from '@mui/material/AccordionDetails';
 import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
+import Alert from '../components/Alert';
 import Select from '@mui/material/Select';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
@@ -32,11 +33,17 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const MovimientoFiltro = (props) => {
+    // console.log("~ props:", props)
 
     const [errorCliente, setErrorCliente] = useState(null)
     const [clienteSeleccionado, setClienteSeleccionado] = useState({ id: "", label: "" });
     const [clientes, setClientes] = useState([]);
     const [articulo, setArticulo] = useState('');
+    const [estado, setEstado] = useState('');
+    const [fechaMov, setFechaMov] = useState('');
+    const [fechaDesde, setFechaDesde] = useState('');
+    const [fechaHasta, setFechaHasta] = useState('');
+    const [movimientoId, setMovimientoId] = useState('');
     const [articulos, setArticulos] = useState([]);
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
@@ -61,27 +68,45 @@ const MovimientoFiltro = (props) => {
 
     useEffect(() => {
         setErrorCliente("");
+        console.log('estado seleccionado => ', estado);
         // console.log('articulo selecionado => ', articulo);
         // console.log('cliente seleccionado => ', clienteSeleccionado);
-    }, [clienteSeleccionado, articulo])
+    }, [clienteSeleccionado, articulo, estado])
 
     const limpiarFiltro = () => {
         setArticulo('');
+        setEstado('');
         setClienteSeleccionado({ id: "", label: "" });
         props.getMovimientos()
     }
 
     const filtrarMovimientos = async () => {
 
+
         let filterData = {}
 
-        if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+        if (movimientoId !== '') {
             filterData = {
                 ...filterData,
-                clienteId: clienteSeleccionado.id
+                id: movimientoId
             }
         }
-     
+
+        if (estado !== '') {
+            filterData = {
+                ...filterData,
+                estado: estado === 'Activo' ? 1 : estado === 'Borrador' ? 2 : 0
+            }
+        }
+
+
+        // if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+        //     filterData = {
+        //         ...filterData,
+        //         clienteId: clienteSeleccionado.id
+        //     }
+        // }
+
         // if(articulo !== ''){
         //     filterData = {
         //        ...filterData,
@@ -89,39 +114,55 @@ const MovimientoFiltro = (props) => {
         //     }
         // }
 
+
+        //? COMO LLEGA "2023-02-15T20:44:39.000Z"
+        if (fechaDesde !== '') {
+            console.log('fechaDesde: ', fechaDesde)
+        } else {
+            console.log('no hay fecha Desde')
+        }
+
+        if (fechaHasta !== '') {
+            console.log('fechaHasta: ', fechaHasta)
+        } else {
+            console.log('no hay fecha Hasta')
+        }
+
         const reqOptions = {
             method: 'POST',
             body: JSON.stringify({
-                filter:{ ...filterData }
+                filter: { ...filterData }
             }),
             headers: { "Content-Type": "application/json" }
         };
 
-        // console.log('Filtro final => ', JSON.parse(reqOptions.body));
+        console.log('Filtro final => ', JSON.parse(reqOptions.body));
 
-        const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
+        // const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
 
-        if (movimientoData.error) {
-            setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
-            return;
-        }
+        // if (movimientoData.error) {
+        //     setAlert(true);
+        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
+        //     return;
+        // }
 
-        if (errorMovimiento) {
-            setAlert(true);
-            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
-            return;
-        }
+        // if (errorMovimiento) {
+        //     setAlert(true);
+        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
+        //     return;
+        // }
 
-        // console.log('dato filtrado => ', movimientoData);
 
-        props.onFilter(movimientoData)
+        // props.onFilter(movimientoData)
 
     };
 
 
     return (
         <>
+
+            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <Accordion>
                     <AccordionSummary
@@ -139,10 +180,31 @@ const MovimientoFiltro = (props) => {
                             component="form"
                             sx={{ flexGrow: 1 }}
                         >
-                            <Grid container spacing={1}>
-                                <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
-                                    <Item>
+                            <Grid container spacing={1} sx={{ marginLeft: 1 }}>
+                                <Item>
+                                    <Grid item={true} >
                                         <FormControl fullWidth>
+                                            <TextField
+                                                // error={errors.movimientoId && true}
+                                                // helperText={errors.movimientoId}
+                                                name="movimientoId"
+                                                id="movimientoId"
+                                                label="Id"
+                                                type="text"
+                                                value={movimientoId}
+                                                onChange={(e) => { setMovimientoId(e.target.value) }}
+                                                sx={{ width: "150px" }}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                </Item>
+
+                                <Item>
+                                    <Grid item={true} >
+                                        <FormControl fullWidth >
                                             <Autocomplete
                                                 id="cliente"
                                                 name="cliente"
@@ -153,7 +215,7 @@ const MovimientoFiltro = (props) => {
                                                     setClienteSeleccionado(newValue)
                                                 }}
                                                 value={clienteSeleccionado}
-                                                sx={{ width: "*" }}
+                                                sx={{ width: "240px" }}
                                                 renderInput={(params) => <TextField {...params} label="Clientes" />}
                                             />
                                             {
@@ -164,14 +226,75 @@ const MovimientoFiltro = (props) => {
                                                 )
                                             }
                                         </FormControl>
-                                    </Item>
-                                </Grid>
-                                {/* <Grid item={true} xs={4} sx={{ marginLeft: 1 }}>
-                                    <Item>
-                                       
+                                    </Grid>
+                                </Item>
+                                <Item>
+                                    <Grid item={true} >
+                                        <FormControl fullWidth >
+                                            <InputLabel id="estado">Estado</InputLabel>
+                                            <Select
+                                                labelId="estado"
+                                                id="estado"
+                                                name="estado"
+                                                value={estado}
+                                                label="Estado "
+                                                onChange={(e) => setEstado(e.target.value)}
+                                                sx={{ width: "180px" }}
+                                            >
+                                                {/* {
+                                                    props.movimientos.map(item => {
+                                                        return (
+                                                            <MenuItem key={item.id} value={item.estado}>{item.estadoDescripcion}</MenuItem>
+                                                        )
+                                                    })
+                                                } */}
+                                                <MenuItem key={'Borrador'} value={'Borrador'}>Borrador</MenuItem>
+                                                <MenuItem key={'Activo'} value={'Activo'}>Activo</MenuItem>
+                                                <MenuItem key={'Anulado'} value={'Anulado'}>Anulado</MenuItem>
 
-                                    </Item>
-                                </Grid> */}
+                                            </Select>
+                                            {/* <FormHelperText>{errors.estado}</FormHelperText> */}
+                                        </FormControl>
+                                    </Grid>
+                                </Item>
+                                <Item>
+                                    <Grid item={true} >
+                                        <FormControl fullWidth >
+                                            <TextField
+                                                name="fechaDesde"
+                                                id="fechaDesde"
+                                                label="Desde"
+                                                type="date"
+                                                value={fechaDesde}
+                                                required
+                                                onChange={(e) => setFechaDesde(e.target.value)}
+                                                sx={{ width: "150px" }}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                </Item>
+                                <Item>
+                                    <Grid item={true} >
+                                        <FormControl fullWidth >
+                                            <TextField
+                                                name="fechaHasta"
+                                                id="fechaHasta"
+                                                label="Hasta"
+                                                type="date"
+                                                value={fechaHasta}
+                                                required
+                                                onChange={(e) => setFechaHasta(e.target.value)}
+                                                sx={{ width: "150px" }}
+                                                InputLabelProps={{
+                                                    shrink: true,
+                                                }}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                </Item>
                             </Grid>
 
                             <Stack
