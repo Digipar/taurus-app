@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from 'react'
+import React, { useState, useEffect } from 'react'
 import { Card, TextField, Stack } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
@@ -21,9 +21,7 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import MenuItem from '@mui/material/MenuItem';
 import useFetch from '../hooks/use-fetch';
 import { API } from '../config';
-import moment from 'moment';
-
-
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 
@@ -35,81 +33,98 @@ const Item = styled(Paper)(({ theme }) => ({
 }));
 
 const MovimientoFiltro = (props) => {
-    // console.log("~ props:", props)
-
-    const [errorCliente, setErrorCliente] = useState(null)
-    const [clienteSeleccionado, setClienteSeleccionado] = useState({ id: "", label: "" });
-    const [clientes, setClientes] = useState([]);
-    const [articulo, setArticulo] = useState('');
+    // const [articulo, setArticulo] = useState('');
     const [estado, setEstado] = useState('');
-    const [fechaMov, setFechaMov] = useState('');
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [movimientoId, setMovimientoId] = useState('');
     const [articulos, setArticulos] = useState([]);
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
+
+    //? API
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
+    const { fetchData: fetchClientes ,error: errorClientes, loading: loadingClientes } = useFetch();
 
+    //? Autocomplete 
+    const [open, setOpen] = useState(false);
+    const [options, setOptions] = useState([]);
+    const [clienteSeleccionado, setClienteSeleccionado] = useState("")
 
-    useEffect(() => {
-        let clientesTemp = [];
-        props.clientes.map((cliente) => {
-            return clientesTemp.push({ id: cliente.id, label: cliente.nombre, })
-        })
-        setClientes([...clientesTemp])
-    }, [props.clientes])
-
-    // useEffect(() => {
-    //     const articulosTemp = [];
-    //     props.articulos.map((articulo) => {
-    //         articulosTemp.push({ id: articulo.id, label: articulo.descripcion })
-    //     })
-    //     setArticulos([...articulosTemp])
-    // }, [props.articulos])
+    const loading = open && options.length === 0;
 
     useEffect(() => {
-        setErrorCliente("");
-        // console.log('estado seleccionado => ', estado);
-        // console.log('articulo selecionado => ', articulo);
-        // console.log('cliente seleccionado => ', clienteSeleccionado);
-    }, [clienteSeleccionado, articulo, estado])
+        let active = true;
+    
+        if (!loading) {
+          return undefined;
+        }
+    
+        (async () => {
+    
+          const reqOptions = {
+            method: 'GET',
+            headers: { "Content-Type": "application/json" }
+          };
+    
+          const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
+        //   console.log('clientesData =>', clientesData)
+    
+          if (active) {
+            setOptions([...clientesData]);
+          }
+        })();
+    
+        return () => {
+          active = false;
+        };
+      }, [loading]);
+    
+      React.useEffect(() => {
+        if (!open) {
+          setOptions([]);
+        }
+      }, [open]);
 
     const limpiarFiltro = () => {
-        setArticulo('');
+        // setArticulo('');
+        setClienteSeleccionado('');
+        setMovimientoId('')
         setEstado('');
         setFechaDesde('');
         setFechaHasta('');
-        setClienteSeleccionado({ id: "", label: "" });
         props.getMovimientos()
     }
 
+
+    //! FILTRO
     const filtrarMovimientos = async () => {
-        console.log("Cliente seleccionado: ", clienteSeleccionado)
 
         let filterData = {}
 
-        // if (movimientoId !== '') {
-        //     filterData = {
-        //         ...filterData,
-        //         id: movimientoId
-        //     }
-        // }
+        if (movimientoId !== '') {
+            filterData = {
+                ...filterData,
+                id: movimientoId
+            }
+        }
 
-        // if (estado !== '') {
-        //     filterData = {
-        //         ...filterData,
-        //         estado: estado === 'Activo' ? 1 : estado === 'Borrador' ? 2 : 0
-        //     }
-        // }
+        
+        if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+            filterData = {
+                ...filterData,
+                clienteId: clienteSeleccionado.id
+            }
+        }
 
 
-        // if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
-        //     filterData = {
-        //         ...filterData,
-        //         clienteId: clienteSeleccionado.id
-        //     }
-        // }
+        if (estado !== '') {
+            filterData = {
+                ...filterData,
+                estado: estado === 'Activo' ? 1 : estado === 'Borrador' ? 2 : 0
+            }
+        }
+
 
         // if(articulo !== ''){
         //     filterData = {
@@ -118,52 +133,50 @@ const MovimientoFiltro = (props) => {
         //     }
         // }
 
-        // if (fechaDesde !== '' && fechaHasta !== '') {
-        //     // let desde = new Date(fechaDesde)
-        //     // let hasta = new Date(fechaHasta)
-        //     filterData = {
-        //         ...filterData,
-        //         creado: { $between: [fechaDesde, fechaHasta] } 
-        //     }
-        // }
+        if (fechaDesde !== '' && fechaHasta !== '') {
 
-        //? COMO LLEGA "2023-02-15T20:44:39.000Z"
-        // if (fechaDesde !== '') {
-        //     console.log('fechaDesde: ', fechaDesde)
-        // } 
+            filterData = {
+                ...filterData,
+                creado: { $between: [fechaDesde, fechaHasta] } 
+            }
+        }
 
-        // if (fechaHasta !== '') {
-        //     console.log('fechaHasta: ', fechaHasta)
-        // } 
+        if (fechaDesde === '') {
+            console.log('falta campo fechaDesde: ');
+        } 
 
-        // const reqOptions = {
-        //     method: 'POST',
-        //     body: JSON.stringify({
-        //         filter: { ...filterData }
-        //     }),
-        //     headers: { "Content-Type": "application/json" }
-        // };
+        if (fechaHasta === '') {
+            console.log('falta campo fechaHasta: ');
+        } 
+
+        const reqOptions = {
+            method: 'POST',
+            body: JSON.stringify({
+                filter: { ...filterData }
+            }),
+            headers: { "Content-Type": "application/json" }
+        };
 
         // console.log('Filtro final => ', JSON.parse(reqOptions.body));
 
-        // const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
+        const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
 
         // console.log("movimientoData:", movimientoData);
-        
-        // if (movimientoData.error) {
-        //     setAlert(true);
-        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
-        //     return;
-        // }
 
-        // if (errorMovimiento) {
-        //     setAlert(true);
-        //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
-        //     return;
-        // }
+        if (movimientoData.error) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
+            return;
+        }
+
+        if (errorMovimiento) {
+            setAlert(true);
+            setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorMovimiento })
+            return;
+        }
 
 
-        // props.onFilter(movimientoData)
+        props.onFilter(movimientoData)
 
     };
 
@@ -212,27 +225,41 @@ const MovimientoFiltro = (props) => {
 
                                 <Item>
                                     <Grid item={true} >
-                                        <FormControl fullWidth >
+                                        <FormControl fullWidth  >
                                             <Autocomplete
-                                                id="cliente"
-                                                name="cliente"
-                                                // filterOptions={(x) => x}
-                                                options={clientes}
-                                                isOptionEqualToValue={(option, value) => option.label === value.label}
+                                                id="asynchronous-demo"
+                                                sx={{ width: "450px" }}
+                                                open={open}
+                                                onOpen={() => {
+                                                    setOpen(true);
+                                                }}
+                                                onClose={() => {
+                                                    setOpen(false);
+                                                }}
+                                                isOptionEqualToValue={(option, value) => option.nombre === value.nombre}
+                                                getOptionLabel={(option) => option.nombre}
+                                                options={options}
+                                                loading={loading}
+                                                // value={clienteSeleccionado}
                                                 onChange={(event, newValue) => {
                                                     setClienteSeleccionado(newValue)
                                                 }}
-                                                value={clienteSeleccionado}
-                                                sx={{ width: "240px" }}
-                                                renderInput={(params) => <TextField {...params} label="Clientes" />}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Clientes"
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            endAdornment: (
+                                                                <React.Fragment>
+                                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                                    {params.InputProps.endAdornment}
+                                                                </React.Fragment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                )}
                                             />
-                                            {
-                                                errorCliente && (
-                                                    <p>{
-                                                        errorCliente
-                                                    }</p>
-                                                )
-                                            }
                                         </FormControl>
                                     </Grid>
                                 </Item>
@@ -247,7 +274,7 @@ const MovimientoFiltro = (props) => {
                                                 value={estado}
                                                 label="Estado "
                                                 onChange={(e) => setEstado(e.target.value)}
-                                                sx={{ width: "180px" }}
+                                                sx={{ width: "250px" }}
                                             >
                                                 {/* {
                                                     props.movimientos.map(item => {
