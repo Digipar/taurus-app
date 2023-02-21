@@ -184,10 +184,16 @@ export default function EnhancedTable() {
         } else {
             setTimeout(function () {
                 setTenantListLength(true)
+                setMostrarPaginacion(false)
             }, 4000);
         }
     }
-
+    const refreshTenants = () => {
+        setSearchField("")
+        setTenantsList([]);
+        getTenants();
+        setMostrarPaginacion(true)
+    }
     const handleChange = e => {
         filtrarTenants(e.target.value)
         setSearchField(e.target.value);
@@ -338,111 +344,109 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Card size="small" sx={{ minWidth: 275 }}>
-            <CardContent>
-                <Grid container direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}>
-                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 3 }} color='primary'>
-                        Tenants
-                    </Typography>
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={limpiarTenants} disabled={loadingTenants}>
-                        Refrescar
-                    </Button>
-                </Grid>
-                <Box m={1}
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}
-                    display="flex">
+        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+            Tenants
+        </Typography>
+        <Card size="small" sx={{ minWidth: 275, mb: 1  }}>
+                <CardContent>
+                    <Grid container direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}>
+                    </Grid>
+                    <Box m={1}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        display="flex">
 
-                    <FormControl sx={{ m: 2, width: '110ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            value={searchField}
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
+                        <FormControl sx={{ml: 2, mt: 3, width: '110ch' }} onClick={limpiarTenants}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                value={searchField}
+                                sx={{ mt: 2 }}
+                                startAdornment={<InputAdornment position='end'>
                                     <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
-                    <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarTenants} disabled={loadingTenants}>
-                        Limpiar
-                    </Button>
-                </Box>
-                {!tenantListlength ? <TableContainer>
-                    <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={'medium'}
-                    >
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={tenantsList.length}
-                        />
-                        <TableBody>
-                            {stableSort(tenantsList, getComparator(order, orderBy))
-
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
-
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, row.descripcion)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.id}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="none"
-                                            >
-                                                {row.id}
-                                            </TableCell>
-                                            <TableCell align="left">{row.nombre} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
-
-                                        </TableRow>
-                                    );
-                                })}
-
-                        </TableBody>
-
-                    </Table>
-                </TableContainer> :   <Stack  alignItems="center"> <Lottie
-                loop
-                animationData={lottieJson}
-                play
-                style={{ width: 250, height: 250, flex: 1}}
-            /></Stack>}
-                {mostrarPaginacion ? <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={tenantsCount.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                /> : ''}
-            </CardContent>
+                                </InputAdornment>}
+                                label='Search' />
+                        </FormControl>
+                        <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshTenants} disabled={loadingTenants}>
+                            Refrescar
+                        </Button>
+                    </Box>
+               </CardContent>
         </Card>
+        <Card>
+               <CardContent>
+                    {!tenantListlength ? <TableContainer>
+                        <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={'medium'}
+                        >
+                            <EnhancedTableHead
+                                numSelected={selected.length}
+                                order={order}
+                                orderBy={orderBy}
+                                onSelectAllClick={handleSelectAllClick}
+                                onRequestSort={handleRequestSort}
+                                rowCount={tenantsList.length} />
+                            <TableBody>
+                                {stableSort(tenantsList, getComparator(order, orderBy))
+
+                                    .map((row, index) => {
+                                        const isItemSelected = isSelected(row.id);
+                                        const labelId = `enhanced-table-checkbox-${index}`;
+
+                                        return (
+                                            <TableRow
+                                                hover
+                                                onClick={(event) => handleClick(event, row.descripcion)}
+                                                role="checkbox"
+                                                aria-checked={isItemSelected}
+                                                tabIndex={-1}
+                                                key={row.id}
+                                                selected={isItemSelected}
+                                            >
+                                                <TableCell>
+                                                </TableCell>
+                                                <TableCell
+                                                    component="th"
+                                                    id={labelId}
+                                                    scope="row"
+                                                    padding="none"
+                                                >
+                                                    {row.id}
+                                                </TableCell>
+                                                <TableCell align="left">{row.nombre} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+
+                                            </TableRow>
+                                        );
+                                    })}
+
+                            </TableBody>
+
+                        </Table>
+                    </TableContainer> : <Stack alignItems="center">
+                        <Lottie
+                            loop
+                            animationData={lottieJson}
+                            play
+                            style={{ width: 250, height: 250, flex: 1 }} />
+                        <h4>Tenant no encontrado</h4>
+                    </Stack>}
+                    {mostrarPaginacion ? <TablePagination
+                        rowsPerPageOptions={[10, 25, 50]}
+                        component="div"
+                        count={tenantsCount.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} /> : ''}
+                </CardContent>
+            </Card></>
     );
 }

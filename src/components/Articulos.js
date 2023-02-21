@@ -292,10 +292,9 @@ export default function EnhancedTable() {
     }, [errorArticulos, fetchArticulos]);
 
     const getArticulos = React.useCallback(async (newPage, rowsPerPageNew) => {
-
         let bodyAEnviar = {
             pageNumber: !newPage ? 0 : newPage,
-            pageCount: !rowsPerPageNew ? 10 : rowsPerPageNew
+            pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew
         }
 
         const reqOptions = {
@@ -305,8 +304,6 @@ export default function EnhancedTable() {
         };
 
         const articuloData = await fetchArticulos(`${API}/articulo`, reqOptions)
-
-        //console.log("Articulo => ", articuloData);
 
         if (articuloData.error) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloData.message })
@@ -339,6 +336,7 @@ export default function EnhancedTable() {
         setMostrarPaginacion(true)
     }
     const limpiarArticulos = () => {
+
         setArticuloListLength(false)
         setSearchField("")
         getArticulos();
@@ -353,119 +351,123 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Card size="small" sx={{ minWidth: 275 }}>
-            <CardContent>
-                <Grid container direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}>
 
-                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 3 }} color='primary'>
-                        Artículos
-                    </Typography>
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
-                        Refrescar
-                    </Button>
-                </Grid>
-                <Box m={1}
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}
-                    display="flex">
+        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+            Artículos
+        </Typography>
 
-                    <FormControl sx={{ ml: 2, width: '95ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            value={searchField}
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
-                                    <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
-                    <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarArticulos} disabled={loadingArticulos}>
-                        Limpiar
-                    </Button>
-                </Box>
-                {!articuloListlength ? <TableContainer>
-                    <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={'medium'}
-                    >
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={articulosList.length}
-                        />
-                        <TableBody>
-                            {stableSort(articulosList, getComparator(order, orderBy))
+            <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
+                <CardContent>
+                    <Grid container direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}>
+                        <Box m={1}
+                            justifyContent="space-between"
+                            alignItems="center"
+                            spacing={2}
+                            display="flex">
 
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, row.descripcion)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.id}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="none"
+                        </Box>
+                        </Grid>
+                        <FormControl sx={{ ml: 2, mt: 3, width: '95ch' }} onClick={limpiarArticulos}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                value={searchField}
+                                sx={{ mt: 2 }}
+                                startAdornment={
+                                    <InputAdornment position='end'  >
+                                        <SearchIcon />
+                                    </InputAdornment>
+                                }
+                                label='Search' />
+                        </FormControl>
+                        <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml:2 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                            Refrescar
+                        </Button>
+                    <></>
+                   
+                        </CardContent>
+                        </Card>
+                        <Card>
+                            <CardContent>
+                           
+                            {!articuloListlength ? <TableContainer>
+                                <Table
+                                    sx={{ minWidth: 750 }}
+                                    aria-labelledby="tableTitle"
+                                    size={'medium'}
+                                >
+                                    <EnhancedTableHead
+                                        numSelected={selected.length}
+                                        order={order}
+                                        orderBy={orderBy}
+                                        onSelectAllClick={handleSelectAllClick}
+                                        onRequestSort={handleRequestSort}
+                                        rowCount={articulosList.length} />
+                                    <TableBody>
+                                        {stableSort(articulosList, getComparator(order, orderBy))
 
-                                            >
-                                                {row.id}
-                                            </TableCell>
-                                            <TableCell align="left">{row.descripcion} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
-                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                            .map((row, index) => {
+                                                const isItemSelected = isSelected(row.id);
+                                                const labelId = `enhanced-table-checkbox-${index}`;
 
-                        </TableBody>
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        onClick={(event) => handleClick(event, row.descripcion)}
+                                                        role="checkbox"
+                                                        aria-checked={isItemSelected}
+                                                        tabIndex={-1}
+                                                        key={row.id}
+                                                        selected={isItemSelected}
+                                                    >
+                                                        <TableCell>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            id={labelId}
+                                                            scope="row"
+                                                            padding="none"
 
-                    </Table>
-                </TableContainer> :
-                    <Stack  alignItems="center"> <Lottie
-                        loop
-                        animationData={lottieJson}
-                        play
-                        style={{ width: 250, height: 250, flex: 1}}
-                    /></Stack>
+                                                        >
+                                                            {row.id}
+                                                        </TableCell>
+                                                        <TableCell align="left">{row.descripcion} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                                        <TableCell align="left">{row.descripcionAdicional}</TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
 
-                }
+                                    </TableBody>
 
-                {mostrarPaginacion ? <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={articulosCount.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                /> : ''}
+                                </Table>
+                            </TableContainer> :
+                                <Stack alignItems="center">
+                                    <Lottie
+                                        loop
+                                        animationData={lottieJson}
+                                        play
+                                        style={{ width: 250, height: 250, flex: 1 }} />
+                                    <h4>Artículo no encontrado</h4>
+                                </Stack>}
 
-            </CardContent>
-        </Card>
+                            {mostrarPaginacion ? <TablePagination
+                                rowsPerPageOptions={[10, 25, 50]}
+                                component="div"
+                                count={articulosCount.length}
+                                rowsPerPage={rowsPerPage}
+                                page={page}
+                                onPageChange={handleChangePage}
+                                onRowsPerPageChange={handleChangeRowsPerPage} /> : ''}
 
-    );
+                        </CardContent>
+                    </Card>
+                    </>
+
+                );
 }

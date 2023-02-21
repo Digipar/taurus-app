@@ -303,7 +303,7 @@ export default function EnhancedTable() {
 
         let bodyAEnviar = {
             pageNumber: !newPage ? 0 : newPage,
-            pageCount: !rowsPerPageNew ? 10 : rowsPerPageNew
+            pageCount: rowsPerPageNew == undefined ? 10 : rowsPerPageNew
         }
 
         const reqOptions = {
@@ -346,10 +346,12 @@ export default function EnhancedTable() {
         setMostrarPaginacion(true)
     }
     const limpiarClientes = () => {
+
+        setClienteListLength(false)
         setSearchField("")
         getClientes();
-        setClienteListLength(false)
         setMostrarPaginacion(true)
+
     }
     React.useEffect(() => {
         getClientes();
@@ -358,113 +360,113 @@ export default function EnhancedTable() {
     }, [])
 
     return (
-        <Card size="small" sx={{ minWidth: 275 }}>
-            <CardContent>
-                <Grid container direction="row"
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}>
+        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+            Clientes
+        </Typography>
+            <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
+                <CardContent>
+                    <Grid container direction="row"
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}>
 
-                    <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 3 }} color='primary'>
-                        Clientes
-                    </Typography>
-                    <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
-                        Refrescar
-                    </Button>
-                </Grid>
-                <Box m={1}
-                    justifyContent="space-between"
-                    alignItems="center"
-                    spacing={2}
-                    display="flex">
 
-                    <FormControl sx={{ ml: 2, width: '95ch' }}>
-                        <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
-                        <OutlinedInput
-                            onChange={handleChange}
-                            type="search"
-                            noValidate
-                            value={searchField}
-                            sx={{ mt: 1 }}
-                            startAdornment={
-                                <InputAdornment position='end'>
+
+                    </Grid>
+                    <Box m={1}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        display="flex">
+
+                        <FormControl sx={{ ml: 2, mt: 3, width: '95ch' }} onClick={limpiarClientes}>
+                            <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
+                            <OutlinedInput
+                                onChange={handleChange}
+                                type="search"
+                                noValidate
+                                value={searchField}
+                                sx={{ mt: 2 }}
+                                startAdornment={<InputAdornment position='end'  >
                                     <SearchIcon />
-                                </InputAdornment>
-                            }
-                            label='Search'
-                        />
-                    </FormControl>
-                    <Button startIcon={<BackspaceIcon />} sx={{ mt: 2, mr: 3 }} variant="text" color='primary' onClick={limpiarClientes} disabled={loadingClientes}>
-                        Limpiar
-                    </Button>
-                </Box>
+                                </InputAdornment>}
+                                label='Search' />
+                        </FormControl>
+                        <Button startIcon={<CachedIcon />} sx={{ mt: 3, mr: 3 }} variant="text" color='primary' onClick={refreshClientes} disabled={loadingClientes}>
+                            Refrescar
+                        </Button>
+                    </Box>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardContent>
 
-                {!clienteListlength ? <TableContainer>
-                    <Table
-                        sx={{ minWidth: 750 }}
-                        aria-labelledby="tableTitle"
-                        size={'medium'}
-                    >
-                        <EnhancedTableHead
-                            numSelected={selected.length}
-                            order={order}
-                            orderBy={orderBy}
-                            onSelectAllClick={handleSelectAllClick}
-                            onRequestSort={handleRequestSort}
-                            rowCount={clientesList.length}
-                        />
-                        <TableBody>
-                            {stableSort(clientesList, getComparator(order, orderBy))
+                    {!clienteListlength ? <TableContainer>
+                        <Table
+                            sx={{ minWidth: 750 }}
+                            aria-labelledby="tableTitle"
+                            size={'medium'}
+                        >
+                            <EnhancedTableHead
+                                numSelected={selected.length}
+                                order={order}
+                                orderBy={orderBy}
+                                onSelectAllClick={handleSelectAllClick}
+                                onRequestSort={handleRequestSort}
+                                rowCount={clientesList.length} />
+                            <TableBody>
+                                {stableSort(clientesList, getComparator(order, orderBy))
 
-                                .map((row, index) => {
-                                    const isItemSelected = isSelected(row.id);
-                                    const labelId = `enhanced-table-checkbox-${index}`;
+                                    .map((row, index) => {
+                                        const isItemSelected = isSelected(row.id);
+                                        const labelId = `enhanced-table-checkbox-${index}`;
 
-                                    return (
-                                        <TableRow
-                                            hover
-                                            onClick={(event) => handleClick(event, row.nombre)}
-                                            role="checkbox"
-                                            aria-checked={isItemSelected}
-                                            tabIndex={-1}
-                                            key={row.id}
-                                            selected={isItemSelected}
-                                        >
-                                            <TableCell>
-                                            </TableCell>
-                                            <TableCell
-                                                component="th"
-                                                id={labelId}
-                                                scope="row"
-                                                padding="none"
+                                        return (
+                                            <TableRow
+                                                hover
+                                                onClick={(event) => handleClick(event, row.nombre)}
+                                                role="checkbox"
+                                                aria-checked={isItemSelected}
+                                                tabIndex={-1}
+                                                key={row.id}
+                                                selected={isItemSelected}
                                             >
-                                                {row.id}
-                                            </TableCell>
-                                            <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
-                                            <TableCell align="left">{row.tenantId}</TableCell>
-                                        </TableRow>
-                                    );
-                                })}
+                                                <TableCell>
+                                                </TableCell>
+                                                <TableCell
+                                                    component="th"
+                                                    id={labelId}
+                                                    scope="row"
+                                                    padding="none"
+                                                >
+                                                    {row.id}
+                                                </TableCell>
+                                                <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                                <TableCell align="left">{row.tenantId}</TableCell>
+                                            </TableRow>
+                                        );
+                                    })}
 
-                        </TableBody>
+                            </TableBody>
 
-                    </Table>
-                </TableContainer> :   <Stack  alignItems="center"> <Lottie
-                loop
-                animationData={lottieJson}
-                play
-                style={{ width: 250, height: 250, flex: 1}}
-            /></Stack>}
-                {mostrarPaginacion ? <TablePagination
-                    rowsPerPageOptions={[10, 25, 50]}
-                    component="div"
-                    count={clientesCount.length}
-                    rowsPerPage={rowsPerPage}
-                    page={page}
-                    onPageChange={handleChangePage}
-                    onRowsPerPageChange={handleChangeRowsPerPage}
-                /> : ''}
-            </CardContent>
-        </Card>
+                        </Table>
+                    </TableContainer> : <Stack alignItems="center">
+                        <Lottie
+                            loop
+                            animationData={lottieJson}
+                            play
+                            style={{ width: 250, height: 250, flex: 1 }} />
+                        <h4>Cliente no encontrado</h4>
+                    </Stack>}
+                    {mostrarPaginacion ? <TablePagination
+                        rowsPerPageOptions={[10, 25, 50]}
+                        component="div"
+                        count={clientesCount.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} /> : ''}
+                </CardContent>
+            </Card></>
     );
 }
