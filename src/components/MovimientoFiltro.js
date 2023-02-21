@@ -21,6 +21,8 @@ import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import MenuItem from '@mui/material/MenuItem';
 import useFetch from '../hooks/use-fetch';
 import { API } from '../config';
+import moment from 'moment';
+
 
 
 
@@ -68,7 +70,7 @@ const MovimientoFiltro = (props) => {
 
     useEffect(() => {
         setErrorCliente("");
-        console.log('estado seleccionado => ', estado);
+        // console.log('estado seleccionado => ', estado);
         // console.log('articulo selecionado => ', articulo);
         // console.log('cliente seleccionado => ', clienteSeleccionado);
     }, [clienteSeleccionado, articulo, estado])
@@ -76,28 +78,30 @@ const MovimientoFiltro = (props) => {
     const limpiarFiltro = () => {
         setArticulo('');
         setEstado('');
+        setFechaDesde('');
+        setFechaHasta('');
         setClienteSeleccionado({ id: "", label: "" });
         props.getMovimientos()
     }
 
     const filtrarMovimientos = async () => {
-
+        console.log("Cliente seleccionado: ", clienteSeleccionado)
 
         let filterData = {}
 
-        if (movimientoId !== '') {
-            filterData = {
-                ...filterData,
-                id: movimientoId
-            }
-        }
+        // if (movimientoId !== '') {
+        //     filterData = {
+        //         ...filterData,
+        //         id: movimientoId
+        //     }
+        // }
 
-        if (estado !== '') {
-            filterData = {
-                ...filterData,
-                estado: estado === 'Activo' ? 1 : estado === 'Borrador' ? 2 : 0
-            }
-        }
+        // if (estado !== '') {
+        //     filterData = {
+        //         ...filterData,
+        //         estado: estado === 'Activo' ? 1 : estado === 'Borrador' ? 2 : 0
+        //     }
+        // }
 
 
         // if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
@@ -114,32 +118,38 @@ const MovimientoFiltro = (props) => {
         //     }
         // }
 
+        // if (fechaDesde !== '' && fechaHasta !== '') {
+        //     // let desde = new Date(fechaDesde)
+        //     // let hasta = new Date(fechaHasta)
+        //     filterData = {
+        //         ...filterData,
+        //         creado: { $between: [fechaDesde, fechaHasta] } 
+        //     }
+        // }
 
         //? COMO LLEGA "2023-02-15T20:44:39.000Z"
-        if (fechaDesde !== '') {
-            console.log('fechaDesde: ', fechaDesde)
-        } else {
-            console.log('no hay fecha Desde')
-        }
+        // if (fechaDesde !== '') {
+        //     console.log('fechaDesde: ', fechaDesde)
+        // } 
 
-        if (fechaHasta !== '') {
-            console.log('fechaHasta: ', fechaHasta)
-        } else {
-            console.log('no hay fecha Hasta')
-        }
+        // if (fechaHasta !== '') {
+        //     console.log('fechaHasta: ', fechaHasta)
+        // } 
 
-        const reqOptions = {
-            method: 'POST',
-            body: JSON.stringify({
-                filter: { ...filterData }
-            }),
-            headers: { "Content-Type": "application/json" }
-        };
+        // const reqOptions = {
+        //     method: 'POST',
+        //     body: JSON.stringify({
+        //         filter: { ...filterData }
+        //     }),
+        //     headers: { "Content-Type": "application/json" }
+        // };
 
-        console.log('Filtro final => ', JSON.parse(reqOptions.body));
+        // console.log('Filtro final => ', JSON.parse(reqOptions.body));
 
         // const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
 
+        // console.log("movimientoData:", movimientoData);
+        
         // if (movimientoData.error) {
         //     setAlert(true);
         //     setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: movimientoData.message })
@@ -160,9 +170,7 @@ const MovimientoFiltro = (props) => {
 
     return (
         <>
-
             <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <Accordion>
                     <AccordionSummary
