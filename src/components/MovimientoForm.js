@@ -169,7 +169,6 @@ const MovimientoForm = (props) => {
     })
 
     formik.handleSubmit = (e) => {
-        console.log('cliente seleccionado', clienteSeleccionado)
         e.preventDefault();
 
         //! Editar movimiento
