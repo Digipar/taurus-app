@@ -302,7 +302,7 @@ export default function EnhancedTable() {
     const getClientes = React.useCallback(async (newPage, rowsPerPageNew) => {
 
         let bodyAEnviar = {
-            pageNumber: !newPage ? 0 : newPage,
+            pageNumber: !newPage ? 1 : newPage,
             pageCount: rowsPerPageNew == undefined ? 10 : rowsPerPageNew
         }
 
