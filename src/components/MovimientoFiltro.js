@@ -3,7 +3,6 @@ import { Card, TextField, Stack } from '@mui/material';
 import Accordion from '@mui/material/Accordion';
 import AccordionSummary from '@mui/material/AccordionSummary';
 import AccordionDetails from '@mui/material/AccordionDetails';
-import Typography from '@mui/material/Typography';
 import InputLabel from '@mui/material/InputLabel';
 import ExpandMoreIcon from '@mui/icons-material/ExpandMore';
 import Alert from '../components/Alert';
@@ -11,10 +10,8 @@ import Select from '@mui/material/Select';
 import Autocomplete from '@mui/material/Autocomplete';
 import FormControl from '@mui/material/FormControl';
 import Box from '@mui/material/Box';
-import Paper from '@mui/material/Paper';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
-import { styled } from '@mui/material/styles';
 import SearchIcon from '@mui/icons-material/Search';
 import ReplayIcon from '@mui/icons-material/Replay';
 import ManageSearchIcon from '@mui/icons-material/ManageSearch';
@@ -25,27 +22,18 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 
-// const Item = styled(Paper)(({ theme }) => ({
-//     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-//     ...theme.typography.body2,
-//     // textAlign: 'center',
-//     color: theme.palette.text.secondary,
-// }));
-
 const MovimientoFiltro = (props) => {
-    // const [articulo, setArticulo] = useState('');
     const [estado, setEstado] = useState('');
     const [fechaDesde, setFechaDesde] = useState('');
     const [fechaHasta, setFechaHasta] = useState('');
     const [movimientoId, setMovimientoId] = useState('');
-    const [articulos, setArticulos] = useState([]);
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
 
     //? API
-    const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
-    const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
+    const { fetchData: fetchMovimiento, error: errorMovimiento } = useFetch();
+    const { fetchData: fetchClientes } = useFetch();
+    const { fetchData: fetchArticulos } = useFetch();
 
     //? Autocomplete 
     const [open, setOpen] = useState(false);
@@ -76,7 +64,6 @@ const MovimientoFiltro = (props) => {
 
             const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
 
-            console.log("clientesData:", clientesData)
             if (active) {
                 setOptions([...clientesData]);
             }
@@ -85,7 +72,7 @@ const MovimientoFiltro = (props) => {
         return () => {
             active = false;
         };
-    }, [loading]);
+    }, [loading, fetchClientes]);
 
     //? [Autocomplete] Cliente
     useEffect(() => {
@@ -120,7 +107,7 @@ const MovimientoFiltro = (props) => {
         return () => {
             activeArt = false;
         };
-    }, [loadingArt]);
+    }, [loadingArt, fetchArticulos]);
 
     //? [Autocomplete] Articulo
     useEffect(() => {
@@ -138,8 +125,7 @@ const MovimientoFiltro = (props) => {
         props.getMovimientos()
     }
 
-
-    //! FILTRO
+    //! Filtro
     const filtrarMovimientos = async () => {
 
         let filterData = {}
@@ -151,16 +137,12 @@ const MovimientoFiltro = (props) => {
             }
         }
 
-
         if (clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null) {
             filterData = {
                 ...filterData,
                 clienteId: clienteSeleccionado.id
             }
-        }else{
-            console.log('no hay cliente');
         }
-
 
         if (estado !== '') {
             filterData = {
@@ -169,14 +151,11 @@ const MovimientoFiltro = (props) => {
             }
         }
 
-
         if (articuloSeleccionado && articuloSeleccionado?.id && articuloSeleccionado.id !== null) {
             filterData = {
                ...filterData,
                articuloId: articuloSeleccionado.id
             }
-        }else{
-            console.log('no hay articulo');
         }
 
         if (fechaDesde !== '' && fechaHasta !== '') {
@@ -203,11 +182,7 @@ const MovimientoFiltro = (props) => {
             headers: { "Content-Type": "application/json" }
         };
 
-        // console.log('Filtro final => ', JSON.parse(reqOptions.body));
-
         const movimientoData = await fetchMovimiento(`${API}/movimiento`, reqOptions)
-
-        // console.log("movimientoData:", movimientoData);
 
         if (movimientoData.error) {
             setAlert(true);
@@ -221,7 +196,6 @@ const MovimientoFiltro = (props) => {
             return;
         }
 
-
         props.onFilter(movimientoData)
 
     };
@@ -229,7 +203,7 @@ const MovimientoFiltro = (props) => {
 
     return (
         <>
-            {/* <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert> */}
+            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <Accordion>
                     <AccordionSummary
