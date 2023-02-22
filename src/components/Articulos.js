@@ -231,13 +231,15 @@ export default function EnhancedTable() {
     };
 
     const handleChangePage = (event, newPage) => {
-
+        // console.log("newPage", newPage)
+        // console.log("rowsPerPage", rowsPerPage)
         getArticulos(newPage, rowsPerPage)
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
         let rowsPerPageNew = event.target.value
+        // console.log("rowsPerPageNew =>", rowsPerPageNew)
         setRowsPerPage(event.target.value)
         getArticulos(0, rowsPerPageNew)
     };
@@ -251,6 +253,7 @@ export default function EnhancedTable() {
 
         const articuloCount = await fetchArticulos(`${API}/articulo-count`, reqOptions)
 
+        // console.log("articulosCounntt:", articuloCount)
 
         if (articuloCount.error) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloCount.message })
@@ -292,6 +295,10 @@ export default function EnhancedTable() {
     }, [errorArticulos, fetchArticulos]);
 
     const getArticulos = React.useCallback(async (newPage, rowsPerPageNew) => {
+        
+        console.log("ARTICULO GET newPage", newPage)
+        console.log("ARTICULO GET rowsPerPageNew", rowsPerPageNew)
+
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
             pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew

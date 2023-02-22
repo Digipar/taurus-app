@@ -207,7 +207,7 @@ const Movimientos = () => {
     };
 
     const handleClick = (event, id) => {
-        console.log("id:", id)
+        // console.log("id:", id)
         const selectedIndex = selected.indexOf(id);
         let newSelected = [];
 
@@ -227,15 +227,17 @@ const Movimientos = () => {
     };
 
     const handleChangePage = (event, newPage) => {
-
-        getArticulos(newPage, rowsPerPage)
+        // console.log("newPage", newPage)
+        // console.log("rowsPerPage", rowsPerPage)
+        getMovimientos(newPage, rowsPerPage)
         setPage(newPage);
     };
 
     const handleChangeRowsPerPage = (event) => {
         let rowsPerPageNew = event.target.value
+        // console.log("rowsPerPageNew =>", rowsPerPageNew)
         setRowsPerPage(event.target.value)
-        getArticulos(0, rowsPerPageNew)
+        getMovimientos(0, rowsPerPageNew)
     };
 
     const getMovimientosCount = useCallback(async () => {
@@ -247,6 +249,8 @@ const Movimientos = () => {
 
         const movimientosCount = await fetchMovimientos(`${API}/movimiento-count`, reqOptions)
 
+        // console.log("movimientosCounnt => ", movimientosCount)
+
         setMovimientosCount(movimientosCount)
 
     }, [fetchMovimientos]);
@@ -255,10 +259,15 @@ const Movimientos = () => {
 
     const getMovimientos = useCallback(async (newPage, rowsPerPageNew) => {
 
+        console.log("MOVIMIENTO GET newPage", newPage)
+        console.log("MOVIMIENTO GET rowsPerPageNew", rowsPerPageNew)
+
         let bodyPaginacion = {
             pageNumber: !newPage ? 1 : newPage,
             pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew
         }
+
+        // console.log("bodyPaginacion", bodyPaginacion)
 
         const reqOptions = {
             method: 'POST',
@@ -268,7 +277,7 @@ const Movimientos = () => {
 
         const movimientoData = await fetchMovimientos(`${API}/movimiento`, reqOptions)
 
-        console.log("movimientoData:", movimientoData)
+        // console.log("movimientoData =>", movimientoData)
         setMovimientos(movimientoData);
 
 
@@ -313,8 +322,8 @@ const Movimientos = () => {
     useEffect(() => {
         getMovimientos();
         getMovimientosCount();
-        getClientes();
-        getArticulos();
+        // getClientes();
+        // getArticulos();
     }, [])
 
     return (
@@ -342,7 +351,7 @@ const Movimientos = () => {
                             Nuevo movimiento
                         </Button>
 
-                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={getMovimientos} disabled={loadingMovimientos}>
+                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
                             Refrescar
                         </Button>
                     </Stack>
