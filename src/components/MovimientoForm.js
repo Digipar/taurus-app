@@ -205,7 +205,7 @@ const MovimientoForm = (props) => {
     return (
         <>
             {
-                id ? <Title>Editar nuevo movimiento</Title> : <Title>Registrar nuevo movimiento</Title>
+                id ? <Title>Editar movimiento</Title> : <Title>Registrar movimiento</Title>
             }
             <Box
                 component="form" onSubmit={formik.handleSubmit}
