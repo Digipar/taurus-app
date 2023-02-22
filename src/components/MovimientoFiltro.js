@@ -25,12 +25,12 @@ import CircularProgress from '@mui/material/CircularProgress';
 
 
 
-const Item = styled(Paper)(({ theme }) => ({
-    backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
-    ...theme.typography.body2,
-    // textAlign: 'center',
-    color: theme.palette.text.secondary,
-}));
+// const Item = styled(Paper)(({ theme }) => ({
+//     backgroundColor: theme.palette.mode === 'dark' ? '#1A2027' : '#fff',
+//     ...theme.typography.body2,
+//     // textAlign: 'center',
+//     color: theme.palette.text.secondary,
+// }));
 
 const MovimientoFiltro = (props) => {
     // const [articulo, setArticulo] = useState('');
@@ -44,51 +44,93 @@ const MovimientoFiltro = (props) => {
 
     //? API
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
-    const { fetchData: fetchClientes ,error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
 
     //? Autocomplete 
     const [open, setOpen] = useState(false);
     const [options, setOptions] = useState([]);
     const [clienteSeleccionado, setClienteSeleccionado] = useState("")
 
-    const loading = open && options.length === 0;
+    const [openArt, setOpenArt] = useState(false);
+    const [optionsArt, setOptionsArt] = useState([]);
+    const [articuloSeleccionado, setArticuloSeleccionado] = useState("")
 
+    const loading = open && options.length === 0;
+    const loadingArt = openArt && optionsArt.length === 0;
+
+    //? [Autocomplete] Cliente
     useEffect(() => {
         let active = true;
-    
+
         if (!loading) {
-          return undefined;
+            return undefined;
         }
-    
+
         (async () => {
-    
-          const reqOptions = {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" }
-          };
-    
-          const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
-        //   console.log('clientesData =>', clientesData)
-    
-          if (active) {
-            setOptions([...clientesData]);
-          }
+
+            const reqOptions = {
+                method: 'GET',
+                headers: { "Content-Type": "application/json" }
+            };
+
+            const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
+
+            console.log("clientesData:", clientesData)
+            if (active) {
+                setOptions([...clientesData]);
+            }
         })();
-    
+
         return () => {
-          active = false;
+            active = false;
         };
-      }, [loading]);
-    
-      React.useEffect(() => {
+    }, [loading]);
+
+    //? [Autocomplete] Cliente
+    useEffect(() => {
         if (!open) {
-          setOptions([]);
+            setOptions([]);
         }
-      }, [open]);
+    }, [open]);
+
+    //? [Autocomplete] Articulo
+    useEffect(() => {
+        let activeArt = true;
+
+        if (!loadingArt) {
+            return undefined;
+        }
+
+        (async () => {
+
+            const reqOptions = {
+                method: 'GET',
+                headers: { "Content-Type": "application/json" }
+            };
+
+            const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
+            // console.log('articulosData:', articulosData)
+
+            if (activeArt) {
+                setOptionsArt([...articulosData]);
+            }
+        })();
+
+        return () => {
+            activeArt = false;
+        };
+    }, [loadingArt]);
+
+    //? [Autocomplete] Articulo
+    useEffect(() => {
+        if (!openArt) {
+            setOptionsArt([]);
+        }
+    }, [openArt]);
+
 
     const limpiarFiltro = () => {
-        // setArticulo('');
-        setClienteSeleccionado('');
         setMovimientoId('')
         setEstado('');
         setFechaDesde('');
@@ -109,12 +151,14 @@ const MovimientoFiltro = (props) => {
             }
         }
 
-        
-        if(clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null){
+
+        if (clienteSeleccionado && clienteSeleccionado?.id && clienteSeleccionado.id !== null) {
             filterData = {
                 ...filterData,
                 clienteId: clienteSeleccionado.id
             }
+        }else{
+            console.log('no hay cliente');
         }
 
 
@@ -126,28 +170,30 @@ const MovimientoFiltro = (props) => {
         }
 
 
-        // if(articulo !== ''){
-        //     filterData = {
-        //        ...filterData,
-        //        articuloId: articulo
-        //     }
-        // }
+        if (articuloSeleccionado && articuloSeleccionado?.id && articuloSeleccionado.id !== null) {
+            filterData = {
+               ...filterData,
+               articuloId: articuloSeleccionado.id
+            }
+        }else{
+            console.log('no hay articulo');
+        }
 
         if (fechaDesde !== '' && fechaHasta !== '') {
 
             filterData = {
                 ...filterData,
-                creado: { $between: [fechaDesde, fechaHasta] } 
+                creado: { $between: [fechaDesde, fechaHasta] }
             }
         }
 
-        if (fechaDesde === '') {
-            console.log('falta campo fechaDesde: ');
-        } 
+        // if (fechaDesde === '') {
+        //     console.log('falta campo fechaDesde: ');
+        // }
 
-        if (fechaHasta === '') {
-            console.log('falta campo fechaHasta: ');
-        } 
+        // if (fechaHasta === '') {
+        //     console.log('falta campo fechaHasta: ');
+        // }
 
         const reqOptions = {
             method: 'POST',
@@ -183,7 +229,7 @@ const MovimientoFiltro = (props) => {
 
     return (
         <>
-            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+            {/* <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert> */}
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <Accordion>
                     <AccordionSummary
@@ -202,7 +248,7 @@ const MovimientoFiltro = (props) => {
                             sx={{ flexGrow: 1 }}
                         >
                             <Grid container spacing={1} sx={{ marginLeft: 1 }}>
-                                <Item>
+                                
                                     <Grid item={true} >
                                         <FormControl fullWidth>
                                             <TextField
@@ -221,9 +267,9 @@ const MovimientoFiltro = (props) => {
                                             />
                                         </FormControl>
                                     </Grid>
-                                </Item>
+                                
 
-                                <Item>
+                                
                                     <Grid item={true} >
                                         <FormControl fullWidth  >
                                             <Autocomplete
@@ -262,8 +308,48 @@ const MovimientoFiltro = (props) => {
                                             />
                                         </FormControl>
                                     </Grid>
-                                </Item>
-                                <Item>
+                                
+                                
+                                    <Grid item={true} >
+                                        <FormControl fullWidth  >
+                                            <Autocomplete
+                                                id="asynchronous-demo2"
+                                                sx={{ width: "450px" }}
+                                                open={openArt}
+                                                onOpen={() => {
+                                                    setOpenArt(true);
+                                                }}
+                                                onClose={() => {
+                                                    setOpenArt(false);
+                                                }}
+                                                isOptionEqualToValue={(option, value) => option.descripcion === value.descripcion}
+                                                getOptionLabel={(option) => option.descripcion}
+                                                options={optionsArt}
+                                                loading={loadingArt}
+                                                // value={articuloSeleccionado}
+                                                onChange={(event, newValue) => {
+                                                    setArticuloSeleccionado(newValue)
+                                                }}
+                                                renderInput={(params) => (
+                                                    <TextField
+                                                        {...params}
+                                                        label="Articulos"
+                                                        InputProps={{
+                                                            ...params.InputProps,
+                                                            endAdornment: (
+                                                                <React.Fragment>
+                                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                                    {params.InputProps.endAdornment}
+                                                                </React.Fragment>
+                                                            ),
+                                                        }}
+                                                    />
+                                                )}
+                                            />
+                                        </FormControl>
+                                    </Grid>
+                                
+                                
                                     <Grid item={true} >
                                         <FormControl fullWidth >
                                             <InputLabel id="estado">Estado</InputLabel>
@@ -291,8 +377,8 @@ const MovimientoFiltro = (props) => {
                                             {/* <FormHelperText>{errors.estado}</FormHelperText> */}
                                         </FormControl>
                                     </Grid>
-                                </Item>
-                                <Item>
+                                
+                                
                                     <Grid item={true} >
                                         <FormControl fullWidth >
                                             <TextField
@@ -303,15 +389,15 @@ const MovimientoFiltro = (props) => {
                                                 value={fechaDesde}
                                                 required
                                                 onChange={(e) => setFechaDesde(e.target.value)}
-                                                sx={{ width: "150px" }}
+                                                sx={{ width: "171px" }}
                                                 InputLabelProps={{
                                                     shrink: true,
                                                 }}
                                             />
                                         </FormControl>
                                     </Grid>
-                                </Item>
-                                <Item>
+                                
+                                
                                     <Grid item={true} >
                                         <FormControl fullWidth >
                                             <TextField
@@ -322,14 +408,14 @@ const MovimientoFiltro = (props) => {
                                                 value={fechaHasta}
                                                 required
                                                 onChange={(e) => setFechaHasta(e.target.value)}
-                                                sx={{ width: "150px" }}
+                                                sx={{ width: "171px" }}
                                                 InputLabelProps={{
                                                     shrink: true,
                                                 }}
                                             />
                                         </FormControl>
                                     </Grid>
-                                </Item>
+                                
                             </Grid>
 
                             <Stack
