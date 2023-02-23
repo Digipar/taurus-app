@@ -34,6 +34,7 @@ const MovimientoForm = (props) => {
     const [clientes, setClientes] = useState([]);
     const [articulos, setArticulos] = useState([]);
     const [clienteSeleccionado, setClienteSeleccionado] = React.useState({ id: "", label: "" });
+    const [articuloSeleccionado, setArticuloSeleccionado] = React.useState({ id: "", label: "" });
     const [initialValues, setInitialValues] = React.useState({
         cliente: "",
         articulo: "",
@@ -44,6 +45,7 @@ const MovimientoForm = (props) => {
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
     const [errorCliente, setErrorCliente] = useState(null)
+    const [errorArticulo, setErrorArticulo] = useState(null)
     const [modoEditar, setModoEditar] = useState(false)
 
 
@@ -69,7 +71,7 @@ const MovimientoForm = (props) => {
 
         let movDataEditar = {
             cliente: clienteSeleccionado.id,
-            articulo: movimientoData.articuloId,
+            articulo: articuloSeleccionado.id,
             cantidad: movimientoData.cantidad,
             precio: +movimientoData.precio,
         }
@@ -79,6 +81,7 @@ const MovimientoForm = (props) => {
 
         // Necesario para el autocomplete 
         setClienteSeleccionado({ id: movimientoData.cliente.id, label: movimientoData.cliente.nombre });
+        setArticuloSeleccionado({ id: movimientoData.articulo.id, label: movimientoData.articulo.descripcion });
 
 
     }, []);
@@ -88,7 +91,7 @@ const MovimientoForm = (props) => {
 
         let movEditFinal = {
             clienteId: clienteSeleccionado.id,
-            articuloId: formik.values.articulo,
+            articuloId: articuloSeleccionado.id,
             cantidad: formik.values.cantidad,
             precio: +formik.values.precio,
         }
@@ -132,8 +135,14 @@ const MovimientoForm = (props) => {
     }, [])
 
     useEffect(() => {
+        // console.log('clienteSeleccionado?.id', clienteSeleccionado)
         setErrorCliente("");
     }, [clienteSeleccionado])
+
+    useEffect(() => {
+        // console.log('articuloSeleccionado?.id', articuloSeleccionado?.id)
+        setErrorArticulo("");
+    }, [articuloSeleccionado])
 
     useEffect(() => {
         let clientesTemp = [];
@@ -162,8 +171,8 @@ const MovimientoForm = (props) => {
                 .required('Campo precio es requerido.'),
             cantidad: Yup.number()
                 .required('Campo cantidad es requerido.'),
-            articulo: Yup.string()
-                .required("El campo articulo es requerido."),
+            // articulo: Yup.string()
+            //     .required("El campo articulo es requerido."),
 
         })
     })
@@ -176,9 +185,19 @@ const MovimientoForm = (props) => {
             updateMovimiento();
         }
 
+        if (!modoEditar && !clienteSeleccionado?.id) {
+            setErrorCliente("Seleccione un cliente");
+        }
+
+        if (!modoEditar && !articuloSeleccionado?.id) {
+            setErrorArticulo("Seleccione un articulo");
+        }
+
         //! Crear movimiento
-        if (clienteSeleccionado?.id && !modoEditar) {
+        if (!modoEditar && clienteSeleccionado?.id && articuloSeleccionado?.id) {
+            // console.log('CREA MOVIMIENTO')
             formik.values.cliente = clienteSeleccionado.id
+            formik.values.articulo = articuloSeleccionado.id
             let movData = {
                 clienteId: formik.values.cliente,
                 articuloId: formik.values.articulo,
@@ -190,13 +209,12 @@ const MovimientoForm = (props) => {
                 modificado: new Date()
             }
 
-            //  console.log("data final =>", movData)
+            // console.log("data final para crear =>", movData)
 
             props.registrarMovimiento(movData)
 
-        } else {
-            setErrorCliente("Seleccione un cliente")
         }
+
     }
 
 
@@ -235,27 +253,26 @@ const MovimientoForm = (props) => {
                     }
                 </FormControl>
 
-                <FormControl fullWidth error={formik.errors.articulo && true} sx={{ marginTop: 2 }}>
-                    <InputLabel id="articulo">Articulos *</InputLabel>
-                    <Select
-                        labelId="articulo"
+                <FormControl fullWidth sx={{ marginTop: 2 }}>
+                    <Autocomplete
                         id="articulo"
                         name="articulo"
-                        label="Articulos"
-                        value={formik.values.articulo}
-                        onChange={formik.handleChange}
-                        required
-                    >
-                        {
-
-                            articulos.map(item => {
-                                return (
-                                    <MenuItem key={item.id} value={item.id}>{item.label}</MenuItem>
-                                )
-                            })
-                        }
-                    </Select>
-                    <FormHelperText>{formik.errors.articulo}</FormHelperText>
+                        options={articulos}
+                        isOptionEqualToValue={(option, value) => option.label === value.label}
+                        onChange={(event, newValue) => {
+                            setArticuloSeleccionado(newValue)
+                        }}
+                        value={articuloSeleccionado}
+                        sx={{ width: "*" }}
+                        renderInput={(params) => <TextField {...params} label="Articulos" />}
+                    />
+                    {
+                        errorArticulo && (
+                            <p>{
+                                errorArticulo
+                            }</p>
+                        )
+                    }
                 </FormControl>
 
                 <FormControl fullWidth sx={{ marginTop: 2 }}>
@@ -288,8 +305,6 @@ const MovimientoForm = (props) => {
                         required
                     />
                 </FormControl>
-
-
 
 
                 <Stack
