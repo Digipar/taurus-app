@@ -296,8 +296,8 @@ export default function EnhancedTable() {
 
     const getArticulos = React.useCallback(async (newPage, rowsPerPageNew) => {
         
-        console.log("ARTICULO GET newPage", newPage)
-        console.log("ARTICULO GET rowsPerPageNew", rowsPerPageNew)
+        // console.log("ARTICULO GET newPage", newPage)
+        // console.log("ARTICULO GET rowsPerPageNew", rowsPerPageNew)
 
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
