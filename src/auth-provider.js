@@ -1,5 +1,6 @@
 // pretend this is firebase, netlify, or auth0's code.
 // you shouldn't have to implement something like this in your own app
+import { API} from './config';
 
 const localStorageKey = '__auth_provider_token__'
 const localStorageUserData = '__auth_provider_user_data__'
@@ -23,47 +24,55 @@ async function getUserFromToken(token) {
 function handleUserResponse({user}) {
   console.log('user', user)
   window.localStorage.setItem(localStorageKey, user.token)
-  window.localStorage.setItem(localStorageUserData, user.username)
+  window.localStorage.setItem(localStorageUserData, user)
   return user
 }
 
-function login({username, password}) {
-  console.log('login called')
-    //  dummy code to make the app work
+async function  login({correo, contrasenha}) {
+
+  let bodyAEnviar={
+    correo: correo,
+    contrasenha: contrasenha
+  }
+  console.log('login called', bodyAEnviar)
+  try {
+  const requestOptions = {
+    method: "POST", 
+    body:JSON.stringify(bodyAEnviar),
+    headers: { "Content-Type": "application/json" }
+  }
+  const user = await fetch(`${API}/login`, requestOptions);
+  console.log('user', user)
+    if (!user.ok) {
+      return {}
+    }    
+    const userJSON = await user.json();
+    console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    if (username === 'vmartinetti@gmail.com' && password === '123123123') {
-      // return handleUserResponse({user: {token, username}})
-    return Promise.resolve(handleUserResponse({user: {token, username}}))
-    }
-    return Promise.reject(null)
-    // return null
-    // end of dummy code
-    // 
-  // return client('login', {username, password})
-  // .then(handleUserResponse)
-  // .catch(error => {
-  //   console.log(error)
-  //   return error
-  // })
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON.nombre,userId: userJSON.Id,correo: userJSON.correo}})
+  }
+  catch(error){
+    console.log('error', error)
+  } 
 }
 
-function register({username, password}) {
-  return client('register', {username, password}).then(handleUserResponse)
+function register({UsuarioNombre, contrasenha}) {
+  return client('register', {UsuarioNombre, contrasenha}).then(handleUserResponse)
 }
 
 async function logout() {
   window.localStorage.removeItem(localStorageKey)
 }
 
-// an auth provider wouldn't use your client, they'd have their own
-// so that's why we're not just re-using the client
 const authURL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080'
 
 async function client(endpoint, data) {
   const config = {
     method: 'POST',
     body: JSON.stringify(data),
-    headers: {'Content-Type': 'application/json'},
+    headers: {
+    'Content-Type': 'application/json'},
+ 
   }
 
   return window.fetch(`${authURL}/${endpoint}`, config).then(async response => {

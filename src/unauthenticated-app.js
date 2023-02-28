@@ -10,6 +10,7 @@ const UnauthenticatedApp = () => {
       <Route path="/signin" exact element={<SignIn />} />
 
       <Route path="*" element={<Navigate to="/signin" />} />
+      
     </Routes>
     )
 }

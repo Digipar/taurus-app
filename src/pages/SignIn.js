@@ -1,17 +1,21 @@
-import Avatar from "@mui/material/Avatar";
+
 import Button from "@mui/material/Button";
 import CssBaseline from "@mui/material/CssBaseline";
 import TextField from "@mui/material/TextField";
 import FormControlLabel from "@mui/material/FormControlLabel";
 import Checkbox from "@mui/material/Checkbox";
 import Link from "@mui/material/Link";
-import Grid from "@mui/material/Grid";
 import Box from "@mui/material/Box";
-import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
 import Typography from "@mui/material/Typography";
 import Container from "@mui/material/Container";
-import { createTheme, ThemeProvider } from "@mui/material/styles";
 import { useAuth } from "../context/auth-context";
+import Card from '@mui/material/Card';
+import CardActions from '@mui/material/CardActions';
+import CardContent from '@mui/material/CardContent';
+import * as yup from "yup";
+import { useFormik } from 'formik';
+import CardMedia from '@mui/material/CardMedia';
+import { CardActionArea } from '@mui/material';
 
 const Copyright = (props) => {
   return (
@@ -26,7 +30,7 @@ const Copyright = (props) => {
         color="inherit"
         href="https://mui.com/"
       >
-        Expensy
+        Digipar
       </Link>{" "}
       {new Date().getFullYear()}
       {"."}
@@ -35,15 +39,28 @@ const Copyright = (props) => {
 };
 
 const SignIn = (props) => {
-  const {login} = useAuth();
-  const handleSubmit = (event) => {
-    event.preventDefault();
-    const data = new FormData(event.currentTarget);
-       // dummy login, check if both fields are filled and redirect to home
-    if (data.get("email") && data.get("password")) {
-      login({username: data.get("email"), password: data.get("password")})
-    }
-  };
+
+  const { login } = useAuth();
+  const validationSchema = yup.object({
+    correo: yup
+      .string('Enter your email')
+      .email('Ingrese un email válido')
+      .required('Su email es requerido'),
+
+  });
+
+  const formik = useFormik({
+    initialValues: {
+      correo: '',
+      contrasenha: ''
+    },
+    validationSchema: validationSchema,
+    onSubmit: (values) => {
+      console.log('values', values)
+      //submit(values)
+      login(values)
+    },
+  });
 
   return (
     <Container
@@ -51,91 +68,91 @@ const SignIn = (props) => {
       maxWidth="xs"
     >
       <CssBaseline />
-      <Box
-        sx={{
-          marginTop: 8,
-          display: "flex",
-          flexDirection: "column",
-          alignItems: "center",
-        }}
-      >
-        <Avatar sx={{ m: 1, bgcolor: "primary.main" }}>
-          <LockOutlinedIcon />
-        </Avatar>
-        <Typography
-          component="h1"
-          variant="h5"
-        >
-          Sign in
-        </Typography>
-        <Box
-          component="form"
-          onSubmit={handleSubmit}
-          noValidate
-          sx={{ mt: 1 }}
-        >
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            id="email"
-            label="Email Address"
-            name="email"
-            autoComplete="email"
-            autoFocus
-          />
-          <TextField
-            margin="normal"
-            required
-            fullWidth
-            name="password"
-            label="Password"
-            type="password"
-            id="password"
-            autoComplete="current-password"
-          />
-          <FormControlLabel
-            control={
-              <Checkbox
-                value="remember"
-                color="primary"
-              />
-            }
-            label="Remember me"
-          />
-          <Button
-            type="submit"
-            fullWidth
-            variant="contained"
-            sx={{ mt: 3, mb: 2 }}
+      <Card sx={{ minWidth: 375, mt: 15 }}>
+        <CardContent>
+          <Box
+            sx={{
+              marginTop: 4,
+              display: "flex",
+              flexDirection: "column",
+              alignItems: "center",
+            }}
           >
-            Sign In
-          </Button>
-          <Grid container>
-            <Grid
-              item
-              xs
+            <CardActionArea>
+              <CardMedia
+                direction="column"
+                justify="center"
+                component="img"
+                sx={{ height: 60, width: 160 , ml:13}}
+                image="./logoDigipar.png"
+                alt="Digipar"
+              />
+            </CardActionArea>
+            <Typography
+              component="h1"
+              variant="h5"
+              sx={{mt:5}}
             >
-              <Link
-                href="#"
-                variant="body2"
-              >
-                Forgot password?
-              </Link>
-            </Grid>
-            <Grid item>
-              <Link
-                href="#"
-                variant="body2"
-              >
-                {"Don't have an account? Sign Up"}
-              </Link>
-            </Grid>
-          </Grid>
-        </Box>
-      </Box>
-      <Copyright sx={{ mt: 8, mb: 4 }} />
+              Ingrese sus credenciales
+            </Typography>
+            <Box
+
+              component="form"
+              onSubmit={formik.handleSubmit}
+              noValidate
+              sx={{ mt: 1 }}
+            >
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                id="correo"
+                label="Correo electrónico"
+                name="correo"
+                autoComplete="email"
+                onChange={formik.handleChange}
+                error={formik.touched.correo && Boolean(formik.errors.correo)}
+                helperText={formik.touched.correo && formik.errors.correo}
+                autoFocus
+              />
+              <TextField
+                margin="normal"
+                required
+                fullWidth
+                name="contrasenha"
+                label="Contraseña"
+                type="password"
+                id="contrasenha"
+                autoComplete="current-contrasenha"
+                onChange={formik.handleChange}
+              />
+              <FormControlLabel
+                control={
+                  <Checkbox
+                    value="remember"
+                    color="primary"
+                  />
+                }
+                label="Recordarme"
+              />
+              <CardActions>
+                <Button
+                  type="submit"
+                  fullWidth
+                  variant="contained"
+                  sx={{ mt: 3, mb: 2 }}
+                >
+                  Ingresar
+                </Button>
+              </CardActions>
+            </Box>
+          </Box>
+        </CardContent>
+        <Copyright sx={{ mt: 1, mb: 4 }} />
+      </Card>
+
     </Container>
+
   );
 };
 export default SignIn;

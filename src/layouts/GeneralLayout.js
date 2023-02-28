@@ -9,20 +9,23 @@ import List from '@mui/material/List';
 import Typography from '@mui/material/Typography';
 import Divider from '@mui/material/Divider';
 import IconButton from '@mui/material/IconButton';
-import Badge from '@mui/material/Badge';
 import Container from '@mui/material/Container';
 import Link from '@mui/material/Link';
 import MenuIcon from '@mui/icons-material/Menu';
 import ChevronLeftIcon from '@mui/icons-material/ChevronLeft';
-import NotificationsIcon from '@mui/icons-material/Notifications';
 import { mainListItems, secondaryListItems } from '../components/ListItems';
+import { useAuth } from "../context/auth-context";
+import {  Button } from '@mui/material';
+import { esES } from '@mui/material/locale';
+import LockOutlinedIcon from "@mui/icons-material/LockOutlined";
+
 
 function Copyright(props) {
     return (
       <Typography variant="body2" color="text.secondary" align="center" {...props}>
         {'Copyright © '}
         <Link color="inherit" href="https://mui.com/">
-          Your Website
+          Digipar
         </Link>{' '}
         {new Date().getFullYear()}
         {'.'}
@@ -76,9 +79,10 @@ const Drawer = styled(MuiDrawer, { shouldForwardProp: (prop) => prop !== 'open' 
     }),
 );
 
-const mdTheme = createTheme();
+const mdTheme = createTheme(esES);
 
 function GeneralLayoutContetn(props) {
+  const {logout } = useAuth();
 const [open, setOpen] = React.useState(true);
 const toggleDrawer = () => {
     setOpen(!open);
@@ -112,16 +116,13 @@ return (
             noWrap
             sx={{ flexGrow: 1 }}
             >
-            Dashboard
+            Taurus
             </Typography>
-            <IconButton color="inherit">
-            <Badge badgeContent={4} color="secondary">
-                <NotificationsIcon />
-            </Badge>
-            </IconButton>
+           
+            <Button onClick={logout} color="inherit" component="h1"> <LockOutlinedIcon /> Cerrar sesión</Button>
         </Toolbar>
         </AppBar>
-        <Drawer variant="permanent" open={open}>
+      <Drawer variant="permanent" open={open}>
         <Toolbar
             sx={{
             display: 'flex',
@@ -130,7 +131,13 @@ return (
             px: [1],
             }}
         >
+        <img
+        src="./logoDashboard.png"
+        loading="lazy"
+        alt=""
+      /> 
             <IconButton onClick={toggleDrawer}>
+           
             <ChevronLeftIcon />
             </IconButton>
         </Toolbar>
