@@ -22,10 +22,10 @@ import Title from './Title';
 const MovimientoForm = (props) => {
     const { id } = useParams();
     const user = useAuth();
-    const userData = JSON.parse(user.user);
+    // const userData = JSON.parse(user.user);
     const navigate = useNavigate();
 
-    // console.log("userData", userData);
+     console.log("user", user);
 
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
     const { fetchData: fetchUpdateMovimiento, error: errorUpdateMovimiento, loading: loadingUpdateMovimiento } = useFetch();
@@ -203,8 +203,8 @@ const MovimientoForm = (props) => {
                 articuloId: formik.values.articulo,
                 cantidad: formik.values.cantidad,
                 precio: formik.values.precio,
-                creadoPor: userData ? userData?.userId : '',
-                modificadoPor: userData ? userData?.userId : '',
+                // creadoPor: userData ? userData?.userId : '',
+                // modificadoPor: userData ? userData?.userId : '',
                 creado: new Date(),
                 modificado: new Date()
             }
