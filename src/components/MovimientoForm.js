@@ -22,19 +22,18 @@ import Title from './Title';
 const MovimientoForm = (props) => {
     const { id } = useParams();
     const user = useAuth();
-    // const userData = JSON.parse(user.user);
     const navigate = useNavigate();
 
-     console.log("user", user);
+    //  console.log("enc user", user);
 
     const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
     const { fetchData: fetchUpdateMovimiento, error: errorUpdateMovimiento, loading: loadingUpdateMovimiento } = useFetch();
 
     const [movLoading, setMovLoading] = React.useState(false)
-    const [clientes, setClientes] = useState([]);
-    const [articulos, setArticulos] = useState([]);
-    const [clienteSeleccionado, setClienteSeleccionado] = React.useState({ id: "", label: "" });
-    const [articuloSeleccionado, setArticuloSeleccionado] = React.useState({ id: "", label: "" });
+    // const [clientes, setClientes] = useState([]);
+    // const [articulos, setArticulos] = useState([]);
+    // const [clienteSeleccionado, setClienteSeleccionado] = React.useState({ id: "", label: "" });
+    // const [articuloSeleccionado, setArticuloSeleccionado] = React.useState({ id: "", label: "" });
     const [initialValues, setInitialValues] = React.useState({
         cliente: "",
         articulo: "",
@@ -44,8 +43,8 @@ const MovimientoForm = (props) => {
     // const [editNewValues, setEditNewValues] = React.useState({});
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
-    const [errorCliente, setErrorCliente] = useState(null)
-    const [errorArticulo, setErrorArticulo] = useState(null)
+    // const [errorCliente, setErrorCliente] = useState(null)
+    // const [errorArticulo, setErrorArticulo] = useState(null)
     const [modoEditar, setModoEditar] = useState(false)
 
 
@@ -70,19 +69,13 @@ const MovimientoForm = (props) => {
         }
 
         let movDataEditar = {
-            cliente: clienteSeleccionado.id,
-            articulo: articuloSeleccionado.id,
+            cliente: movimientoData.cliente.id,
+            articulo: movimientoData.articulo.id,
             cantidad: movimientoData.cantidad,
             precio: +movimientoData.precio,
         }
 
-        // initial values = estructura form (ej. name)
         setInitialValues(movDataEditar);
-
-        // Necesario para el autocomplete 
-        setClienteSeleccionado({ id: movimientoData.cliente.id, label: movimientoData.cliente.nombre });
-        setArticuloSeleccionado({ id: movimientoData.articulo.id, label: movimientoData.articulo.descripcion });
-
 
     }, []);
 
@@ -90,8 +83,8 @@ const MovimientoForm = (props) => {
     const updateMovimiento = async () => {
 
         let movEditFinal = {
-            clienteId: clienteSeleccionado.id,
-            articuloId: articuloSeleccionado.id,
+            clienteId: formik.values.cliente,
+            articuloId: formik.values.articulo,
             cantidad: formik.values.cantidad,
             precio: +formik.values.precio,
         }
@@ -134,32 +127,6 @@ const MovimientoForm = (props) => {
         }
     }, [])
 
-    useEffect(() => {
-        // console.log('clienteSeleccionado?.id', clienteSeleccionado)
-        setErrorCliente("");
-    }, [clienteSeleccionado])
-
-    useEffect(() => {
-        // console.log('articuloSeleccionado?.id', articuloSeleccionado?.id)
-        setErrorArticulo("");
-    }, [articuloSeleccionado])
-
-    useEffect(() => {
-        let clientesTemp = [];
-        props.clientes.map((cliente) => {
-            return clientesTemp.push({ id: cliente.id, label: cliente.nombre, })
-        })
-        setClientes([...clientesTemp])
-    }, [props.clientes])
-
-    useEffect(() => {
-        const articulosTemp = [];
-        props.articulos.map((articulo) => {
-            articulosTemp.push({ id: articulo.id, label: articulo.descripcion })
-        })
-        setArticulos([...articulosTemp])
-    }, [props.articulos])
-
 
     const formik = useFormik({
 
@@ -171,8 +138,10 @@ const MovimientoForm = (props) => {
                 .required('Campo precio es requerido.'),
             cantidad: Yup.number()
                 .required('Campo cantidad es requerido.'),
-            // articulo: Yup.string()
-            //     .required("El campo articulo es requerido."),
+            cliente: Yup.string()
+                .required("El campo cliente es requerido."),
+            articulo: Yup.string()
+                .required("El campo articulo es requerido.")
 
         })
     })
@@ -185,26 +154,19 @@ const MovimientoForm = (props) => {
             updateMovimiento();
         }
 
-        if (!modoEditar && !clienteSeleccionado?.id) {
-            setErrorCliente("Seleccione un cliente");
-        }
-
-        if (!modoEditar && !articuloSeleccionado?.id) {
-            setErrorArticulo("Seleccione un articulo");
-        }
 
         //! Crear movimiento
-        if (!modoEditar && clienteSeleccionado?.id && articuloSeleccionado?.id) {
-            // console.log('CREA MOVIMIENTO')
-            formik.values.cliente = clienteSeleccionado.id
-            formik.values.articulo = articuloSeleccionado.id
+        // if (!modoEditar && clienteSeleccionado?.id && articuloSeleccionado?.id) {
+        if (!modoEditar) {
+      
+            // console.log('create user', user)
             let movData = {
                 clienteId: formik.values.cliente,
                 articuloId: formik.values.articulo,
                 cantidad: formik.values.cantidad,
                 precio: formik.values.precio,
-                // creadoPor: userData ? userData?.userId : '',
-                // modificadoPor: userData ? userData?.userId : '',
+                // creadoPor: user ? user?.userId : '',
+                // modificadoPor: user ? user?.userId : '',
                 creado: new Date(),
                 modificado: new Date()
             }
@@ -230,9 +192,51 @@ const MovimientoForm = (props) => {
                 sx={{ marginTop: 2 }}
             >
 
-                <FormControl fullWidth sx={{ marginTop: 2 }}>
+                <FormControl fullWidth error={formik.errors.cliente && true} sx={{ marginTop: 2 }}>
+                    <InputLabel id="cliente-sl">Clientes *</InputLabel>
+                    <Select
+                        labelId="cliente-sl"
+                        id="cliente"
+                        name="cliente"
+                        value={formik.values.cliente}
+                        label="Clientes *"
+                        onChange={formik.handleChange}
+                    >
+                        {
+                            props.clientes.map(item => {
+                                return (
+                                    <MenuItem key={item.id} value={item.id}>{item.nombre}</MenuItem>
+                                )
+                            })
+                        }
 
-                    <Autocomplete
+                    </Select>
+                    <FormHelperText>{formik.errors.cliente}</FormHelperText>
+                </FormControl>
+
+                <FormControl fullWidth error={formik.errors.articulo && true} sx={{ marginTop: 2 }}>
+                    <InputLabel id="articulo-sl">Articulos *</InputLabel>
+                    <Select
+                        labelId="articulo-sl"
+                        id="articulo"
+                        name="articulo"
+                        value={formik.values.articulo}
+                        label="Articulos *"
+                        onChange={formik.handleChange}
+                    >
+                        {
+                            props.articulos.map(item => {
+                                return (
+                                    <MenuItem key={item.id} value={item.id}>{item.descripcion}</MenuItem>
+                                )
+                            })
+                        }
+
+                    </Select>
+                    <FormHelperText>{formik.errors.articulo}</FormHelperText>
+                </FormControl>
+
+                {/* <Autocomplete
                         id="cliente"
                         name="cliente"
                         options={clientes}
@@ -273,7 +277,7 @@ const MovimientoForm = (props) => {
                             }</p>
                         )
                     }
-                </FormControl>
+                </FormControl> */}
 
                 <FormControl fullWidth sx={{ marginTop: 2 }}>
                     <TextField
