@@ -91,7 +91,7 @@ const MovimientoRegistrar = () => {
            
         }
 
-        console.log('Movimiento Data Create =>', movimientoDataCreate)
+        // console.log('Movimiento Data Create =>', movimientoDataCreate)
 
         const reqOptions = {
             method: 'POST',
@@ -99,13 +99,13 @@ const MovimientoRegistrar = () => {
             headers: { "Content-Type": "application/json" }
         };
 
-        console.log("reqOptions", reqOptions)
-        console.log("API", API + '/movimiento');
-        console.log("body => ", JSON.parse(reqOptions.body))
+        // console.log("reqOptions", reqOptions)
+        // console.log("API", API + '/movimiento');
+        // console.log("body => ", JSON.parse(reqOptions.body))
 
         const respMovimiento = await fetchRegistrarMovimiento(`${API}/movimiento`, reqOptions);
 
-        console.log("[POST] respMovimiento => ", respMovimiento)
+        // console.log("[POST] respMovimiento => ", respMovimiento)
 
         if (respMovimiento.error) {
             setAlert(true);
