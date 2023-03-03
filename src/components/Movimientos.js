@@ -184,12 +184,8 @@ const Movimientos = () => {
     const [mostrarPaginacion, setMostrarPaginacion] = useState(true);
     // const [movimientosLength, setMovimientosLength] = useState(false);
 
-    const [clientes, setClientes] = useState([])
-    const [articulos, setArticulos] = useState([])
-
     const { fetchData: fetchMovimientos, loading: loadingMovimientos } = useFetch();
-    const { fetchData: fetchClientes } = useFetch();
-    const { fetchData: fetchArticulos } = useFetch();
+  
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -283,28 +279,28 @@ const Movimientos = () => {
 
     }, [fetchMovimientos]);
 
-    const getClientes = useCallback(async () => {
-        const reqOptions = {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" }
-        };
+    // const getClientes = useCallback(async () => {
+    //     const reqOptions = {
+    //         method: 'GET',
+    //         headers: { "Content-Type": "application/json" }
+    //     };
 
-        const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
-        setClientes(clientesData)
+    //     const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
+    //     setClientes(clientesData)
 
-    }, []);
+    // }, [fetchClientes]);
 
-    const getArticulos = useCallback(async () => {
-        const reqOptions = {
-            method: 'GET',
-            headers: { "Content-Type": "application/json" }
-        };
+    // const getArticulos = useCallback(async () => {
+    //     const reqOptions = {
+    //         method: 'GET',
+    //         headers: { "Content-Type": "application/json" }
+    //     };
 
-        const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
+    //     const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
 
-        setArticulos(articulosData);
+    //     setArticulos(articulosData);
 
-    }, []);
+    // }, [fetchArticulos]);
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
@@ -324,14 +320,14 @@ const Movimientos = () => {
         getMovimientosCount();
         // getClientes();
         // getArticulos();
-    }, [])
+    }, [getMovimientos, getMovimientosCount])
 
     return (
         <>
 
             <Title>Movimientos</Title>
 
-            <MovimientoFiltro clientes={clientes} articulos={articulos} getMovimientos={getMovimientos} onFilter={getDataFilter} />
+            <MovimientoFiltro getMovimientos={getMovimientos} onFilter={getDataFilter} />
 
             {/* <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml: 2 }} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
                 Refrescar
