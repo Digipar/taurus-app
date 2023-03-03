@@ -182,7 +182,6 @@ const Movimientos = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [movimientosCount, setMovimientosCount] = useState([]);
     const [mostrarPaginacion, setMostrarPaginacion] = useState(true);
-    // const [movimientosLength, setMovimientosLength] = useState(false);
 
     const { fetchData: fetchMovimientos, loading: loadingMovimientos } = useFetch();
   

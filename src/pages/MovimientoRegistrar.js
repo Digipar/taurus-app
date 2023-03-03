@@ -100,9 +100,6 @@ const MovimientoRegistrar = () => {
             headers: { "Content-Type": "application/json" }
         };
 
-        // console.log("reqOptions", reqOptions)
-        // console.log("API", API + '/movimiento');
-        // console.log("body => ", JSON.parse(reqOptions.body))
 
         const respMovimiento = await fetchRegistrarMovimiento(`${API}/movimiento`, reqOptions);
 
