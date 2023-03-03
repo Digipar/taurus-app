@@ -182,7 +182,7 @@ const Movimientos = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [movimientosCount, setMovimientosCount] = useState([]);
     const [mostrarPaginacion, setMostrarPaginacion] = useState(true);
-    const [movimientosLength, setMovimientosLength] = useState(false);
+    // const [movimientosLength, setMovimientosLength] = useState(false);
 
     const [clientes, setClientes] = useState([])
     const [articulos, setArticulos] = useState([])
@@ -259,8 +259,8 @@ const Movimientos = () => {
 
     const getMovimientos = useCallback(async (newPage, rowsPerPageNew) => {
 
-        console.log("MOVIMIENTO GET newPage", newPage)
-        console.log("MOVIMIENTO GET rowsPerPageNew", rowsPerPageNew)
+        // console.log("MOVIMIENTO GET newPage", newPage)
+        // console.log("MOVIMIENTO GET rowsPerPageNew", rowsPerPageNew)
 
         let bodyPaginacion = {
             pageNumber: !newPage ? 1 : newPage,
@@ -357,7 +357,7 @@ const Movimientos = () => {
                     </Stack>
                     <Divider />
 
-                    {!movimientosLength ? 
+                    {movimientos.length ? 
                     <TableContainer>
                         <Table
                             sx={{ minWidth: 750 }}

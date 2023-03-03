@@ -42,14 +42,14 @@ async function  login({correo, contrasenha}) {
     headers: { "Content-Type": "application/json" }
   }
   const user = await fetch(`${API}/login`, requestOptions);
-  console.log('user', user)
+  // console.log('user ', user)
     if (!user.ok) {
       return {}
     }    
     const userJSON = await user.json();
-    console.log('userJSON', userJSON)
+    // console.log('userJSON', userJSON)
     const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,UsuarioNombre: userJSON.nombre,userId: userJSON.Id,correo: userJSON.correo}})
+    return handleUserResponse({user: {token,UsuarioNombre: userJSON.nombre,userId: userJSON.id,correo: userJSON.correo}})
   }
   catch(error){
     console.log('error', error)
