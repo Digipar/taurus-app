@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -26,10 +26,10 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import BackspaceIcon from '@mui/icons-material/Backspace';
 import Lottie from 'react-lottie-player';
 import lottieJson from '../img/lottie.json';
 import Stack from '@mui/material/Stack';
+import Alert from '../components/Alert';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -173,6 +173,7 @@ export default function EnhancedTable() {
     const [clientesCount, setClientesCount] = React.useState([]);
     const [clientesTotal, setClientesTotal] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
+    const [alert, setAlert] = React.useState(false);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
@@ -250,7 +251,7 @@ export default function EnhancedTable() {
         getClientes(0, rowsPerPageNew)
     };
 
-    const getClientesCount = React.useCallback(async () => {
+    const getClientesCount = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -269,7 +270,7 @@ export default function EnhancedTable() {
             setClientesCount(clienteCount)
         }
     }, [errorClientes, fetchClientes]);
-    const getClientesTotal = React.useCallback(async () => {
+    const getClientesTotal = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -293,17 +294,18 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
             setClientesTotal(clienteTotal)
         }
     }, [errorClientes, fetchClientes]);
 
-    const getClientes = React.useCallback(async (newPage, rowsPerPageNew) => {
+    const getClientes = useCallback(async (newPage, rowsPerPageNew) => {
 
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
-            pageCount: rowsPerPageNew == undefined ? 10 : rowsPerPageNew
+            pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew
         }
 
         const reqOptions = {
@@ -329,6 +331,7 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
 
@@ -357,10 +360,12 @@ export default function EnhancedTable() {
         getClientes();
         getClientesCount();
         getClientesTotal()
-    }, [])
+    }, [getClientes,getClientesCount,getClientesTotal])
 
     return (
-        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+        <>
+        <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+        <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
             Clientes
         </Typography>
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
