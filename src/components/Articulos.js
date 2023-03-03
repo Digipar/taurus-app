@@ -241,7 +241,7 @@ export default function EnhancedTable() {
         let rowsPerPageNew = event.target.value
         // console.log("rowsPerPageNew =>", rowsPerPageNew)
         setRowsPerPage(event.target.value)
-        getArticulos(0, rowsPerPageNew)
+        getArticulos(1, rowsPerPageNew)
     };
 
     const getArticulosCount = React.useCallback(async () => {
