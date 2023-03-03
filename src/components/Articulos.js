@@ -1,4 +1,4 @@
-import * as React from 'react';
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -26,10 +26,10 @@ import CachedIcon from '@mui/icons-material/Cached';
 import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
-import BackspaceIcon from '@mui/icons-material/Backspace';
 import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
 import Stack from '@mui/material/Stack';
+import Alert from '../components/Alert';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -162,6 +162,7 @@ export default function EnhancedTable() {
     const [articulosCount, setArticulosCount] = React.useState([]);
     const [articulosTotal, setArticulosTotal] = React.useState([]);
     const [alertOptions, setAlertOptions] = React.useState({});
+    const [alert, setAlert] = React.useState(false);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [articuloListlength, setArticuloListLength] = React.useState(false);
@@ -241,10 +242,10 @@ export default function EnhancedTable() {
         let rowsPerPageNew = event.target.value
         // console.log("rowsPerPageNew =>", rowsPerPageNew)
         setRowsPerPage(event.target.value)
-        getArticulos(0, rowsPerPageNew)
+        getArticulos(1, rowsPerPageNew)
     };
 
-    const getArticulosCount = React.useCallback(async () => {
+    const getArticulosCount = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -255,7 +256,7 @@ export default function EnhancedTable() {
 
         // console.log("articulosCounntt:", articuloCount)
 
-        if (articuloCount.error) {
+        if (articuloCount?.error) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articuloCount.message })
         } else if (errorArticulos) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
@@ -264,7 +265,7 @@ export default function EnhancedTable() {
             setArticulosCount(articuloCount)
         }
     }, [errorArticulos, fetchArticulos]);
-    const getArticulosTotal = React.useCallback(async () => {
+    const getArticulosTotal = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -288,13 +289,14 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
             setArticulosTotal(articuloTotal)
         }
     }, [errorArticulos, fetchArticulos]);
 
-    const getArticulos = React.useCallback(async (newPage, rowsPerPageNew) => {
+    const getArticulos = useCallback(async (newPage, rowsPerPageNew) => {
         
         // console.log("ARTICULO GET newPage", newPage)
         // console.log("ARTICULO GET rowsPerPageNew", rowsPerPageNew)
@@ -326,6 +328,7 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
 
@@ -355,11 +358,13 @@ export default function EnhancedTable() {
         getArticulos();
         getArticulosCount();
         getArticulosTotal()
-    }, [])
+    }, [getArticulos,getArticulosCount,getArticulosTotal])
 
     return (
 
-        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+        <>
+        <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+        <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
             Artículos
         </Typography>
 
