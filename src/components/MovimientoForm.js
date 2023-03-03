@@ -3,16 +3,15 @@ import { useFormik } from 'formik';
 import * as Yup from 'yup';
 import Box from "@mui/material/Box";
 import Stack from "@mui/material/Stack";
+import Alert from '../components/Alert';
 import FormControl from '@mui/material/FormControl';
 import Select from '@mui/material/Select';
 import MenuItem from '@mui/material/MenuItem';
 import TextField from '@mui/material/TextField';
-import Autocomplete from '@mui/material/Autocomplete';
 import InputLabel from '@mui/material/InputLabel';
 import Button from "@mui/material/Button";
 import FormHelperText from '@mui/material/FormHelperText';
 import { Link, useParams } from "react-router-dom";
-import { useAuth } from "../context/auth-context";
 import { API } from '../config';
 import useFetch from '../hooks/use-fetch';
 import { useNavigate } from 'react-router-dom';
@@ -21,30 +20,24 @@ import Title from './Title';
 
 const MovimientoForm = (props) => {
     const { id } = useParams();
-    const user = useAuth();
+    // const user = useAuth();
     const navigate = useNavigate();
 
     //  console.log("enc user", user);
 
-    const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
-    const { fetchData: fetchUpdateMovimiento, error: errorUpdateMovimiento, loading: loadingUpdateMovimiento } = useFetch();
+    const [alert, setAlert] = React.useState(false);
+    const [alertOptions, setAlertOptions] = React.useState({});
 
-    const [movLoading, setMovLoading] = React.useState(false)
-    // const [clientes, setClientes] = useState([]);
-    // const [articulos, setArticulos] = useState([]);
-    // const [clienteSeleccionado, setClienteSeleccionado] = React.useState({ id: "", label: "" });
-    // const [articuloSeleccionado, setArticuloSeleccionado] = React.useState({ id: "", label: "" });
+    const { fetchData: fetchMovimiento, error: errorMovimiento, loading: loadingMovimiento } = useFetch();
+    const { fetchData: fetchUpdateMovimiento, error: errorUpdateMovimiento } = useFetch();
+
     const [initialValues, setInitialValues] = React.useState({
         cliente: "",
         articulo: "",
         cantidad: "",
         precio: ""
     });
-    // const [editNewValues, setEditNewValues] = React.useState({});
-    const [alert, setAlert] = React.useState(false);
-    const [alertOptions, setAlertOptions] = React.useState({});
-    // const [errorCliente, setErrorCliente] = useState(null)
-    // const [errorArticulo, setErrorArticulo] = useState(null)
+
     const [modoEditar, setModoEditar] = useState(false)
 
 
@@ -55,6 +48,7 @@ const MovimientoForm = (props) => {
         };
 
         const movimientoData = await fetchMovimiento(`${API}/movimiento/${id}`, reqOptions)
+
 
         if (movimientoData.error) {
             setAlert(true);
@@ -68,6 +62,7 @@ const MovimientoForm = (props) => {
             return;
         }
 
+
         let movDataEditar = {
             cliente: movimientoData.cliente.id,
             articulo: movimientoData.articulo.id,
@@ -77,7 +72,7 @@ const MovimientoForm = (props) => {
 
         setInitialValues(movDataEditar);
 
-    }, []);
+    }, [errorMovimiento, fetchMovimiento, id]);
 
 
     const updateMovimiento = async () => {
@@ -89,15 +84,11 @@ const MovimientoForm = (props) => {
             precio: +formik.values.precio,
         }
 
-        // console.log('objFinal', objFinal)
-
         const reqOptions = {
             method: 'PUT',
             body: JSON.stringify(movEditFinal),
             headers: { "Content-Type": "application/json" }
         };
-
-        // console.log("BODY UPDATE => ", JSON.parse(reqOptions.body))
 
         const updateMovimientoData = await fetchUpdateMovimiento(`${API}/movimiento/${id}`, reqOptions);
 
@@ -112,9 +103,9 @@ const MovimientoForm = (props) => {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorUpdateMovimiento })
             return;
         }
-
         setAlert(true);
         setAlertOptions({ tipo: 'success', titulo: 'Éxito', mensaje: 'Movimiento actualizado con éxito!' })
+
         navigate('/movimientos')
 
     }
@@ -125,7 +116,7 @@ const MovimientoForm = (props) => {
             setModoEditar(true);
             getMovimientoById();
         }
-    }, [])
+    }, [getMovimientoById, id])
 
 
     const formik = useFormik({
@@ -156,10 +147,8 @@ const MovimientoForm = (props) => {
 
 
         //! Crear movimiento
-        // if (!modoEditar && clienteSeleccionado?.id && articuloSeleccionado?.id) {
         if (!modoEditar) {
-      
-            // console.log('create user', user)
+
             let movData = {
                 clienteId: formik.values.cliente,
                 articuloId: formik.values.articulo,
@@ -183,10 +172,15 @@ const MovimientoForm = (props) => {
 
 
     return (
-        <>
+        <React.Fragment>
+
+            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+
             {
                 id ? <Title>Editar movimiento</Title> : <Title>Registrar movimiento</Title>
             }
+
+
             <Box
                 component="form" onSubmit={formik.handleSubmit}
                 sx={{ marginTop: 2 }}
@@ -236,49 +230,6 @@ const MovimientoForm = (props) => {
                     <FormHelperText>{formik.errors.articulo}</FormHelperText>
                 </FormControl>
 
-                {/* <Autocomplete
-                        id="cliente"
-                        name="cliente"
-                        options={clientes}
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        onChange={(event, newValue) => {
-                            setClienteSeleccionado(newValue)
-                        }}
-                        value={clienteSeleccionado}
-                        sx={{ width: "*" }}
-                        renderInput={(params) => <TextField {...params} label="Clientes" />}
-                    />
-                    {
-                        errorCliente && (
-                            <p>{
-                                errorCliente
-                            }</p>
-                        )
-                    }
-                </FormControl>
-
-                <FormControl fullWidth sx={{ marginTop: 2 }}>
-                    <Autocomplete
-                        id="articulo"
-                        name="articulo"
-                        options={articulos}
-                        isOptionEqualToValue={(option, value) => option.label === value.label}
-                        onChange={(event, newValue) => {
-                            setArticuloSeleccionado(newValue)
-                        }}
-                        value={articuloSeleccionado}
-                        sx={{ width: "*" }}
-                        renderInput={(params) => <TextField {...params} label="Articulos" />}
-                    />
-                    {
-                        errorArticulo && (
-                            <p>{
-                                errorArticulo
-                            }</p>
-                        )
-                    }
-                </FormControl> */}
-
                 <FormControl fullWidth sx={{ marginTop: 2 }}>
                     <TextField
                         error={formik.errors.cantidad && true}
@@ -321,7 +272,7 @@ const MovimientoForm = (props) => {
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
                         type="submit"
-                        disabled={movLoading}
+                        disabled={loadingMovimiento}
                     >
                         Grabar
                     </Button>
@@ -335,7 +286,7 @@ const MovimientoForm = (props) => {
                     </Button>
                 </Stack>
             </Box>
-        </>
+        </React.Fragment>
     )
 }
 
