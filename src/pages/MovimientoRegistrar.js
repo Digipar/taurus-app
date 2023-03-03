@@ -5,16 +5,15 @@ import MovimientoForm from '../components/MovimientoForm';
 import { useNavigate } from 'react-router-dom';
 import Alert from '../components/Alert';
 import { Card, CardContent } from '@mui/material';
-import Title from '../components/Title';
 
 
 
 const MovimientoRegistrar = () => {
   
     const navigate = useNavigate();
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
-    const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
-    const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento, loading: loadingMovimientos } = useFetch();
+    const { fetchData: fetchClientes, error: errorClientes } = useFetch();
+    const { fetchData: fetchArticulos, error: errorArticulos } = useFetch();
+    const { fetchData: fetchRegistrarMovimiento, error: errorRegistrarMovimiento } = useFetch();
 
     const [clientes, setClientes] = React.useState([]);
     const [articulos, setArticulos] = React.useState([]);
@@ -35,11 +34,13 @@ const MovimientoRegistrar = () => {
         if (articulosData.error) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: articulosData.message })
+            return;
         } 
 
         if (errorArticulos) {
             setAlert(true);
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
+            return;
         }
 
         setArticulos(articulosData); 
@@ -78,7 +79,7 @@ const MovimientoRegistrar = () => {
         getArticulos();
         getClientes();
 
-    }, [])
+    }, [getArticulos, getClientes])
 
    
 
