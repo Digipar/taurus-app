@@ -1,4 +1,5 @@
-import * as React from 'react';
+
+import React, { useCallback } from 'react';
 import PropTypes from 'prop-types';
 import { alpha } from '@mui/material/styles';
 import Box from '@mui/material/Box';
@@ -27,9 +28,9 @@ import Chip from '@mui/material/Chip';
 import Card from '@mui/material/Card';
 import CardContent from '@mui/material/CardContent';
 import Stack from '@mui/material/Stack';
-import BackspaceIcon from '@mui/icons-material/Backspace';
 import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
+import Alert from '../components/Alert';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -156,6 +157,7 @@ export default function EnhancedTable() {
     const [tenantsTotal, setTenantsTotal] = React.useState([]);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
+    const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
     const { fetchData: fetchTenants, error: errorTenants, loading: loadingTenants } = useFetch();
     const [tenantListlength, setTenantListLength] = React.useState(false);
@@ -240,7 +242,7 @@ export default function EnhancedTable() {
         getTenants(0, rowsPerPageNew)
     };
 
-    const getTenantsCount = React.useCallback(async () => {
+    const getTenantsCount = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -249,17 +251,17 @@ export default function EnhancedTable() {
 
         const tenantCount = await fetchTenants(`${API}/tenant-count`, reqOptions)
         if (tenantCount.error) {
-
+// eslint-disable-line
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantCount.message })
         } else if (errorTenants) {
-
+// eslint-disable-line
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
             setTenantsCount(tenantCount)
         }
     }, [errorTenants, fetchTenants]);
 
-    const getTenantsTotal = React.useCallback(async () => {
+    const getTenantsTotal = useCallback(async () => {
 
         const reqOptions = {
             method: 'GET',
@@ -283,13 +285,14 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
             setTenantsTotal(tenantsTotal)
         }
     }, [errorTenants, fetchTenants]);
 
-    const getTenants = React.useCallback(async (newPage, rowsPerPageNew) => {
+    const getTenants = useCallback(async (newPage, rowsPerPageNew) => {
 
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
@@ -305,8 +308,8 @@ export default function EnhancedTable() {
         const tenantData = await fetchTenants(`${API}/tenant`, reqOptions)
 
         if (tenantData.error) {
-
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantData.message })
+
         } else if (errorTenants) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
@@ -318,12 +321,15 @@ export default function EnhancedTable() {
                         element.estado = 'Anulado'
                     }
                 }
+                return element
 
             });
 
             setTenantsList(tenantData)
         }
     }, [errorTenants, fetchTenants]);
+    
+
 
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
@@ -341,10 +347,13 @@ export default function EnhancedTable() {
         getTenants();
         getTenantsCount();
         getTenantsTotal()
-    }, [])
+    }, [getTenants,getTenantsCount,getTenantsTotal])
 
     return (
-        <><Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+       
+        <>
+        <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+        <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
             Tenants
         </Typography>
         <Card size="small" sx={{ minWidth: 275, mb: 1  }}>
@@ -421,7 +430,7 @@ export default function EnhancedTable() {
                                                 >
                                                     {row.id}
                                                 </TableCell>
-                                                <TableCell align="left">{row.nombre} {row.estado != 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                                <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
 
                                             </TableRow>
                                         );
