@@ -421,7 +421,9 @@ export default function EnhancedTable() {
                         <Stack alignItems="center" sx={{ marginTop: "25px" }}>
                             <CircularProgress /> Cargando...
                         </Stack>
-                        :  <Table
+                        :  
+                        <TableContainer>
+                        <Table
                         sx={{ minWidth: 750 }}
                         aria-labelledby="tableTitle"
                         size={'medium'}
@@ -470,6 +472,7 @@ export default function EnhancedTable() {
                         </TableBody>
 
                     </Table>
+                        </TableContainer>
                 }
                 {
                     articuloListlength === 0 && loadingArticulos === false ?
