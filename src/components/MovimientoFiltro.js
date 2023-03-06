@@ -97,7 +97,6 @@ const MovimientoFiltro = (props) => {
             };
 
             const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
-            // console.log('articulosData:', articulosData)
 
             if (activeArt) {
                 setOptionsArt([...articulosData]);
