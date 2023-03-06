@@ -30,6 +30,7 @@ import Lottie from 'react-lottie-player';
 import lottieJson from '../img/lottie.json';
 import Stack from '@mui/material/Stack';
 import Alert from '../components/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -176,8 +177,9 @@ export default function EnhancedTable() {
     const [alert, setAlert] = React.useState(false);
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
-    const { fetchData: fetchClientes, error: errorClientes, loading: loadingClientes } = useFetch();
+    const { fetchData: fetchClientes, error: errorClientes} = useFetch();
     const [clienteListlength, setClienteListLength] = React.useState(false);
+    const [loadingClientes, setLoadingClientes] = React.useState(false);
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -189,7 +191,7 @@ export default function EnhancedTable() {
                 return (
                     cliente.nombre
                         .toLowerCase()
-                        .includes(searchField.toLowerCase())
+                        .match(searchField.toLowerCase())
                 );
             }
         );
@@ -200,7 +202,10 @@ export default function EnhancedTable() {
             }, 4000);
         } else {
             setTimeout(function () {
-                setClienteListLength(true)
+                setClientesList(clientesList)
+                setClienteListLength(0)          
+                setLoadingClientes(false)
+                setMostrarPaginacion(false)
             }, 4000);
         }
     }
@@ -239,9 +244,10 @@ export default function EnhancedTable() {
         setSelected(newSelected);
     };
 
-    const handleChangePage = (event, newPage) => {
-
-        getClientes(newPage, rowsPerPage)
+    const handleChangePage = async (event, newPage) => {
+        setLoadingClientes(true)
+        await getClientes(newPage, rowsPerPage)
+        setLoadingClientes(false)
         setPage(newPage);
     };
 
@@ -302,7 +308,7 @@ export default function EnhancedTable() {
     }, [errorClientes, fetchClientes]);
 
     const getClientes = useCallback(async (newPage, rowsPerPageNew) => {
-
+        setLoadingClientes(true)
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
             pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew
@@ -323,29 +329,34 @@ export default function EnhancedTable() {
 
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorClientes })
         } else {
-            clienteData.map(element => {
-                if (element.estado !== 1) {
-                    if (element.estado === 2) {
-                        element.estado = 'Borrador'
-                    } else {
-                        element.estado = 'Anulado'
+            if (clienteData.length > 0) {
+
+                clienteData.map(element => {
+                    if (element.estado !== 1) {
+                        if (element.estado === 2) {
+                            element.estado = 'Borrador'
+                        } else {
+                            element.estado = 'Anulado'
+                        }
                     }
-                }
-                return element
+                    return element
+    
+                });
+                setClientesList(clienteData)
+                setLoadingClientes(false)
+            }
 
-            });
-
-            setClientesList(clienteData)
         }
     }, [errorClientes, fetchClientes]);
 
 
     const isSelected = (nombre) => selected.indexOf(nombre) !== -1;
 
-    const refreshClientes = () => {
+    const refreshClientes = async () => {
+    
+        setClienteListLength(false)
         setSearchField("")
-        setClientesList([]);
-        getClientes();
+        await getClientes();
         setMostrarPaginacion(true)
     }
     const limpiarClientes = () => {
@@ -405,9 +416,15 @@ export default function EnhancedTable() {
             </Card>
             <Card>
                 <CardContent>
-
-                    {!clienteListlength ? <TableContainer>
-                        <Table
+               
+                    {
+                        loadingClientes === true ?
+                            <Stack alignItems="center" sx={{ marginTop: "25px" }}>
+                                <CircularProgress /> Cargando...
+                            </Stack>
+                            :
+                            <TableContainer>
+                            <Table
                             sx={{ minWidth: 750 }}
                             aria-labelledby="tableTitle"
                             size={'medium'}
@@ -453,16 +470,23 @@ export default function EnhancedTable() {
                                     })}
 
                             </TableBody>
-
                         </Table>
-                    </TableContainer> : <Stack alignItems="center">
-                        <Lottie
-                            loop
-                            animationData={lottieJson}
-                            play
-                            style={{ width: 250, height: 250, flex: 1 }} />
-                        <h4>Cliente no encontrado</h4>
-                    </Stack>}
+                            
+                            </TableContainer>
+                         
+                    }
+                    {
+                        clienteListlength === 0 && loadingClientes === false ?
+                            <Stack alignItems="center">
+                                <Lottie
+                                    loop
+                                    animationData={lottieJson}
+                                    play
+                                    style={{ width: 250, height: 250, flex: 1 }} />
+                                <h4>Cliente no encontrado</h4>
+                            </Stack>
+                            : ''
+                    }
                     {mostrarPaginacion ? <TablePagination
                         rowsPerPageOptions={[10, 25, 50]}
                         component="div"

@@ -31,6 +31,7 @@ import Stack from '@mui/material/Stack';
 import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
 import Alert from '../components/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -97,6 +98,7 @@ function EnhancedTableHead(props) {
                         sortDirection={orderBy === encabezado.id ? order : false}
                     >
                         <TableSortLabel
+                            sx={{ fontWeight: 'bold' }}
                             active={orderBy === encabezado.id}
                             direction={orderBy === encabezado.id ? order : 'asc'}
                             onClick={createSortHandler(encabezado.id)}
@@ -159,8 +161,9 @@ export default function EnhancedTable() {
     const [searchField, setSearchField] = React.useState("");
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
-    const { fetchData: fetchTenants, error: errorTenants, loading: loadingTenants } = useFetch();
+    const { fetchData: fetchTenants, error: errorTenants } = useFetch();
     const [tenantListlength, setTenantListLength] = React.useState(false);
+    const [loadingTenants, setLoadingTenants] = React.useState(false);
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -173,29 +176,34 @@ export default function EnhancedTable() {
                 return (
                     tenant.nombre
                         .toLowerCase()
-                        .includes(searchField.toLowerCase())
+                        .match(searchField.toLowerCase())
                 );
             }
         );
-        //console.log('tenantsList', tenantsList)
+       
         if (tenantsList.length) {
             setTimeout(function () {
                 setTenantsList(tenantsList)
                 setMostrarPaginacion(false)
             }, 4000);
         } else {
+            console.log('aca')
             setTimeout(function () {
-                setTenantListLength(true)
+                setTenantsList(tenantsList)
+                setTenantListLength(0)
+                setLoadingTenants(false)
                 setMostrarPaginacion(false)
             }, 4000);
         }
     }
-    const refreshTenants = () => {
+    const refreshTenants = async () => {
+        setTenantListLength(false)
         setSearchField("")
         setTenantsList([]);
-        getTenants();
+        await getTenants();
         setMostrarPaginacion(true)
     }
+
     const handleChange = e => {
         filtrarTenants(e.target.value)
         setSearchField(e.target.value);
@@ -230,10 +238,11 @@ export default function EnhancedTable() {
         setSelected(newSelected);
     };
 
-    const handleChangePage = (event, newPage) => {
-
-        getTenants(newPage, rowsPerPage)
+    const handleChangePage = async (event, newPage) => {
+        setLoadingTenants(true)
+        await getTenants(newPage, rowsPerPage)
         setPage(newPage);
+        setLoadingTenants(false)
     };
 
     const handleChangeRowsPerPage = (event) => {
@@ -251,10 +260,10 @@ export default function EnhancedTable() {
 
         const tenantCount = await fetchTenants(`${API}/tenant-count`, reqOptions)
         if (tenantCount.error) {
-// eslint-disable-line
+            // eslint-disable-line
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: tenantCount.message })
         } else if (errorTenants) {
-// eslint-disable-line
+            // eslint-disable-line
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
             setTenantsCount(tenantCount)
@@ -293,7 +302,7 @@ export default function EnhancedTable() {
     }, [errorTenants, fetchTenants]);
 
     const getTenants = useCallback(async (newPage, rowsPerPageNew) => {
-
+        setLoadingTenants(true)
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
             pageCount: !rowsPerPageNew ? 10 : rowsPerPageNew
@@ -313,22 +322,25 @@ export default function EnhancedTable() {
         } else if (errorTenants) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorTenants })
         } else {
-            tenantData.map(element => {
-                if (element.estado !== 1) {
-                    if (element.estado === 2) {
-                        element.estado = 'Borrador'
-                    } else {
-                        element.estado = 'Anulado'
+            if (tenantData.length > 0) {
+                tenantData.map(element => {
+                    if (element.estado !== 1) {
+                        if (element.estado === 2) {
+                            element.estado = 'Borrador'
+                        } else {
+                            element.estado = 'Anulado'
+                        }
                     }
-                }
-                return element
+                    return element
+                });
 
-            });
+                setTenantsList(tenantData)
+                setLoadingTenants(false)
+            }
 
-            setTenantsList(tenantData)
         }
     }, [errorTenants, fetchTenants]);
-    
+
 
 
 
@@ -347,16 +359,16 @@ export default function EnhancedTable() {
         getTenants();
         getTenantsCount();
         getTenantsTotal()
-    }, [getTenants,getTenantsCount,getTenantsTotal])
+    }, [getTenants, getTenantsCount, getTenantsTotal])
 
     return (
-       
+
         <>
-        <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-        <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
-            Tenants
-        </Typography>
-        <Card size="small" sx={{ minWidth: 275, mb: 1  }}>
+            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+            <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+                Tenants
+            </Typography>
+            <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <CardContent>
                     <Grid container direction="row"
                         justifyContent="space-between"
@@ -369,7 +381,7 @@ export default function EnhancedTable() {
                         spacing={2}
                         display="flex">
 
-                        <FormControl sx={{ml: 2, mt: 3, width: '110ch' }} onClick={limpiarTenants}>
+                        <FormControl sx={{ ml: 2, mt: 3, width: '110ch' }} onClick={limpiarTenants}>
                             <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                             <OutlinedInput
                                 onChange={handleChange}
@@ -386,67 +398,81 @@ export default function EnhancedTable() {
                             Refrescar
                         </Button>
                     </Box>
-               </CardContent>
-        </Card>
-        <Card>
-               <CardContent>
-                    {!tenantListlength ? <TableContainer>
-                        <Table
-                            sx={{ minWidth: 750 }}
-                            aria-labelledby="tableTitle"
-                            size={'medium'}
-                        >
-                            <EnhancedTableHead
-                                numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
-                                onSelectAllClick={handleSelectAllClick}
-                                onRequestSort={handleRequestSort}
-                                rowCount={tenantsList.length} />
-                            <TableBody>
-                                {stableSort(tenantsList, getComparator(order, orderBy))
+                </CardContent>
+            </Card>
+            <Card>
+                <CardContent>
 
-                                    .map((row, index) => {
-                                        const isItemSelected = isSelected(row.id);
-                                        const labelId = `enhanced-table-checkbox-${index}`;
+                    {
+                        loadingTenants === true ?
+                            <Stack alignItems="center" sx={{ marginTop: "25px" }}>
+                                <CircularProgress /> Cargando...
+                            </Stack>
+                            : 
+                            <TableContainer>
+                            <Table
+                                sx={{ minWidth: 750 }}
+                                aria-labelledby="tableTitle"
+                                size={'medium'}
+                            >
+                                <EnhancedTableHead
+                                    numSelected={selected.length}
+                                    order={order}
+                                    orderBy={orderBy}
+                                    onSelectAllClick={handleSelectAllClick}
+                                    onRequestSort={handleRequestSort}
+                                    rowCount={tenantsList.length} />
 
-                                        return (
-                                            <TableRow
-                                                hover
-                                                onClick={(event) => handleClick(event, row.descripcion)}
-                                                role="checkbox"
-                                                aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.id}
-                                                selected={isItemSelected}
-                                            >
-                                                <TableCell>
-                                                </TableCell>
-                                                <TableCell
-                                                    component="th"
-                                                    id={labelId}
-                                                    scope="row"
-                                                    padding="none"
+                                <TableBody>
+                                    {stableSort(tenantsList, getComparator(order, orderBy))
+
+                                        .map((row, index) => {
+                                            const isItemSelected = isSelected(row.id);
+                                            const labelId = `enhanced-table-checkbox-${index}`;
+
+                                            return (
+                                                <TableRow
+                                                    hover
+                                                    onClick={(event) => handleClick(event, row.descripcion)}
+                                                    role="checkbox"
+                                                    aria-checked={isItemSelected}
+                                                    tabIndex={-1}
+                                                    key={row.id}
+                                                    selected={isItemSelected}
                                                 >
-                                                    {row.id}
-                                                </TableCell>
-                                                <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                                    <TableCell>
+                                                    </TableCell>
+                                                    <TableCell
+                                                        component="th"
+                                                        id={labelId}
+                                                        scope="row"
+                                                        padding="none"
+                                                    >
+                                                        {row.id}
+                                                    </TableCell>
+                                                    <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
 
-                                            </TableRow>
-                                        );
-                                    })}
+                                                </TableRow>
+                                            );
+                                        })}
 
-                            </TableBody>
+                                </TableBody>
+                            </Table>
+                        </TableContainer>
+                    }
+                    {
+                        tenantListlength === 0 && loadingTenants === false ?
+                            <Stack alignItems="center">
+                                <Lottie
+                                    loop
+                                    animationData={lottieJson}
+                                    play
+                                    style={{ width: 250, height: 250, flex: 1 }} />
+                                <h4>Tenant no encontrado</h4>
+                            </Stack>
+                            : ''                            
+                    }
 
-                        </Table>
-                    </TableContainer> : <Stack alignItems="center">
-                        <Lottie
-                            loop
-                            animationData={lottieJson}
-                            play
-                            style={{ width: 250, height: 250, flex: 1 }} />
-                        <h4>Tenant no encontrado</h4>
-                    </Stack>}
                     {mostrarPaginacion ? <TablePagination
                         rowsPerPageOptions={[10, 25, 50]}
                         component="div"
