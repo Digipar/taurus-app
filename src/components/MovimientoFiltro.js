@@ -13,12 +13,11 @@ import Box from '@mui/material/Box';
 import Grid from '@mui/material/Grid';
 import Button from '@mui/material/Button';
 import SearchIcon from '@mui/icons-material/Search';
-import ReplayIcon from '@mui/icons-material/Replay';
-import ManageSearchIcon from '@mui/icons-material/ManageSearch';
 import MenuItem from '@mui/material/MenuItem';
 import useFetch from '../hooks/use-fetch';
 import { API } from '../config';
 import CircularProgress from '@mui/material/CircularProgress';
+import { Link } from "react-router-dom";
 
 
 
@@ -29,6 +28,7 @@ const MovimientoFiltro = (props) => {
     const [movimientoId, setMovimientoId] = useState('');
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
+    // const [loadingMovimientos, setLoadingMovimientos] = React.useState(false)
 
     //? API
     const { fetchData: fetchMovimiento, error: errorMovimiento } = useFetch();
@@ -127,6 +127,8 @@ const MovimientoFiltro = (props) => {
     //! Filtro
     const filtrarMovimientos = async () => {
 
+        props.loadingMovimientos(true)
+
         let filterData = {}
 
         if (movimientoId !== '') {
@@ -152,8 +154,8 @@ const MovimientoFiltro = (props) => {
 
         if (articuloSeleccionado && articuloSeleccionado?.id && articuloSeleccionado.id !== null) {
             filterData = {
-               ...filterData,
-               articuloId: articuloSeleccionado.id
+                ...filterData,
+                articuloId: articuloSeleccionado.id
             }
         }
 
@@ -195,7 +197,10 @@ const MovimientoFiltro = (props) => {
             return;
         }
 
+
+
         props.onFilter(movimientoData)
+        props.loadingMovimientos(false)
 
     };
 
@@ -213,6 +218,11 @@ const MovimientoFiltro = (props) => {
                         <Button startIcon={<SearchIcon />} variant="text" color='primary'>
                             Filtro de búsqueda
                         </Button>
+
+                          
+                        <Button sx={{ marginLeft: '97vh !important'  }} color='primary' variant='contained' component={Link} to="/movimiento-registrar" disabled={props.loadingMovimientos}>
+                                    Nuevo movimiento
+                                </Button>
                     </AccordionSummary>
                     <AccordionDetails>
 
@@ -221,191 +231,199 @@ const MovimientoFiltro = (props) => {
                             sx={{ flexGrow: 1 }}
                         >
                             <Grid container spacing={1} sx={{ marginLeft: 1 }}>
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth>
-                                            <TextField
-                                                // error={errors.movimientoId && true}
-                                                // helperText={errors.movimientoId}
-                                                name="movimientoId"
-                                                id="movimientoId"
-                                                label="Id"
-                                                type="text"
-                                                value={movimientoId}
-                                                onChange={(e) => { setMovimientoId(e.target.value) }}
-                                                sx={{ width: "150px" }}
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                
 
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth  >
-                                            <Autocomplete
-                                                id="asynchronous-demo"
-                                                sx={{ width: "450px" }}
-                                                open={open}
-                                                onOpen={() => {
-                                                    setOpen(true);
-                                                }}
-                                                onClose={() => {
-                                                    setOpen(false);
-                                                }}
-                                                isOptionEqualToValue={(option, value) => option.nombre === value.nombre}
-                                                getOptionLabel={(option) => option.nombre}
-                                                options={options}
-                                                loading={loading}
-                                                // value={clienteSeleccionado}
-                                                onChange={(event, newValue) => {
-                                                    setClienteSeleccionado(newValue)
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="Clientes"
-                                                        InputProps={{
-                                                            ...params.InputProps,
-                                                            endAdornment: (
-                                                                <React.Fragment>
-                                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                                    {params.InputProps.endAdornment}
-                                                                </React.Fragment>
-                                                            ),
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth  >
-                                            <Autocomplete
-                                                id="asynchronous-demo2"
-                                                sx={{ width: "450px" }}
-                                                open={openArt}
-                                                onOpen={() => {
-                                                    setOpenArt(true);
-                                                }}
-                                                onClose={() => {
-                                                    setOpenArt(false);
-                                                }}
-                                                isOptionEqualToValue={(option, value) => option.descripcion === value.descripcion}
-                                                getOptionLabel={(option) => option.descripcion}
-                                                options={optionsArt}
-                                                loading={loadingArt}
-                                                // value={articuloSeleccionado}
-                                                onChange={(event, newValue) => {
-                                                    setArticuloSeleccionado(newValue)
-                                                }}
-                                                renderInput={(params) => (
-                                                    <TextField
-                                                        {...params}
-                                                        label="Articulos"
-                                                        InputProps={{
-                                                            ...params.InputProps,
-                                                            endAdornment: (
-                                                                <React.Fragment>
-                                                                    {loading ? <CircularProgress color="inherit" size={20} /> : null}
-                                                                    {params.InputProps.endAdornment}
-                                                                </React.Fragment>
-                                                            ),
-                                                        }}
-                                                    />
-                                                )}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth >
-                                            <InputLabel id="estado">Estado</InputLabel>
-                                            <Select
-                                                labelId="estado"
-                                                id="estado"
-                                                name="estado"
-                                                value={estado}
-                                                label="Estado "
-                                                onChange={(e) => setEstado(e.target.value)}
-                                                sx={{ width: "250px" }}
-                                            >
-                                                {/* {
+                                <Grid item={true} >
+                                    <FormControl fullWidth>
+                                        <TextField
+                                            // error={errors.movimientoId && true}
+                                            // helperText={errors.movimientoId}
+                                            name="movimientoId"
+                                            id="movimientoId"
+                                            label="Id"
+                                            type="text"
+                                            value={movimientoId}
+                                            onChange={(e) => { setMovimientoId(e.target.value) }}
+                                            sx={{ width: "150px" }}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </FormControl>
+                                </Grid>
+
+
+
+                                <Grid item={true} >
+                                    <FormControl fullWidth  >
+                                        <Autocomplete
+                                            id="asynchronous-demo"
+                                            sx={{ width: "450px" }}
+                                            open={open}
+                                            onOpen={() => {
+                                                setOpen(true);
+                                            }}
+                                            onClose={() => {
+                                                setOpen(false);
+                                            }}
+                                            isOptionEqualToValue={(option, value) => option.nombre === value.nombre}
+                                            getOptionLabel={(option) => option.nombre}
+                                            options={options}
+                                            loading={loading}
+                                            // value={clienteSeleccionado}
+                                            onChange={(event, newValue) => {
+                                                setClienteSeleccionado(newValue)
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Clientes"
+                                                    InputProps={{
+                                                        ...params.InputProps,
+                                                        endAdornment: (
+                                                            <React.Fragment>
+                                                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                                {params.InputProps.endAdornment}
+                                                            </React.Fragment>
+                                                        ),
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </FormControl>
+                                </Grid>
+
+
+                                <Grid item={true} >
+                                    <FormControl fullWidth  >
+                                        <Autocomplete
+                                            id="asynchronous-demo2"
+                                            sx={{ width: "450px" }}
+                                            open={openArt}
+                                            onOpen={() => {
+                                                setOpenArt(true);
+                                            }}
+                                            onClose={() => {
+                                                setOpenArt(false);
+                                            }}
+                                            isOptionEqualToValue={(option, value) => option.descripcion === value.descripcion}
+                                            getOptionLabel={(option) => option.descripcion}
+                                            options={optionsArt}
+                                            loading={loadingArt}
+                                            // value={articuloSeleccionado}
+                                            onChange={(event, newValue) => {
+                                                setArticuloSeleccionado(newValue)
+                                            }}
+                                            renderInput={(params) => (
+                                                <TextField
+                                                    {...params}
+                                                    label="Articulos"
+                                                    InputProps={{
+                                                        ...params.InputProps,
+                                                        endAdornment: (
+                                                            <React.Fragment>
+                                                                {loading ? <CircularProgress color="inherit" size={20} /> : null}
+                                                                {params.InputProps.endAdornment}
+                                                            </React.Fragment>
+                                                        ),
+                                                    }}
+                                                />
+                                            )}
+                                        />
+                                    </FormControl>
+                                </Grid>
+
+
+                                <Grid item={true} >
+                                    <FormControl fullWidth >
+                                        <InputLabel id="estado">Estado</InputLabel>
+                                        <Select
+                                            labelId="estado"
+                                            id="estado"
+                                            name="estado"
+                                            value={estado}
+                                            label="Estado "
+                                            onChange={(e) => setEstado(e.target.value)}
+                                            sx={{ width: "250px" }}
+                                        >
+                                            {/* {
                                                     props.movimientos.map(item => {
                                                         return (
                                                             <MenuItem key={item.id} value={item.estado}>{item.estadoDescripcion}</MenuItem>
                                                         )
                                                     })
                                                 } */}
-                                                <MenuItem key={'Borrador'} value={'Borrador'}>Borrador</MenuItem>
-                                                <MenuItem key={'Activo'} value={'Activo'}>Activo</MenuItem>
-                                                <MenuItem key={'Anulado'} value={'Anulado'}>Anulado</MenuItem>
+                                            <MenuItem key={'Borrador'} value={'Borrador'}>Borrador</MenuItem>
+                                            <MenuItem key={'Activo'} value={'Activo'}>Activo</MenuItem>
+                                            <MenuItem key={'Anulado'} value={'Anulado'}>Anulado</MenuItem>
 
-                                            </Select>
-                                            {/* <FormHelperText>{errors.estado}</FormHelperText> */}
-                                        </FormControl>
-                                    </Grid>
-                                
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth >
-                                            <TextField
-                                                name="fechaDesde"
-                                                id="fechaDesde"
-                                                label="Desde"
-                                                type="date"
-                                                value={fechaDesde}
-                                                required
-                                                onChange={(e) => setFechaDesde(e.target.value)}
-                                                sx={{ width: "171px" }}
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                
-                                
-                                    <Grid item={true} >
-                                        <FormControl fullWidth >
-                                            <TextField
-                                                name="fechaHasta"
-                                                id="fechaHasta"
-                                                label="Hasta"
-                                                type="date"
-                                                value={fechaHasta}
-                                                required
-                                                onChange={(e) => setFechaHasta(e.target.value)}
-                                                sx={{ width: "171px" }}
-                                                InputLabelProps={{
-                                                    shrink: true,
-                                                }}
-                                            />
-                                        </FormControl>
-                                    </Grid>
-                                
+                                        </Select>
+                                        {/* <FormHelperText>{errors.estado}</FormHelperText> */}
+                                    </FormControl>
+                                </Grid>
+
+
+                                <Grid item={true} >
+                                    <FormControl fullWidth >
+                                        <TextField
+                                            name="fechaDesde"
+                                            id="fechaDesde"
+                                            label="Desde"
+                                            type="date"
+                                            value={fechaDesde}
+                                            required
+                                            onChange={(e) => setFechaDesde(e.target.value)}
+                                            sx={{ width: "171px" }}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </FormControl>
+                                </Grid>
+
+
+                                <Grid item={true} >
+                                    <FormControl fullWidth >
+                                        <TextField
+                                            name="fechaHasta"
+                                            id="fechaHasta"
+                                            label="Hasta"
+                                            type="date"
+                                            value={fechaHasta}
+                                            required
+                                            onChange={(e) => setFechaHasta(e.target.value)}
+                                            sx={{ width: "171px" }}
+                                            InputLabelProps={{
+                                                shrink: true,
+                                            }}
+                                        />
+                                    </FormControl>
+                                </Grid>
+
                             </Grid>
 
                             <Stack
-                                sx={{ mt: 2 }}
+                                sx={{ mt: 2, ml: 2 }}
                                 direction="row"
-                                alignItems="center"
+                                alignItems="right"
                                 spacing={1}
                             >
 
-                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary' onClick={filtrarMovimientos}>
+                                <Button variant='contained' color='primary' onClick={filtrarMovimientos}>
                                     Buscar
                                 </Button>
 
-                                <Button startIcon={<ReplayIcon />} variant="text" color='primary' onClick={limpiarFiltro}>
+                                <Button variant='contained' color='primary' onClick={limpiarFiltro}>
                                     Limpiar
                                 </Button>
+
+                             
+
                             </Stack>
+
+
+                        
+
+                            
 
                         </Box>
                     </AccordionDetails>

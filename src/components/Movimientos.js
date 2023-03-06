@@ -27,7 +27,8 @@ import Toolbar from '@mui/material/Toolbar';
 import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
 import CachedIcon from '@mui/icons-material/Cached';
-import AddIcon from '@mui/icons-material/Add';
+// import AddIcon from '@mui/icons-material/Add';
+import CircularProgress from '@mui/material/CircularProgress';
 
 
 function descendingComparator(a, b, orderBy) {
@@ -128,7 +129,7 @@ function EnhancedTableHead(props) {
                         >
                             {encabezado.label}
                             {orderBy === encabezado.id ? (
-                                <Box component="span"  sx={visuallyHidden}>
+                                <Box component="span" sx={visuallyHidden}>
                                     {order === 'desc' ? 'sorted descending' : 'sorted ascending'}
                                 </Box>
                             ) : null}
@@ -182,9 +183,10 @@ const Movimientos = () => {
     const [movimientos, setMovimientos] = useState([]);
     const [movimientosCount, setMovimientosCount] = useState([]);
     const [mostrarPaginacion, setMostrarPaginacion] = useState(true);
+    const [loadingMovimientos, setLoadingMovimientos] = useState(false);
 
-    const { fetchData: fetchMovimientos, loading: loadingMovimientos } = useFetch();
-  
+    const { fetchData: fetchMovimientos } = useFetch();
+
 
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
@@ -221,10 +223,13 @@ const Movimientos = () => {
         setSelected(newSelected);
     };
 
-    const handleChangePage = (event, newPage) => {
+    const handleChangePage = async (event, newPage) => {
+        setLoadingMovimientos(true)
         // console.log("newPage", newPage)
         // console.log("rowsPerPage", rowsPerPage)
-        getMovimientos(newPage, rowsPerPage)
+        await getMovimientos(newPage, rowsPerPage)
+        setLoadingMovimientos(false)
+
         setPage(newPage);
     };
 
@@ -252,7 +257,7 @@ const Movimientos = () => {
 
 
     const getMovimientos = useCallback(async (newPage, rowsPerPageNew) => {
-
+        setLoadingMovimientos(true)
         // console.log("MOVIMIENTO GET newPage", newPage)
         // console.log("MOVIMIENTO GET rowsPerPageNew", rowsPerPageNew)
 
@@ -271,6 +276,9 @@ const Movimientos = () => {
 
         const movimientoData = await fetchMovimientos(`${API}/movimiento`, reqOptions)
 
+        if (movimientoData.length > 0) {
+            setLoadingMovimientos(false)
+        }
         // console.log("movimientoData =>", movimientoData)
         setMovimientos(movimientoData);
 
@@ -307,14 +315,17 @@ const Movimientos = () => {
         setMovimientos(dataFiltrada)
     }
 
-    const resfreshMovimientos = () => {
+    const resfreshMovimientos = async () => {
         setMovimientos([]);
-        getMovimientos();
+        // setLoadingMovimientos(true)
+        await getMovimientos();
+        // setLoadingMovimientos(false)
         setMostrarPaginacion(true)
     }
-    
+
     useEffect(() => {
         getMovimientos();
+
         getMovimientosCount();
         // getClientes();
         // getArticulos();
@@ -325,7 +336,7 @@ const Movimientos = () => {
 
             <Title>Movimientos</Title>
 
-            <MovimientoFiltro getMovimientos={getMovimientos} onFilter={getDataFilter} />
+            <MovimientoFiltro getMovimientos={getMovimientos} loadingMovimientos={loadingMovimientos} onFilter={getDataFilter} />
 
             {/* <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml: 2 }} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
                 Refrescar
@@ -341,88 +352,97 @@ const Movimientos = () => {
                         spacing={1}
                     >
 
-                        <Button startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
-                            Nuevo movimiento
-                        </Button>
 
-                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
+                        <Button sx={{ marginLeft: '940px !important', marginBottom: '12px' }} startIcon={<CachedIcon />} variant="contained" color='primary' onClick={resfreshMovimientos} >
                             Refrescar
                         </Button>
                     </Stack>
                     <Divider />
 
-                    {movimientos.length ? 
-                    <TableContainer>
-                        <Table
-                            sx={{ minWidth: 750 }}
-                            aria-labelledby="tableTitle"
-                            size={'medium'}
-                        >
-                            <EnhancedTableHead
-                                numSelected={selected.length}
-                                order={order}
-                                orderBy={orderBy}
-                                onSelectAllClick={handleSelectAllClick}
-                                onRequestSort={handleRequestSort}
-                                rowCount={movimientos.length} />
-                            <TableBody>
-                                {stableSort(movimientos, getComparator(order, orderBy))
+                    {
+                        loadingMovimientos === true ?
+                            <Stack alignItems="center" sx={{ marginTop: "25px" }}>
+                                <CircularProgress /> Cargando...
+                            </Stack>
+                            :
+                            <TableContainer>
+                                <Table
+                                    sx={{ minWidth: 750 }}
+                                    aria-labelledby="tableTitle"
+                                    size={'medium'}
+                                >
+                                    <EnhancedTableHead
+                                        numSelected={selected.length}
+                                        order={order}
+                                        orderBy={orderBy}
+                                        onSelectAllClick={handleSelectAllClick}
+                                        onRequestSort={handleRequestSort}
+                                        rowCount={movimientos.length} />
+                                    <TableBody>
+                                        {stableSort(movimientos, getComparator(order, orderBy))
 
-                                    .map((row, index) => {
-                                        const isItemSelected = isSelected(row.id);
-                                        const labelId = `enhanced-table-checkbox-${index}`;
+                                            .map((row, index) => {
+                                                const isItemSelected = isSelected(row.id);
+                                                const labelId = `enhanced-table-checkbox-${index}`;
 
-                                        return (
-                                            <TableRow
-                                                hover
-                                                onClick={(event) => handleClick(event, row.articulo.descripcion)}
-                                                role="checkbox"
-                                                aria-checked={isItemSelected}
-                                                tabIndex={-1}
-                                                key={row.id}
-                                                selected={isItemSelected}
-                                            >
-                                                <TableCell>
-                                                </TableCell>
-                                                <TableCell
-                                                    component="th"
-                                                    id={labelId}
-                                                    scope="row"
-                                                    padding="none"
+                                                return (
+                                                    <TableRow
+                                                        hover
+                                                        onClick={(event) => handleClick(event, row.articulo.descripcion)}
+                                                        role="checkbox"
+                                                        aria-checked={isItemSelected}
+                                                        tabIndex={-1}
+                                                        key={row.id}
+                                                        selected={isItemSelected}
+                                                    >
+                                                        <TableCell>
+                                                        </TableCell>
+                                                        <TableCell
+                                                            component="th"
+                                                            id={labelId}
+                                                            scope="row"
+                                                            padding="none"
 
-                                                >
-                                                    {row.id}
-                                                </TableCell>
-                                                <TableCell align="left">{row.articulo.descripcion} </TableCell>
-                                                <TableCell align="left">{row.cliente.nombre}</TableCell>
-                                                <TableCell align="left">{row.cantidad}</TableCell>
-                                                <TableCell align="left">{row.precio}</TableCell>
-                                                <TableCell>
-                                                    <Tooltip title="Editar">
-                                                        <Button startIcon={<ModeEditIcon />}
-                                                            component={Link}
-                                                            to={`/movimiento-editar/${row.id}`}
-                                                            variant="text"
-                                                            color='primary'
-                                                            disabled={loadingMovimientos} />
-                                                    </Tooltip>
-                                                </TableCell>
-                                            </TableRow>
-                                        );
-                                    })}
+                                                        >
+                                                            {row.id}
+                                                        </TableCell>
+                                                        <TableCell align="left">{row.articulo.descripcion} </TableCell>
+                                                        <TableCell align="left">{row.cliente.nombre}</TableCell>
+                                                        <TableCell align="left">{row.cantidad}</TableCell>
+                                                        <TableCell align="left">{row.precio}</TableCell>
+                                                        <TableCell>
+                                                            <Tooltip title="Editar">
+                                                                <Button startIcon={<ModeEditIcon />}
+                                                                    component={Link}
+                                                                    to={`/movimiento-editar/${row.id}`}
+                                                                    variant="text"
+                                                                    color='primary'
+                                                                // disabled={loadingMovimientos} 
 
-                            </TableBody>
+                                                                />
+                                                            </Tooltip>
+                                                        </TableCell>
+                                                    </TableRow>
+                                                );
+                                            })}
 
-                        </Table>
-                    </TableContainer> :
-                        <Stack alignItems="center">
-                            <Lottie
-                                loop
-                                animationData={lottieJson}
-                                play
-                                style={{ width: 250, height: 250, flex: 1 }} />
-                            <h4>Movimiento no encontrado</h4>
-                        </Stack>}
+                                    </TableBody>
+
+                                </Table>
+                            </TableContainer>
+                    }
+                    {
+                        movimientos.length === 0 && loadingMovimientos === false ?
+                            <Stack alignItems="center">
+                                <Lottie
+                                    loop
+                                    animationData={lottieJson}
+                                    play
+                                    style={{ width: 250, height: 250, flex: 1 }} />
+                                <h4>Movimiento no encontrado</h4>
+                            </Stack>
+                            : ''
+                    }
 
                     {mostrarPaginacion ?
                         <TablePagination
