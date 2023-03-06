@@ -336,7 +336,7 @@ const Movimientos = () => {
 
             <Title>Movimientos</Title>
 
-            <MovimientoFiltro getMovimientos={getMovimientos} loadingMovimientos={loadingMovimientos} onFilter={getDataFilter} />
+            <MovimientoFiltro getMovimientos={getMovimientos}  onFilter={getDataFilter} />
 
             {/* <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml: 2 }} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
                 Refrescar
