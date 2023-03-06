@@ -34,6 +34,7 @@ function AuthProvider(props) {
     [setData],
   )
   const logout = React.useCallback(() => {
+    console.log('aca')
     auth.logout()
     setData(null)
   }, [setData])
