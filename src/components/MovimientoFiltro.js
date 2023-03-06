@@ -31,7 +31,7 @@ const MovimientoFiltro = (props) => {
     const [movimientoId, setMovimientoId] = useState('');
     const [alert, setAlert] = React.useState(false);
     const [alertOptions, setAlertOptions] = React.useState({});
-    const [loadingMovimientos, setLoadingMovimientos] = React.useState(false)
+    // const [loadingMovimientos, setLoadingMovimientos] = React.useState(false)
 
     //? API
     const { fetchData: fetchMovimiento, error: errorMovimiento } = useFetch();
@@ -130,7 +130,7 @@ const MovimientoFiltro = (props) => {
     //! Filtro
     const filtrarMovimientos = async () => {
 
-        setLoadingMovimientos(true)
+        props.loadingMovimientos(true)
 
         let filterData = {}
 
@@ -203,7 +203,7 @@ const MovimientoFiltro = (props) => {
 
 
         props.onFilter(movimientoData)
-        setLoadingMovimientos(false)
+        props.loadingMovimientos(false)
 
     };
 
@@ -221,6 +221,11 @@ const MovimientoFiltro = (props) => {
                         <Button startIcon={<SearchIcon />} variant="text" color='primary'>
                             Filtro de búsqueda
                         </Button>
+
+                          
+                        <Button sx={{ marginLeft: '97vh !important'  }} color='primary' variant='contained' component={Link} to="/movimiento-registrar" disabled={props.loadingMovimientos}>
+                                    Nuevo movimiento
+                                </Button>
                     </AccordionSummary>
                     <AccordionDetails>
 
@@ -400,24 +405,21 @@ const MovimientoFiltro = (props) => {
                             </Grid>
 
                             <Stack
-                                sx={{ mt: 2 }}
+                                sx={{ mt: 2, ml: 2 }}
                                 direction="row"
                                 alignItems="right"
                                 spacing={1}
                             >
 
-                                <Button startIcon={<ManageSearchIcon />} variant="text" color='primary' onClick={filtrarMovimientos}>
+                                <Button variant='contained' color='primary' onClick={filtrarMovimientos}>
                                     Buscar
                                 </Button>
 
-                                <Button startIcon={<ReplayIcon />} variant="text" color='primary' onClick={limpiarFiltro}>
+                                <Button variant='contained' color='primary' onClick={limpiarFiltro}>
                                     Limpiar
                                 </Button>
 
-                               
-                                <Button sx={{ marginLeft: '97vh !important'  }} startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
-                                    Nuevo movimiento
-                                </Button>
+                             
 
                             </Stack>
 
