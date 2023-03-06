@@ -92,8 +92,6 @@ const MovimientoRegistrar = () => {
            
         }
 
-        // console.log('Movimiento Data Create =>', movimientoDataCreate)
-
         const reqOptions = {
             method: 'POST',
             body: JSON.stringify(movimientoDataCreate),
