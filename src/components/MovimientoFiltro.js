@@ -127,7 +127,6 @@ const MovimientoFiltro = (props) => {
     //! Filtro
     const filtrarMovimientos = async () => {
 
-        props.loadingMovimientos(true)
 
         let filterData = {}
 
@@ -200,7 +199,6 @@ const MovimientoFiltro = (props) => {
 
 
         props.onFilter(movimientoData)
-        props.loadingMovimientos(false)
 
     };
 
