@@ -272,6 +272,8 @@ const Movimientos = () => {
 
         const movimientoData = await fetchMovimientos(`${API}/movimiento`, reqOptions)
 
+        
+
         // console.log("movimientoData =>", movimientoData)
         setMovimientos(movimientoData);
 
@@ -342,11 +344,8 @@ const Movimientos = () => {
                         spacing={1}
                     >
 
-                        <Button startIcon={<AddIcon />} variant="text" color='primary' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
-                            Nuevo movimiento
-                        </Button>
-
-                        <Button startIcon={<CachedIcon />} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
+                      
+                        <Button sx={{ marginLeft: '134vh !important' , marginBottom: '12px' }} startIcon={<CachedIcon />} variant="text" color='primary' onClick={resfreshMovimientos} >
                             Refrescar
                         </Button>
                     </Stack>
@@ -405,7 +404,9 @@ const Movimientos = () => {
                                                             to={`/movimiento-editar/${row.id}`}
                                                             variant="text"
                                                             color='primary'
-                                                            disabled={loadingMovimientos} />
+                                                            // disabled={loadingMovimientos} 
+
+                                                            />
                                                     </Tooltip>
                                                 </TableCell>
                                             </TableRow>
