@@ -249,7 +249,6 @@ const Movimientos = () => {
 
         const movimientosCount = await fetchMovimientos(`${API}/movimiento-count`, reqOptions)
 
-        // console.log("movimientosCounnt => ", movimientosCount)
 
         setMovimientosCount(movimientosCount)
 
