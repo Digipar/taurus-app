@@ -45,15 +45,8 @@ async function login({ correo, contrasenha }) {
     // console.log('user ', user)
     if (!user.ok) {
       return user
-
-      // switch (user.status){
-      //     case 401:throw new Error('Bad fetch response')            
-      //     case 404:return{} 
-      //     case 500:return{}
-      // }
   } else {
     const userJSON = await user.json();
-  // console.log('userJSON', userJSON)
   const token = Math.random().toString(36).substr(2);
   return handleUserResponse({ user: { token, UsuarioNombre: userJSON.nombre, userId: userJSON.id, correo: userJSON.correo } })
    
