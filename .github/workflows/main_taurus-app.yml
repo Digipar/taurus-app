@@ -52,4 +52,4 @@ jobs:
           app-name: 'taurus-app'
           slot-name: 'Production'
           publish-profile: ${{ secrets.AZUREAPPSERVICE_PUBLISHPROFILE_F1DD490B948E4D42B81BE95CAAA3FA40 }}
-          package: ./build
+          package: build
