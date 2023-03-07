@@ -18,6 +18,8 @@ AuthContext.displayName = 'AuthContext'
 
 function AuthProvider(props) {
   const {data: user, error, isLoading, isIdle, isError, isSuccess, run, setData} = useAsync()
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [loginError, setLoginError] = React.useState(false);
   // code for pre-loading the user's information if we have their token in
   // localStorage goes here
   React.useEffect(() => {
@@ -26,7 +28,23 @@ function AuthProvider(props) {
   }, [run])
 
   const login = React.useCallback(
-    form => auth.login(form).then(user => setData(user)),
+    form => auth.login(form).then(user => {
+      if (user.ok === false) {
+        switch (user.status) {
+          case 401:
+            setErrorMessage('Email o contraseña inválida')
+            break;
+        
+          default: setErrorMessage('Error de comunicación')
+            break;
+        }
+        setLoginError(true)
+      }else{
+        setData(user)
+      }
+      return true
+    }
+    ),
     [setData],
   )
   const register = React.useCallback(
@@ -40,8 +58,8 @@ function AuthProvider(props) {
   }, [setData])
 
   const value = React.useMemo(
-    () => ({user, login, logout, register}),
-    [login, logout, register, user],
+    () => ({user, login, logout, register,loginError, setLoginError, errorMessage}),
+    [login, logout, register, user, loginError, setLoginError, errorMessage],
   )
   // 🚨 this is the important bit.
   // Normally your provider components render the context provider with a value.

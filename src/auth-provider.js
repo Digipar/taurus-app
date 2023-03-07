@@ -1,7 +1,6 @@
 // pretend this is firebase, netlify, or auth0's code.
 // you shouldn't have to implement something like this in your own app
 import { API } from './config';
-import Alert from '@mui/material/Alert';
 const localStorageKey = '__auth_provider_token__'
 const localStorageUserData = '__auth_provider_user_data__'
 
@@ -30,7 +29,7 @@ function handleUserResponse({ user }) {
 }
 
 async function login({ correo, contrasenha }) {
-  let aviso =false
+
   let bodyAEnviar = {
     correo: correo,
     contrasenha: contrasenha
@@ -45,12 +44,13 @@ async function login({ correo, contrasenha }) {
     console.log('user', user)
     // console.log('user ', user)
     if (!user.ok) {
+      return user
 
-      switch (user.status) {
-          case 401:throw new Error('Bad fetch response')            
-          case 404:return{} 
-          case 500:return{}
-      }
+      // switch (user.status){
+      //     case 401:throw new Error('Bad fetch response')            
+      //     case 404:return{} 
+      //     case 500:return{}
+      // }
   } else {
     const userJSON = await user.json();
   // console.log('userJSON', userJSON)
@@ -62,6 +62,7 @@ async function login({ correo, contrasenha }) {
 }
   catch (error) {
     console.log('error', error)
+    return error
 
   }
 }
