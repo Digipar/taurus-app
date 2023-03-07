@@ -16,6 +16,7 @@ import * as yup from "yup";
 import { useFormik } from 'formik';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
+import Alert from '../components/Alert';
 
 const Copyright = (props) => {
   return (
@@ -40,7 +41,7 @@ const Copyright = (props) => {
 
 const SignIn = (props) => {
 
-  const { login } = useAuth();
+  const { login, loginError, setLoginError, errorMessage } = useAuth();
   const validationSchema = yup.object({
     correo: yup
       .string('Enter your email')
@@ -56,17 +57,19 @@ const SignIn = (props) => {
     },
     validationSchema: validationSchema,
     onSubmit: (values) => {
-      console.log('values', values)
+      //console.log('values', values)
       //submit(values)
       login(values)
     },
   });
 
   return (
+    
     <Container
       component="main"
       maxWidth="xs"
     >
+    <Alert open={loginError} setOpen={setLoginError} alertOptions={{ tipo: 'error', titulo: 'Error', mensaje: errorMessage }}></Alert>
       <CssBaseline />
       <Card sx={{ minWidth: 375, mt: 15 }}>
         <CardContent>

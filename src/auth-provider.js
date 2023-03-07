@@ -1,9 +1,9 @@
 // pretend this is firebase, netlify, or auth0's code.
 // you shouldn't have to implement something like this in your own app
-import { API} from './config';
-
+import { API } from './config';
 const localStorageKey = '__auth_provider_token__'
 const localStorageUserData = '__auth_provider_user_data__'
+
 
 async function getToken() {
   // if we were a real auth provider, this is where we would make a request
@@ -21,47 +21,61 @@ async function getUserFromToken(token) {
   // await Promise.resolve(window.localStorage.getItem(localStorageUserData))
 }
 
-function handleUserResponse({user}) {
-  console.log('user', user)
+function handleUserResponse({ user }) {
+
   window.localStorage.setItem(localStorageKey, user.token)
   window.localStorage.setItem(localStorageUserData, user)
   return user
 }
 
-async function  login({correo, contrasenha}) {
+async function login({ correo, contrasenha }) {
 
-  let bodyAEnviar={
+  let bodyAEnviar = {
     correo: correo,
     contrasenha: contrasenha
   }
-  console.log('login called', bodyAEnviar)
   try {
-  const requestOptions = {
-    method: "POST", 
-    body:JSON.stringify(bodyAEnviar),
-    headers: { "Content-Type": "application/json" }
-  }
-  const user = await fetch(`${API}/login`, requestOptions);
-  // console.log('user ', user)
+    const requestOptions = {
+      method: "POST",
+      body: JSON.stringify(bodyAEnviar),
+      headers: { "Content-Type": "application/json" }
+    }
+    const user = await fetch(`${API}/login`, requestOptions);
+    console.log('user', user)
+    // console.log('user ', user)
     if (!user.ok) {
-      return {}
-    }    
+      return user
+
+      // switch (user.status){
+      //     case 401:throw new Error('Bad fetch response')            
+      //     case 404:return{} 
+      //     case 500:return{}
+      // }
+  } else {
     const userJSON = await user.json();
-    // console.log('userJSON', userJSON)
-    const token = Math.random().toString(36).substr(2);
-    return handleUserResponse({user: {token,UsuarioNombre: userJSON.nombre,userId: userJSON.id,correo: userJSON.correo}})
+  // console.log('userJSON', userJSON)
+  const token = Math.random().toString(36).substr(2);
+  return handleUserResponse({ user: { token, UsuarioNombre: userJSON.nombre, userId: userJSON.id, correo: userJSON.correo } })
+   
   }
-  catch(error){
+  
+}
+  catch (error) {
     console.log('error', error)
-  } 
+    return error
+
+  }
 }
 
-function register({UsuarioNombre, contrasenha}) {
-  return client('register', {UsuarioNombre, contrasenha}).then(handleUserResponse)
+function register({ UsuarioNombre, contrasenha }) {
+  return client('register', { UsuarioNombre, contrasenha }).then(handleUserResponse)
 }
 
 async function logout() {
+  console.log('aca')
+
   window.localStorage.removeItem(localStorageKey)
+ 
 }
 
 const authURL = process.env.REACT_APP_AUTH_URL || 'http://localhost:8080'
@@ -71,8 +85,9 @@ async function client(endpoint, data) {
     method: 'POST',
     body: JSON.stringify(data),
     headers: {
-    'Content-Type': 'application/json'},
- 
+      'Content-Type': 'application/json'
+    },
+
   }
 
   return window.fetch(`${authURL}/${endpoint}`, config).then(async response => {
@@ -85,4 +100,4 @@ async function client(endpoint, data) {
   })
 }
 
-export {getToken, getUserFromToken, login, register, logout, localStorageKey}
+export { getToken, getUserFromToken, login, register, logout, localStorageKey }

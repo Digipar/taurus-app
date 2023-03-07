@@ -30,6 +30,7 @@ import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
 import Stack from '@mui/material/Stack';
 import Alert from '../components/Alert';
+import CircularProgress from '@mui/material/CircularProgress';
 
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
@@ -166,7 +167,8 @@ export default function EnhancedTable() {
     const [mostrarPaginacion, setMostrarPaginacion] = React.useState(true);
     const [searchField, setSearchField] = React.useState("");
     const [articuloListlength, setArticuloListLength] = React.useState(false);
-    const { fetchData: fetchArticulos, error: errorArticulos, loading: loadingArticulos } = useFetch();
+    const { fetchData: fetchArticulos, error: errorArticulos } = useFetch();
+    const [loadingArticulos, setLoadingArticulos] = React.useState(false);
     const handleRequestSort = (event, property) => {
         const isAsc = orderBy === property && order === 'asc';
         setOrder(isAsc ? 'desc' : 'asc');
@@ -178,7 +180,7 @@ export default function EnhancedTable() {
                 return (
                     articulo.descripcion
                         .toLowerCase()
-                        .includes(searchField.toLowerCase())
+                        .match(searchField.toLowerCase())
 
                 );
             }
@@ -191,7 +193,10 @@ export default function EnhancedTable() {
             }, 4000);
         } else {
             setTimeout(function () {
-                setArticuloListLength(true)
+                setArticulosList(articulosList)
+                setArticuloListLength(0)
+                setLoadingArticulos(false)
+                setMostrarPaginacion(false)
             }, 4000);
         }
     }
@@ -231,10 +236,11 @@ export default function EnhancedTable() {
         setSelected(newSelected);
     };
 
-    const handleChangePage = (event, newPage) => {
-        // console.log("newPage", newPage)
+    const handleChangePage = async (event, newPage) => {
+        setLoadingArticulos(true)
         // console.log("rowsPerPage", rowsPerPage)
-        getArticulos(newPage, rowsPerPage)
+        await getArticulos(newPage, rowsPerPage)
+        setLoadingArticulos(false)
         setPage(newPage);
     };
 
@@ -246,6 +252,7 @@ export default function EnhancedTable() {
     };
 
     const getArticulosCount = useCallback(async () => {
+
 
         const reqOptions = {
             method: 'GET',
@@ -262,9 +269,11 @@ export default function EnhancedTable() {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
 
+
             setArticulosCount(articuloCount)
         }
     }, [errorArticulos, fetchArticulos]);
+
     const getArticulosTotal = useCallback(async () => {
 
         const reqOptions = {
@@ -297,10 +306,8 @@ export default function EnhancedTable() {
     }, [errorArticulos, fetchArticulos]);
 
     const getArticulos = useCallback(async (newPage, rowsPerPageNew) => {
-        
-        // console.log("ARTICULO GET newPage", newPage)
-        // console.log("ARTICULO GET rowsPerPageNew", rowsPerPageNew)
 
+        setLoadingArticulos(true)
         let bodyAEnviar = {
             pageNumber: !newPage ? 1 : newPage,
             pageCount: rowsPerPageNew === undefined ? 10 : rowsPerPageNew
@@ -319,31 +326,36 @@ export default function EnhancedTable() {
         } else if (errorArticulos) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: errorArticulos })
         } else {
-
-            articuloData.map(element => {
-                if (element.estado !== 1) {
-                    if (element.estado === 2) {
-                        element.estado = 'Borrador'
-                    } else {
-                        element.estado = 'Anulado'
+            if (articuloData.length > 0) {
+                articuloData.map(element => {
+                    if (element.estado !== 1) {
+                        if (element.estado === 2) {
+                            element.estado = 'Borrador'
+                        } else {
+                            element.estado = 'Anulado'
+                        }
                     }
-                }
-                return element
+                    return element
+                });
 
-            });
+                setArticulosList(articuloData)
+                setLoadingArticulos(false)
+            }
 
-            setArticulosList(articuloData)
+
         }
     }, [errorArticulos, fetchArticulos]);
 
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
-    const refreshArticulos = () => {
+    const refreshArticulos = async() => {
+     
+        setArticuloListLength(false)
         setSearchField("")
-        setArticulosList([]);
-        getArticulos();
-        setMostrarPaginacion(true)
+        await getArticulos();
+        setMostrarPaginacion(true)      
+     
     }
     const limpiarArticulos = () => {
 
@@ -358,15 +370,15 @@ export default function EnhancedTable() {
         getArticulos();
         getArticulosCount();
         getArticulosTotal()
-    }, [getArticulos,getArticulosCount,getArticulosTotal])
+    }, [getArticulos, getArticulosCount, getArticulosTotal])
 
     return (
 
         <>
-        <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
-        <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
-            Artículos
-        </Typography>
+            <Alert open={alert} setOpen={setAlert} alertOptions={alertOptions}></Alert>
+            <Typography variant="h6" gutterBottom sx={{ ml: 15, mt: 3, mr: 3, mb: 2 }} color='primary'>
+                Artículos
+            </Typography>
 
             <Card size="small" sx={{ minWidth: 275, mb: 1 }}>
                 <CardContent>
@@ -374,15 +386,12 @@ export default function EnhancedTable() {
                         justifyContent="space-between"
                         alignItems="center"
                         spacing={2}>
-                        <Box m={1}
-                            justifyContent="space-between"
-                            alignItems="center"
-                            spacing={2}
-                            display="flex">
-
-
-                        </Box>
-                        </Grid>
+                    </Grid>
+                    <Box m={1}
+                        justifyContent="space-between"
+                        alignItems="center"
+                        spacing={2}
+                        display="flex">
                         <FormControl sx={{ ml: 2, mt: 3, width: '95ch' }} onClick={limpiarArticulos}>
                             <InputLabel htmlFor='outlined-adornment-amount'>Filtro de Búsqueda</InputLabel>
                             <OutlinedInput
@@ -398,88 +407,101 @@ export default function EnhancedTable() {
                                 }
                                 label='Search' />
                         </FormControl>
-                        <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml:2 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
+                        <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml: 2 }} variant="text" color='primary' onClick={refreshArticulos} disabled={loadingArticulos}>
                             Refrescar
                         </Button>
-                    <></>
-                   
-                        </CardContent>
-                        </Card>
-                        <Card>
-                            <CardContent>
-                           
-                            {!articuloListlength ? <TableContainer>
-                                <Table
-                                    sx={{ minWidth: 750 }}
-                                    aria-labelledby="tableTitle"
-                                    size={'medium'}
-                                >
-                                    <EnhancedTableHead
-                                        numSelected={selected.length}
-                                        order={order}
-                                        orderBy={orderBy}
-                                        onSelectAllClick={handleSelectAllClick}
-                                        onRequestSort={handleRequestSort}
-                                        rowCount={articulosList.length} />
-                                    <TableBody>
-                                        {stableSort(articulosList, getComparator(order, orderBy))
 
-                                            .map((row, index) => {
-                                                const isItemSelected = isSelected(row.id);
-                                                const labelId = `enhanced-table-checkbox-${index}`;
+                    </Box>
+                </CardContent>
+            </Card>
+            <Card>
+                <CardContent>
+                {
+                    loadingArticulos === true ?
+                        <Stack alignItems="center" sx={{ marginTop: "25px" }}>
+                            <CircularProgress /> Cargando...
+                        </Stack>
+                        :  
+                        <TableContainer>
+                        <Table
+                        sx={{ minWidth: 750 }}
+                        aria-labelledby="tableTitle"
+                        size={'medium'}
+                    >
+                        <EnhancedTableHead
+                            numSelected={selected.length}
+                            order={order}
+                            orderBy={orderBy}
+                            onSelectAllClick={handleSelectAllClick}
+                            onRequestSort={handleRequestSort}
+                            rowCount={articulosList.length} />
+                        <TableBody>
+                            {stableSort(articulosList, getComparator(order, orderBy))
 
-                                                return (
-                                                    <TableRow
-                                                        hover
-                                                        onClick={(event) => handleClick(event, row.descripcion)}
-                                                        role="checkbox"
-                                                        aria-checked={isItemSelected}
-                                                        tabIndex={-1}
-                                                        key={row.id}
-                                                        selected={isItemSelected}
-                                                    >
-                                                        <TableCell>
-                                                        </TableCell>
-                                                        <TableCell
-                                                            component="th"
-                                                            id={labelId}
-                                                            scope="row"
-                                                            padding="none"
+                                .map((row, index) => {
+                                    const isItemSelected = isSelected(row.id);
+                                    const labelId = `enhanced-table-checkbox-${index}`;
 
-                                                        >
-                                                            {row.id}
-                                                        </TableCell>
-                                                        <TableCell align="left">{row.descripcion} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
-                                                        <TableCell align="left">{row.descripcionAdicional}</TableCell>
-                                                    </TableRow>
-                                                );
-                                            })}
+                                    return (
+                                        <TableRow
+                                            hover
+                                            onClick={(event) => handleClick(event, row.descripcion)}
+                                            role="checkbox"
+                                            aria-checked={isItemSelected}
+                                            tabIndex={-1}
+                                            key={row.id}
+                                            selected={isItemSelected}
+                                        >
+                                            <TableCell>
+                                            </TableCell>
+                                            <TableCell
+                                                component="th"
+                                                id={labelId}
+                                                scope="row"
+                                                padding="none"
 
-                                    </TableBody>
+                                            >
+                                                {row.id}
+                                            </TableCell>
+                                            <TableCell align="left">{row.descripcion} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
+                                            <TableCell align="left">{row.descripcionAdicional}</TableCell>
+                                        </TableRow>
+                                    );
+                                })}
 
-                                </Table>
-                            </TableContainer> :
-                                <Stack alignItems="center">
-                                    <Lottie
-                                        loop
-                                        animationData={lottieJson}
-                                        play
-                                        style={{ width: 250, height: 250, flex: 1 }} />
-                                    <h4>Artículo no encontrado</h4>
-                                </Stack>}
+                        </TableBody>
 
-                            {mostrarPaginacion ? <TablePagination
-                                rowsPerPageOptions={[10, 25, 50]}
-                                component="div"
-                                count={articulosCount.length}
-                                rowsPerPage={rowsPerPage}
-                                page={page}
-                                onPageChange={handleChangePage}
-                                onRowsPerPageChange={handleChangeRowsPerPage} /> : ''}
+                    </Table>
+                        </TableContainer>
+                }
+                {
+                    articuloListlength === 0 && loadingArticulos === false ?
+                        <Stack alignItems="center">
+                            <Lottie
+                                loop
+                                animationData={lottieJson}
+                                play
+                                style={{ width: 250, height: 250, flex: 1 }} />
+                            <h4>Artículo no encontrado</h4>
+                        </Stack>
+                        : ''
+                       
+                }
 
-                        </CardContent>
-                    </Card>
-                    </>
+                  
 
-                );
+                    {mostrarPaginacion ? <TablePagination
+                        rowsPerPageOptions={[10, 25, 50]}
+                        component="div"
+                        count={articulosCount.length}
+                        rowsPerPage={rowsPerPage}
+                        page={page}
+                        onPageChange={handleChangePage}
+                        onRowsPerPageChange={handleChangeRowsPerPage} /> : ''}
+
+                </CardContent>
+            </Card>
+        </>
+
+    );
 }
