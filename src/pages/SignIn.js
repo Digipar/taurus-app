@@ -17,6 +17,9 @@ import { useFormik } from 'formik';
 import CardMedia from '@mui/material/CardMedia';
 import { CardActionArea } from '@mui/material';
 import Alert from '../components/Alert';
+import { useState } from "react";
+import Stack from '@mui/material/Stack';
+import CircularProgress from '@mui/material/CircularProgress';
 
 const Copyright = (props) => {
   return (
@@ -42,6 +45,9 @@ const Copyright = (props) => {
 const SignIn = (props) => {
 
   const { login, loginError, setLoginError, errorMessage } = useAuth();
+
+  const [loadingSignin, setLoadingSignin] = useState(false);
+
   const validationSchema = yup.object({
     correo: yup
       .string('Enter your email')
@@ -56,20 +62,23 @@ const SignIn = (props) => {
       contrasenha: ''
     },
     validationSchema: validationSchema,
-    onSubmit: (values) => {
+    onSubmit: async (values) => {
       //console.log('values', values)
       //submit(values)
-      login(values)
+      setLoadingSignin(true)
+      await login(values)
+      setLoadingSignin(false)
+
     },
   });
 
   return (
-    
+
     <Container
       component="main"
       maxWidth="xs"
     >
-    <Alert open={loginError} setOpen={setLoginError} alertOptions={{ tipo: 'error', titulo: 'Error', mensaje: errorMessage }}></Alert>
+      <Alert open={loginError} setOpen={setLoginError} alertOptions={{ tipo: 'error', titulo: 'Error', mensaje: errorMessage }}></Alert>
       <CssBaseline />
       <Card sx={{ minWidth: 375, mt: 15 }}>
         <CardContent>
@@ -86,7 +95,7 @@ const SignIn = (props) => {
                 direction="column"
                 justify="center"
                 component="img"
-                sx={{ height: 60, width: 160 , ml:13}}
+                sx={{ height: 60, width: 160, ml: 13 }}
                 image="./logoDigipar.png"
                 alt="Digipar"
               />
@@ -94,7 +103,7 @@ const SignIn = (props) => {
             <Typography
               component="h1"
               variant="h5"
-              sx={{mt:5}}
+              sx={{ mt: 5 }}
             >
               Ingrese sus credenciales
             </Typography>
@@ -144,10 +153,18 @@ const SignIn = (props) => {
                   fullWidth
                   variant="contained"
                   sx={{ mt: 3, mb: 2 }}
+                  disabled={loadingSignin}
                 >
                   Ingresar
                 </Button>
+              
               </CardActions>
+              {loadingSignin &&
+                  <Stack alignItems="center" sx={{ fontSize: "15px" }}>
+                    <CircularProgress /> Cargando...
+                  </Stack>
+                }
+
             </Box>
           </Box>
         </CardContent>
