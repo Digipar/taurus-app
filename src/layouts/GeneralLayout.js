@@ -116,7 +116,7 @@ return (
             noWrap
             sx={{ flexGrow: 1 }}
             >
-            Tauruss
+            Taurus
             </Typography>
            
             <Button onClick={logout} color="inherit" component="h1"> <LockOutlinedIcon /> Cerrar sesión</Button>

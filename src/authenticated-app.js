@@ -2,7 +2,6 @@ import React from 'react';
 import { Routes, Route, Navigate } from 'react-router-dom';
 import Clientes from './components/Clientes';
 import GeneralLayout from './layouts/GeneralLayout';
-import Dashboard from './pages/Dashboard';
 import Articulos from './components/Articulos';
 import Tenants from './components/Tenants';
 import Movimientos from './components/Movimientos';
@@ -12,12 +11,12 @@ const AuthenticatedApp = () => {
   // const {user, logout} = useAuth();
   return (
     <Routes>
-      <Route exact path="/" element={<Navigate to="/dashboard" />} />
-      <Route exact path="/signin" element={<Navigate to="/dashboard" />} />
-      <Route exact path="/signup" element={<Navigate to="/dashboard" />} />
-      <Route exact path="/dashboard" element={
+      <Route exact path="/" element={<Navigate to="/movimientos" />} />
+      <Route exact path="/signin" element={<Navigate to="/movimientos" />} />
+      <Route exact path="/signup" element={<Navigate to="/movimientos" />} />
+      <Route exact path="/movimientos" element={
         <GeneralLayout>
-          <Dashboard />
+          <Movimientos />
         </GeneralLayout>
       }
         handle={{
@@ -40,15 +39,7 @@ const AuthenticatedApp = () => {
           crumb: () => 'Clientes'
         }}
       />
-      <Route exact path="/movimientos" element={
-        <GeneralLayout>
-          <Movimientos />
-        </GeneralLayout>
-      }
-        handle={{
-          crumb: () => 'Movimientos'
-        }}
-      />
+    
       <Route exact path="/movimiento-registrar" element={
         <GeneralLayout>
           <MovimientoRegistrar />

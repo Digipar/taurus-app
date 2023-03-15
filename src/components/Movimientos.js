@@ -26,9 +26,10 @@ import PropTypes from 'prop-types';
 import Toolbar from '@mui/material/Toolbar';
 import Lottie from 'react-lottie-player'
 import lottieJson from '../img/lottie.json'
-import CachedIcon from '@mui/icons-material/Cached';
 // import AddIcon from '@mui/icons-material/Add';
 import CircularProgress from '@mui/material/CircularProgress';
+import moment from 'moment';
+
 
 
 function descendingComparator(a, b, orderBy) {
@@ -92,6 +93,12 @@ const encabezadoMovimientos = [
         numeric: false,
         disablePadding: false,
         label: 'Precio',
+    },
+    {
+        id: 'fecha',
+        numeric: false,
+        disablePadding: false,
+        label: 'Fecha',
     },
     {
         id: 'accion',
@@ -285,28 +292,7 @@ const Movimientos = () => {
 
     }, [fetchMovimientos]);
 
-    // const getClientes = useCallback(async () => {
-    //     const reqOptions = {
-    //         method: 'GET',
-    //         headers: { "Content-Type": "application/json" }
-    //     };
 
-    //     const clientesData = await fetchClientes(`${API}/cliente`, reqOptions)
-    //     setClientes(clientesData)
-
-    // }, [fetchClientes]);
-
-    // const getArticulos = useCallback(async () => {
-    //     const reqOptions = {
-    //         method: 'GET',
-    //         headers: { "Content-Type": "application/json" }
-    //     };
-
-    //     const articulosData = await fetchArticulos(`${API}/articulo`, reqOptions)
-
-    //     setArticulos(articulosData);
-
-    // }, [fetchArticulos]);
 
     const isSelected = (descripcion) => selected.indexOf(descripcion) !== -1;
 
@@ -317,35 +303,30 @@ const Movimientos = () => {
 
     const resfreshMovimientos = async () => {
         setMovimientos([]);
-        // setLoadingMovimientos(true)
         await getMovimientos();
-        // setLoadingMovimientos(false)
         setMostrarPaginacion(true)
     }
 
     useEffect(() => {
         getMovimientos();
-
         getMovimientosCount();
-        // getClientes();
-        // getArticulos();
     }, [getMovimientos, getMovimientosCount])
 
     return (
         <>
 
-            <Title>Movimientos</Title>
+            <Title>Movimientos
+                <Button sx={{ marginLeft: '74% !important' }} color='primary' variant='contained' component={Link} to="/movimiento-registrar" disabled={loadingMovimientos}>
+                    Nuevo movimiento
+                </Button>
+            </Title>
 
-            <MovimientoFiltro getMovimientos={getMovimientos}  onFilter={getDataFilter} />
-
-            {/* <Button startIcon={<CachedIcon />} sx={{ mt: 5, mr: 1, ml: 2 }} variant="text" color='primary' onClick={resfreshMovimientos} disabled={loadingMovimientos}>
-                Refrescar
-            </Button> */}
+            <MovimientoFiltro getMovimientos={getMovimientos} onFilter={getDataFilter} onRefreshMov={resfreshMovimientos} />
 
             <Card size="small" sx={{ minWidth: 275 }}>
                 <CardContent>
 
-                    <Stack
+                    {/* <Stack
                         direction="row"
                         justifyContent="space-between"
                         alignItems="center"
@@ -356,7 +337,7 @@ const Movimientos = () => {
                         <Button sx={{ marginLeft: '940px !important', marginBottom: '12px' }} startIcon={<CachedIcon />} variant="contained" color='primary' onClick={resfreshMovimientos} >
                             Refrescar
                         </Button>
-                    </Stack>
+                    </Stack> */}
                     <Divider />
 
                     {
@@ -410,6 +391,7 @@ const Movimientos = () => {
                                                         <TableCell align="left">{row.cliente.nombre}</TableCell>
                                                         <TableCell align="left">{row.cantidad}</TableCell>
                                                         <TableCell align="left">{row.precio}</TableCell>
+                                                        <TableCell align="left">{moment(row.creado).format('DD/MM/YYYY')}</TableCell>
                                                         <TableCell>
                                                             <Tooltip title="Editar">
                                                                 <Button startIcon={<ModeEditIcon />}

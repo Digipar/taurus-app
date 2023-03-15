@@ -18,6 +18,7 @@ import useFetch from '../hooks/use-fetch';
 import { API } from '../config';
 import CircularProgress from '@mui/material/CircularProgress';
 import { Link } from "react-router-dom";
+import CachedIcon from '@mui/icons-material/Cached';
 
 
 
@@ -217,10 +218,7 @@ const MovimientoFiltro = (props) => {
                             Filtro de búsqueda
                         </Button>
 
-                          
-                        <Button sx={{ marginLeft: '97vh !important'  }} color='primary' variant='contained' component={Link} to="/movimiento-registrar" disabled={props.loadingMovimientos}>
-                                    Nuevo movimiento
-                                </Button>
+
                     </AccordionSummary>
                     <AccordionDetails>
 
@@ -367,6 +365,7 @@ const MovimientoFiltro = (props) => {
                                             id="fechaDesde"
                                             label="Desde"
                                             type="date"
+                                            format="dd/mm/yyyy"
                                             value={fechaDesde}
                                             required
                                             onChange={(e) => setFechaDesde(e.target.value)}
@@ -413,15 +412,11 @@ const MovimientoFiltro = (props) => {
                                 <Button variant='contained' color='primary' onClick={limpiarFiltro}>
                                     Limpiar
                                 </Button>
-
-                             
-
+                                <Button sx={{ marginLeft: '74% !important' }} startIcon={<CachedIcon />} variant="text" color='primary' onClick={props.onRefreshMov} disabled={props.loadingMovimientos}>
+                                    Refrescar
+                                </Button>
                             </Stack>
-
-
-                        
-
-                            
+                    
 
                         </Box>
                     </AccordionDetails>

@@ -32,6 +32,7 @@ import Stack from '@mui/material/Stack';
 import Alert from '../components/Alert';
 import CircularProgress from '@mui/material/CircularProgress';
 
+
 function descendingComparator(a, b, orderBy) {
     if (b[orderBy] < a[orderBy]) {
         return -1;
@@ -285,6 +286,7 @@ export default function EnhancedTable() {
 
         const clienteTotal = await fetchClientes(`${API}/cliente`, reqOptions)
 
+        // console.log("clienteTotal:", clienteTotal)
 
         if (clienteTotal.error) {
             setAlertOptions({ tipo: 'error', titulo: 'Error', mensaje: clienteTotal.message })
@@ -464,7 +466,7 @@ export default function EnhancedTable() {
                                                     {row.id}
                                                 </TableCell>
                                                 <TableCell align="left">{row.nombre} {row.estado !== 1 ? ((<Chip label={row.estado === 'Borrador' ? 'Borrador' : row.estado === 'Anulado' ? 'Anulado' : ''} color={row.estado === 'Borrador' ? "warning" : "error"} variant="outlined" />)) : ''}</TableCell>
-                                                <TableCell align="left">{row.tenantId}</TableCell>
+                                                <TableCell align="left">{row.tenant.nombre}</TableCell>
                                             </TableRow>
                                         );
                                     })}
