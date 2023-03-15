@@ -110,6 +110,10 @@ const MovimientoForm = (props) => {
 
     }
 
+    useEffect(() => {
+        console.log('props.clientes', props.clientes)
+
+    })
 
     useEffect(() => {
         if (id) {
@@ -126,7 +130,10 @@ const MovimientoForm = (props) => {
 
         validationSchema: Yup.object({
             precio: Yup.number()
-                .required('Campo precio es requerido.'),
+                .positive('Campo precio no puede ser negativo.')
+                .required('Campo precio es requerido.')
+                .moreThan(0,'Campo precio no valido'),
+
             cantidad: Yup.number()
                 .required('Campo cantidad es requerido.'),
             cliente: Yup.string()
@@ -160,9 +167,9 @@ const MovimientoForm = (props) => {
                 modificado: new Date()
             }
 
-            // console.log("data final para crear =>", movData)
+            console.log("data final para crear =>", movData)
 
-            props.registrarMovimiento(movData)
+           props.registrarMovimiento(movData)
 
         }
 
@@ -187,14 +194,15 @@ const MovimientoForm = (props) => {
             >
 
                 <FormControl fullWidth error={formik.errors.cliente && true} sx={{ marginTop: 2 }}>
-                    <InputLabel id="cliente-sl">Clientes *</InputLabel>
+                    <InputLabel id="cliente">Clientes *</InputLabel>
                     <Select
-                        labelId="cliente-sl"
+                        labelId="cliente"
                         id="cliente"
                         name="cliente"
                         value={formik.values.cliente}
                         label="Clientes *"
                         onChange={formik.handleChange}
+                        required
                     >
                         {
                             props.clientes.map(item => {
@@ -208,15 +216,39 @@ const MovimientoForm = (props) => {
                     <FormHelperText>{formik.errors.cliente}</FormHelperText>
                 </FormControl>
 
-                <FormControl fullWidth error={formik.errors.articulo && true} sx={{ marginTop: 2 }}>
-                    <InputLabel id="articulo-sl">Articulos *</InputLabel>
+                {/* <FormControl fullWidth error={formik.errors.tenant && true} sx={{ marginTop: 2 }}>
+                    <InputLabel id="tenant">Tenants *</InputLabel>
                     <Select
-                        labelId="articulo-sl"
+                        labelId="tenant"
+                        id="tenant"
+                        name="tenant"
+                        value={formik.values.tenant}
+                        label="Tenants *"
+                        onChange={formik.handleChange}
+                        required
+                    >
+                        {
+                            props.clientes.tenant.map(item => {
+                                return (
+                                    <MenuItem key={item.tenant.id} value={item.tenant.id}>{item.tenant.nombre}</MenuItem>
+                                )
+                            })
+                        }
+
+                    </Select>
+                    <FormHelperText>{formik.errors.cliente}</FormHelperText>
+                </FormControl> */}
+
+                <FormControl fullWidth error={formik.errors.articulo && true} sx={{ marginTop: 2 }}>
+                    <InputLabel id="articulo">Articulos *</InputLabel>
+                    <Select
+                        labelId="articulo"
                         id="articulo"
                         name="articulo"
                         value={formik.values.articulo}
                         label="Articulos *"
                         onChange={formik.handleChange}
+                        required
                     >
                         {
                             props.articulos.map(item => {
@@ -238,7 +270,7 @@ const MovimientoForm = (props) => {
                         id="cantidad"
                         label="Cantidad"
                         type="number"
-                        inputProps={{ step: 1 }}
+                        inputProps={{ step: 1, min: 0 }}
                         value={formik.values.cantidad}
                         onChange={formik.handleChange}
                         required
@@ -254,7 +286,7 @@ const MovimientoForm = (props) => {
                         id="precio"
                         label="Precio"
                         type="number"
-                        inputProps={{ step: 1, min: 0 }}
+                        inputProps={{ step: 0.01 }}
                         value={formik.values.precio}
                         onChange={formik.handleChange}
                         required

@@ -2,7 +2,6 @@ import * as React from 'react';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
-import DashboardIcon from '@mui/icons-material/Dashboard';
 import ArticleIcon from '@mui/icons-material/Article';
 import PeopleIcon from '@mui/icons-material/People';
 import { Link } from 'react-router-dom';
@@ -11,11 +10,11 @@ import RoofingIcon from '@mui/icons-material/Roofing';
 
 export const mainListItems = (
   <React.Fragment>
-    <ListItemButton component={Link} to="/dashboard">
+  <ListItemButton component={Link} to="/movimientos">
       <ListItemIcon>
-        <DashboardIcon />
+        <ReorderIcon />
       </ListItemIcon>
-      <ListItemText primary="Dashboard" />
+      <ListItemText primary="Movimientos" />
     </ListItemButton>
     <ListItemButton component={Link} to="/articulos">
       <ListItemIcon>
@@ -28,12 +27,6 @@ export const mainListItems = (
         <PeopleIcon />
       </ListItemIcon>
       <ListItemText primary="Clientes" />
-    </ListItemButton>
-    <ListItemButton component={Link} to="/movimientos">
-      <ListItemIcon>
-        <ReorderIcon />
-      </ListItemIcon>
-      <ListItemText primary="Movimientos" />
     </ListItemButton>
     <ListItemButton component={Link} to="/tenant">
       <ListItemIcon>
